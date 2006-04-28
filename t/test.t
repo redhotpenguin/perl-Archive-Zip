@@ -13,7 +13,7 @@ use FileHandle;
 use File::Path;
 use File::Spec;
 
-BEGIN { plan tests => 123, todo => [] }
+BEGIN { plan tests => 141, todo => [] }
 
 BEGIN { 
     unshift @INC, "t/"; 
@@ -21,45 +21,78 @@ BEGIN {
         or die "Can't get t/common.pl";
 }
 
-my ($zip, @members, $numberOfMembers, $status, $member, $zipout,
-	$memberName, @memberNames);
+
+
+
+
+#####################################################################
+# Testing Utility Functions
 
 #--------- check CRC
 ok(TESTSTRINGCRC, 0xac373f32);
 
+# Bad times die
+eval { Archive::Zip::Member::_unixToDosTime( 0 ) };
+ok( ($@ =~ /Tried to add member with zero or undef/) ? 1 : 0 );
+
+#--------- check time conversion
+
+foreach my $unix_time (
+	315576002, 315576004, 315580000, 315600000,
+	316000000, 320000000, 400000000, 500000000,
+	600000000, 700000000, 800000000, 900000000,
+	1000000000, 1100000000, 1200000000,
+	int(time()/2)*2,
+) {
+	my $dos_time   = Archive::Zip::Member::_unixToDosTime( $unix_time );
+	my $round_trip = Archive::Zip::Member::_dosToUnixTime( $dos_time  );
+	ok( $unix_time, $round_trip );
+}
+
+
+
+
+
+#####################################################################
+# Testing Archives
+
 #--------- empty file
 # new	# Archive::Zip
 # new	# Archive::Zip::Archive
-$zip = Archive::Zip->new();
+my $zip = Archive::Zip->new();
 ok(defined($zip));
 
 # members	# Archive::Zip::Archive
-@members = $zip->members();
+my @members = $zip->members();
 ok(scalar(@members), 0);
 
 # numberOfMembers	# Archive::Zip::Archive
-$numberOfMembers = $zip->numberOfMembers();
+my $numberOfMembers = $zip->numberOfMembers();
 ok($numberOfMembers, 0);
 
 # writeToFileNamed	# Archive::Zip::Archive
-$status = $zip->writeToFileNamed( OUTPUTZIP );
+my $status = $zip->writeToFileNamed( OUTPUTZIP );
 ok($status, AZ_OK);
 
+my $zipout;
 ($status, $zipout) = testZip();
 # STDERR->print("status= $status, out=$zipout\n");
 skip($testZipDoesntWork, $status != 0);
 # unzip -t returns error code=1 for warning on empty
 
 #--------- add a directory
-$memberName = TESTDIR . '/';
+my $memberName = TESTDIR . '/';
 my $dirName = TESTDIR;
 
 # addDirectory	# Archive::Zip::Archive
 # new	# Archive::Zip::Member
-$member = $zip->addDirectory($memberName);
+my $member = $zip->addDirectory($memberName);
 ok(defined($member));
-
 ok($member->fileName(), $memberName);
+
+# On some (Windows systems) the modification time is
+# corrupted. Save this to check late.
+my $dir_time = $member->lastModFileDateTime();
 
 # members	# Archive::Zip::Archive
 @members = $zip->members();
@@ -73,6 +106,9 @@ ok($numberOfMembers, 1);
 # writeToFileNamed	# Archive::Zip::Archive
 $status = $zip->writeToFileNamed( OUTPUTZIP );
 ok($status, AZ_OK);
+
+# Does the modification time get corrupted?
+ok( ($zip->members)[0]->lastModFileDateTime(), $dir_time );
 
 ($status, $zipout) = testZip();
 # STDERR->print("status= $status, out=$zipout\n");
@@ -214,7 +250,7 @@ ok(scalar(@members), 3);
 ok($members[2], $member);
 
 # memberNames	# Archive::Zip::Archive
-@memberNames = $zip->memberNames();
+my @memberNames = $zip->memberNames();
 ok(scalar(@memberNames), 3);
 ok($memberNames[2], $memberName);
 

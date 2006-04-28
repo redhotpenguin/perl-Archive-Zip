@@ -1533,36 +1533,6 @@ sub setLastModFileDateTimeFromUnix    # Archive::Zip::Member
 	$self->{'lastModFileDateTime'} = _unixToDosTime($time_t);
 }
 
-# DOS date/time format
-# 0-4 (5) Second divided by 2
-# 5-10 (6) Minute (0-59)
-# 11-15 (5) Hour (0-23 on a 24-hour clock)
-# 16-20 (5) Day of the month (1-31)
-# 21-24 (4) Month (1 = January, 2 = February, etc.)
-# 25-31 (7) Year offset from 1980 (add 1980 to get actual year)
-
-# Convert DOS date/time format to unix time_t format
-# NOT AN OBJECT METHOD!
-sub _dosToUnixTime    # Archive::Zip::Member
-{
-	my $dt = shift;
-	return time() unless defined($dt);
-
-	my $year = ( ( $dt >> 25 ) & 0x7f ) + 80;
-	my $mon  = ( ( $dt >> 21 ) & 0x0f ) - 1;
-	my $mday = ( ( $dt >> 16 ) & 0x1f );
-
-	my $hour = ( ( $dt >> 11 ) & 0x1f );
-	my $min  = ( ( $dt >> 5 ) & 0x3f );
-	my $sec  = ( ( $dt << 1 ) & 0x3e );
-
-	# catch errors
-	my $time_t =
-	  eval { Time::Local::timelocal( $sec, $min, $hour, $mday, $mon, $year ); };
-	return time() if ($@);
-	return $time_t;
-}
-
 sub internalFileAttributes    # Archive::Zip::Member
 {
 	shift->{'internalFileAttributes'};
@@ -1871,11 +1841,51 @@ sub _centralDirectoryHeaderSize    # Archive::Zip::Member
 	  length( $self->fileComment() );
 }
 
+# DOS date/time format
+# 0-4 (5) Second divided by 2
+# 5-10 (6) Minute (0-59)
+# 11-15 (5) Hour (0-23 on a 24-hour clock)
+# 16-20 (5) Day of the month (1-31)
+# 21-24 (4) Month (1 = January, 2 = February, etc.)
+# 25-31 (7) Year offset from 1980 (add 1980 to get actual year)
+
+# Convert DOS date/time format to unix time_t format
+# NOT AN OBJECT METHOD!
+sub _dosToUnixTime    # Archive::Zip::Member
+{
+	my $dt = shift;
+	return time() unless defined($dt);
+
+	my $year = ( ( $dt >> 25 ) & 0x7f ) + 80;
+	my $mon  = ( ( $dt >> 21 ) & 0x0f ) - 1;
+	my $mday = ( ( $dt >> 16 ) & 0x1f );
+
+	my $hour = ( ( $dt >> 11 ) & 0x1f );
+	my $min  = ( ( $dt >> 5 ) & 0x3f );
+	my $sec  = ( ( $dt << 1 ) & 0x3e );
+
+	# catch errors
+	my $time_t =
+	  eval { Time::Local::timelocal( $sec, $min, $hour, $mday, $mon, $year ); };
+	return time() if ($@);
+	return $time_t;
+}
+
 # convert a unix time to DOS date/time
 # NOT AN OBJECT METHOD!
 sub _unixToDosTime    # Archive::Zip::Member
 {
 	my $time_t = shift;
+	unless ( $time_t ) {
+		Carp::croak("Tried to add member with zero or undef value for time");
+	}
+	# Note, this isn't exactly UTC 1980, it's 1980 + 12 hours and 1
+	#second so that nothing timezoney can muck us up.
+	my $safe_epoch = 315576001;
+	if ( $time_t < $safe_epoch ) {
+		Carp::carp("Unsupported date before 1980 encountered, moving to 1980");
+		$time_t = $safe_epoch;
+	}
 	my ( $sec, $min, $hour, $mday, $mon, $year ) = localtime($time_t);
 	my $dt = 0;
 	$dt += ( $sec >> 1 );
@@ -2393,23 +2403,23 @@ sub _newNamed    # Archive::Zip::DirectoryMember
 	my $self = $class->new(@_);
 	$self->{'externalFileName'} = $fileName;
 	$self->fileName($newName);
-	if ( -e $fileName )
-	{
 
-		if ( -d _ )
-		{
+	if ( -e $fileName ) {
+		# -e does NOT do a full stat, so we need to do one now
+		if ( -d _ ) {
 			my @stat = stat(_);
 			$self->unixFileAttributes( $stat[2] );
-			$self->setLastModFileDateTimeFromUnix( $stat[9] );
-		}
-		else    # hmm.. trying to add a non-directory?
-		{
+			my $mod_t = $stat[9];
+			if ( $^O eq 'MSWin32' and ! $mod_t ) {
+				$mod_t = time();
+			}
+			$self->setLastModFileDateTimeFromUnix( $mod_t );
+
+		} else {  # hmm.. trying to add a non-directory?
 			_error( $fileName, ' exists but is not a directory' );
 			return undef;
 		}
-	}
-	else
-	{
+	} else {
 		$self->unixFileAttributes( $self->DEFAULT_DIRECTORY_PERMISSIONS );
 		$self->setLastModFileDateTimeFromUnix( time() );
 	}
