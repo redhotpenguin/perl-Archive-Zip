@@ -13,6 +13,13 @@ use Archive::Zip::BufferedFileHandle;
 
 $| = 1;
 
+### Workaround for a bug in version of Data::Dumper bundled
+### with some versions of Perl, which causes warnings when
+### calling ->Seen below.
+if ( defined \&Data::Dumper::init_refaddr_format ) {
+	Data::Dumper::init_refaddr_format();
+}
+
 # use constant END_OF_CENTRAL_DIRECTORY_SIGNATURE_STRING;
 use constant CENTRAL_DIRECTORY_FILE_HEADER_SIGNATURE_STRING => pack( SIGNATURE_FORMAT,
 	CENTRAL_DIRECTORY_FILE_HEADER_SIGNATURE );
