@@ -15,9 +15,9 @@
 # ----------------------------------------------------------------------
 
 package Archive::Zip;
-require 5.003_96;
+BEGIN { require 5.003_96; }
 use strict;
-
+use UNIVERSAL;
 use Carp();
 use IO::File();
 use IO::Seekable();
@@ -311,19 +311,18 @@ sub _isSeekable    # Archive::Zip
 {
 	my $fh = shift;
 
-	if ( UNIVERSAL::isa( $fh, 'IO::Scalar' ) )
-	{
+	if ( UNIVERSAL::isa( $fh, 'IO::Scalar' ) ) {
 		return 0;
-	}
-	elsif ( UNIVERSAL::isa( $fh, 'IO::String' ) )
-	{
-		return 1;	
-	}
-	elsif ( UNIVERSAL::can( $fh, 'stat' ) )
-	{
+	} elsif ( UNIVERSAL::isa( $fh, 'IO::String' ) ) {
+		return 1;
+	} elsif ( UNIVERSAL::isa( $fh, 'IO::Seekable' ) {
+		return 1;
+	} elsif ( UNIVERSAL::can( $fh, 'stat' ) ) {
 		return -f $fh;
 	}
-	return UNIVERSAL::can( $fh, 'seek' );
+	return (
+		UNIVERSAL::can( $fh, 'seek' ) and UNIVERSAL::can( $fh, 'tell')
+		) ? 1 : 0;
 }
 
 # Return an opened IO::Handle
@@ -1877,7 +1876,7 @@ sub _unixToDosTime    # Archive::Zip::Member
 {
 	my $time_t = shift;
 	unless ( $time_t ) {
-		Carp::croak("Tried to add member with zero or undef value for time");
+		_error("Tried to add member with zero or undef value for time");
 	}
 	# Note, this isn't exactly UTC 1980, it's 1980 + 12 hours and 1
 	#second so that nothing timezoney can muck us up.
