@@ -318,6 +318,11 @@ sub _isSeekable    # Archive::Zip
 		return 1;
 	}
 	if ( UNIVERSAL::isa($fh, 'IO::Seekable') ) {
+		# Unfortunately, some things like FileHandle objects
+		# return true for Seekable, but AREN'T!!!!!
+		if ( UNIVERSAL::isa($fh, 'FileHandle') ) {
+			return 0;
+		}
 		return 1;
 	}
 	if ( UNIVERSAL::can($fh, 'stat') ) {
