@@ -32,13 +32,17 @@ BEGIN {
 ok(TESTSTRINGCRC, 0xac373f32);
 
 # Bad times die
-eval { Archive::Zip::Member::_unixToDosTime( 0 ) };
-ok( ($@ =~ /Tried to add member with zero or undef/) ? 1 : 0 );
+SCOPE: {
+	my @errors = ();
+	local $Archive::Zip::ErrorHandler = sub { push @errors, @_ };
+	eval { Archive::Zip::Member::_unixToDosTime( 0 ) };
+	ok( ($errors[0] =~ /Tried to add member with zero or undef/) ? 1 : 0 );
+}
 
 #--------- check time conversion
 
 foreach my $unix_time (
-	315576002, 315576004, 315580000, 315600000,
+	315576062, 315576064, 315580000, 315600000,
 	316000000, 320000000, 400000000, 500000000,
 	600000000, 700000000, 800000000, 900000000,
 	1000000000, 1100000000, 1200000000,

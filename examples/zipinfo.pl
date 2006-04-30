@@ -16,7 +16,7 @@ $| = 1;
 ### Workaround for a bug in version of Data::Dumper bundled
 ### with some versions of Perl, which causes warnings when
 ### calling ->Seen below.
-if ( defined \&Data::Dumper::init_refaddr_format ) {
+if ( defined &Data::Dumper::init_refaddr_format ) {
 	Data::Dumper::init_refaddr_format();
 }
 
