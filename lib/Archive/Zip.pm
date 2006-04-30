@@ -316,7 +316,7 @@ sub _isSeekable    # Archive::Zip
 		return 0;
 	} elsif ( UNIVERSAL::isa( $fh, 'IO::String' ) ) {
 		return 1;
-	} elsif ( UNIVERSAL::isa( $fh, 'IO::Seekable' ) {
+	} elsif ( UNIVERSAL::isa( $fh, 'IO::Seekable' ) ) {
 		return 1;
 	} elsif ( UNIVERSAL::can( $fh, 'stat' ) ) {
 		return -f $fh;
