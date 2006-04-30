@@ -1885,7 +1885,7 @@ sub _unixToDosTime    # Archive::Zip::Member
 		$time_t = $safe_epoch;
 	}
 	if ( $time_t < $safe_epoch ) {
-		Carp::carp("Unsupported date before 1980 encountered, moving to 1980");
+		_ioError("Unsupported date before 1980 encountered, moving to 1980");
 		$time_t = $safe_epoch;
 	}
 	my ( $sec, $min, $hour, $mday, $mon, $year ) = localtime($time_t);
