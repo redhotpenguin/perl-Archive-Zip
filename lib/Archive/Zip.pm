@@ -311,18 +311,20 @@ sub _binmode    # Archive::Zip
 sub _isSeekable    # Archive::Zip
 {
 	my $fh = shift;
-
-	if ( UNIVERSAL::isa( $fh, 'IO::Scalar' ) ) {
+	if ( UNIVERSAL::isa($fh, 'IO::Scalar') ) {
 		return 0;
-	} elsif ( UNIVERSAL::isa( $fh, 'IO::String' ) ) {
+	}
+	if ( UNIVERSAL::isa($fh, 'IO::String') ) {
 		return 1;
-	} elsif ( UNIVERSAL::isa( $fh, 'IO::Seekable' ) ) {
+	}
+	if ( UNIVERSAL::isa($fh, 'IO::Seekable') ) {
 		return 1;
-	} elsif ( UNIVERSAL::can( $fh, 'stat' ) ) {
+	}
+	if ( UNIVERSAL::can($fh, 'stat') ) {
 		return -f $fh;
 	}
 	return (
-		UNIVERSAL::can( $fh, 'seek' ) and UNIVERSAL::can( $fh, 'tell')
+		UNIVERSAL::can($fh, 'seek') and UNIVERSAL::can($fh, 'tell')
 		) ? 1 : 0;
 }
 
