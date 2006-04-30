@@ -1,15 +1,20 @@
+package Archive::Zip::BufferedFileHandle;
+
 # File handle that uses a string internally and can seek
 # This is given as a demo for getting a zip file written
 # to a string.
 # I probably should just use IO::Scalar instead.
 # Ned Konz, March 2000
-#
-# $Revision: 1.6 $
 
 use strict;
-package Archive::Zip::BufferedFileHandle;
 use IO::File;
 use Carp;
+
+use vars qw{$VERSION};
+BEGIN {
+	$VERSION = '1.17_01';
+	$VERSION = eval $VERSION;
+}
 
 sub new
 {

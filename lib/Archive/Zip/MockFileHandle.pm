@@ -1,14 +1,17 @@
+package Archive::Zip::MockFileHandle;
+
 # Output file handle that calls a custom write routine
 # Ned Konz, March 2000
 # This is provided to help with writing zip files
 # when you have to process them a chunk at a time.
-#
-# See the examples.
-#
-# $Revision: 1.4 $
 
 use strict;
-package Archive::Zip::MockFileHandle;
+
+use vars qw{$VERSION};
+BEGIN {
+	$VERSION = '1.17_01';
+	$VERSION = eval $VERSION;
+}
 
 sub new
 {

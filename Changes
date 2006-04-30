@@ -1,6 +1,30 @@
 Revision history for Perl extension Archive::Zip.
+
+1.17_01 Sun 30 Apr 2006 - ADAMK
+  - Imported Archive::Zip into http://svn.phase-n.com/svn/cpan/ orphanage.
+    If you have a CPAN login and have released a module, ask ADAMK about an
+    account and you can repair your bug directly in the repository.
+  - Removed the revision comments from the old CVS repository
+  - DOS DateTime Format doesn't support dates before 1980 and goes crazy when
+    decoding back to unix time. If we don't get passed a time at all
+    (0 or undef) we now throw an error.
+  - DOS DateTime Format doesn't support dates before 1980, so if we find any
+    we warn and use Jan 1 12:01pm 1980 if we encounter any
+  - Win32 doesn't support directory modification times.
+    Tentatively use the current time as the mod-time to prevent sending
+    null times to the unix2dos converter (and the resulting error)
+  - Reformat the expected empty zip warning in the output to add a note that
+    the warning is entirely normal. Would be nice if some time later we can
+    suppress it altogether, but I don't have the cross-platform STDERR-fu
+    without adding a dependency to IPC::Run3 (which would be bad).
+  - Adding a proper $VERSION to all classes, and synchronising them to the
+    same value.
+  - Adding a BEGIN block around the require 5.003_96 so it works at
+    compile-time instead of post-compile.
+  - Moved crc32 to bin/crc32 in line with package layout conventions
+
 1.16 Mon Jul 04 12:49:30 CDT 2005
- - Grrrr...removed test that fails when installing under CPANPLUS.
+  - Grrrr...removed test that fails when installing under CPANPLUS.
 
 1.15 Wed Jun 22 10:24:25 CDT 2005
   - added fix for RT #12771 Minor nit: warning in Archive::Zip::DirectoryMember::contents() 

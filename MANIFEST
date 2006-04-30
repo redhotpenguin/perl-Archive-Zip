@@ -1,5 +1,5 @@
 Changes				Version to version change log
-crc32				Utility program to print out file CRC's
+bin/crc32			Utility program to print out file CRC's
 docs/appnote.iz			Zip format description (from Info-Zip, annotated)
 docs/Appnote.txt		PKZip format description
 docs/Archive-Zip.pdf		Object model, PDF version

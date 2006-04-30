@@ -39,22 +39,22 @@ WriteMakefile(
 	PREREQ_PM => {
 		'Compress::Zlib' => 1.14,
 		'Carp'           => 0,
-		'Data::Dumper'   => 0,	# examples/zipinfo.pl
+		'Data::Dumper'   => 0,   # examples/zipinfo.pl
 		'File::Path'     => 0,
 		'File::Find'     => 0,
 		'File::Basename' => 0,
-		'File::Spec'     => 0.8,	# need splitpath()
+		'File::Spec'     => 0.8, # need splitpath()
 		'File::Copy'     => 0,
 		'File::Temp'     => 0,
-		'Getopt::Std'    => 0,	# examples/extract.pl
+		'Getopt::Std'    => 0,   # examples/extract.pl
 		'IO::File'       => 0,
 		'IO::Handle'     => 0,
 		'IO::Seekable'   => 0,
-		# 'Test'         => 0,
+		# 'Test'         => 0,   ### Why is this commented out?
 		'Test::More'     => 0,
 		'Time::Local'    => 0,
 	},
-	EXE_FILES => [ qw( crc32 ) ],
+	EXE_FILES => [ 'bin/crc32' ],
 	clean => {
 		FILES => 'test.log testDir/* testDir/ testin.zip testout.zip test2.zip'
 	},

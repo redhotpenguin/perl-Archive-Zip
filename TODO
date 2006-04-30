@@ -1,4 +1,3 @@
-$Revision: 1.15 $
 Still to do:
 * auto-choosing storing vs compression
 * extra field hooks (see notes.txt)
@@ -9,3 +8,4 @@ Still to do:
 * cookbook style docs
 * Handle tainted paths correctly
 * Work on better compatability with other IO:: modules
+* Move all the tests to Test::More

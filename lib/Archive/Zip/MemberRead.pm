@@ -1,11 +1,8 @@
 package Archive::Zip::MemberRead;
 
-#
 # Copyright (c) 2002 Sreeji K. Das. All rights reserved.  This program is free
 # software; you can redistribute it and/or modify it under the same terms
 # as Perl itself.
-#
-# $Revision: 1.4 $
 
 =head1 NAME
 
@@ -40,6 +37,12 @@ just like you read data from files.
 
 use strict;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
+
+use vars qw{$VERSION};
+BEGIN {
+	$VERSION = '1.17_01';
+	$VERSION = eval $VERSION;
+}
 
 =item Archive::Zip::Member::readFileHandle()
 
@@ -274,6 +277,8 @@ sub read
 	return $ret;
 }
 
+1;
+
 =back
 
 =head1 AUTHOR
@@ -291,5 +296,3 @@ software; you can redistribute it and/or modify it under the same terms
 as Perl itself.
 
 =cut
-
-1;

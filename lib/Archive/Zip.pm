@@ -1,5 +1,6 @@
 #! perl -w
-# $Revision: 1.104.2.1 $
+package Archive::Zip;
+### Can we remove the hashbang?
 
 # Copyright (c) 2000-2002 Ned Konz. All rights reserved.  This program is free
 # software; you can redistribute it and/or modify it under the same terms as
@@ -14,16 +15,15 @@
 # of class Archive::Zip::Archive.
 # ----------------------------------------------------------------------
 
-package Archive::Zip;
 BEGIN { require 5.003_96; }
 use strict;
-use UNIVERSAL;
-use Carp();
-use IO::File();
-use IO::Seekable();
-use Compress::Zlib();
+use UNIVERSAL      ();
+use Carp           ();
+use IO::File       ();
+use IO::Seekable   ();
+use Compress::Zlib ();
 use File::Spec 0.8 ();
-use File::Temp();
+use File::Temp     ();
 
 # use sigtrap qw(die normal-signals);	# is this needed?
 
@@ -39,9 +39,10 @@ $ErrorHandler = \&Carp::carp;
 # BEGIN block is necessary here so that other modules can use the constants.
 BEGIN
 {
-	require Exporter;
+	$VERSION = '1.17_01';
+	$VERSION = eval $VERSION;
 
-	$VERSION = "1.16";
+	require Exporter;
 	@ISA = qw( Exporter );
 
 	my @ConstantNames = qw( FA_MSDOS FA_UNIX GPBF_ENCRYPTED_MASK

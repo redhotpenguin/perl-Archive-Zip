@@ -1,9 +1,14 @@
-# $Revision: 1.11 $
-#
+use Archive::Zip;
+
+warn("Archive::Zip::Tree is deprecated; its methods have been moved into Archive::Zip.") if $^W;
+
+1;
+
+__END__
 
 =head1 NAME
 
-Archive::Zip::Tree - methods for adding/extracting trees using Archive::Zip
+Archive::Zip::Tree - (DEPRECATED) methods for adding/extracting trees using Archive::Zip
 
 =head1 SYNOPSIS
 
@@ -31,9 +36,3 @@ as Perl itself.
 L<Archive::Zip>
 
 =cut
-
-use Archive::Zip;
-
-warn("Archive::Zip::Tree is deprecated; its methods have been moved into Archive::Zip.") if $^W;
-
-1;
