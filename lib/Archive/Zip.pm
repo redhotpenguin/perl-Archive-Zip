@@ -1871,6 +1871,10 @@ sub _dosToUnixTime    # Archive::Zip::Member
 	return $time_t;
 }
 
+# Note, this isn't exactly UTC 1980, it's 1980 + 12 hours and 1
+# minute so that nothing timezoney can muck us up.
+my $safe_epoch = 315576060;
+
 # convert a unix time to DOS date/time
 # NOT AN OBJECT METHOD!
 sub _unixToDosTime    # Archive::Zip::Member
@@ -1878,10 +1882,8 @@ sub _unixToDosTime    # Archive::Zip::Member
 	my $time_t = shift;
 	unless ( $time_t ) {
 		_error("Tried to add member with zero or undef value for time");
+		$time_t = $safe_epoch;
 	}
-	# Note, this isn't exactly UTC 1980, it's 1980 + 12 hours and 1
-	#second so that nothing timezoney can muck us up.
-	my $safe_epoch = 315576001;
 	if ( $time_t < $safe_epoch ) {
 		Carp::carp("Unsupported date before 1980 encountered, moving to 1980");
 		$time_t = $safe_epoch;
