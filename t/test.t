@@ -74,7 +74,9 @@ ok($numberOfMembers, 0);
 my $status = $zip->writeToFileNamed( OUTPUTZIP );
 ok($status, AZ_OK);
 
-print STDERR "\n# You might see an expected 'zipfile is empty' warning now.\n";
+if ( $^O eq 'MSWin32' ) {
+	print STDERR "\n# You might see an expected 'zipfile is empty' warning now.\n";
+}
 my $zipout;
 ($status, $zipout) = testZip();
 # STDERR->print("status= $status, out=$zipout\n");
