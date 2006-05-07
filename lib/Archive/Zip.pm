@@ -39,7 +39,7 @@ $ErrorHandler = \&Carp::carp;
 # BEGIN block is necessary here so that other modules can use the constants.
 BEGIN
 {
-	$VERSION = '1.17_01';
+	$VERSION = '1.17_02';
 	$VERSION = eval $VERSION;
 
 	require Exporter;

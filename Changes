@@ -1,6 +1,13 @@
 Revision history for Perl extension Archive::Zip.
 
-1.17_01 Sun 30 Apr 2006 - ADAMK
+1.17_02 Sun  7 May 2006 - Adam Kennedy
+  - Renamed the test scripts to the more conventional 01_name.t style
+  - Upgraded all test scripts from Test.pm to Test::More (removing Test.pm dependency)
+  - Various other miscellaneous cleanups of the test scripts
+  - Removed MANIFEST and pod.t from repository (will be auto-generated)
+  - Some cleaning up of the POD documentation for readability
+
+1.17_01 Sun 30 Apr 2006 - Adam Kennedy
   - Imported Archive::Zip into http://svn.phase-n.com/svn/cpan/ orphanage.
     If you have a CPAN login and have released a module, ask ADAMK about an
     account and you can repair your bug directly in the repository.
