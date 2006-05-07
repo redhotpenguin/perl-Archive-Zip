@@ -1,11 +1,5 @@
-# Test Archive::Zip::Tree module
-# $Revision: 1.6 $
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl t/testTree.t'
-# vim: ts=4 sw=4 ft=perl
+#!/usr/bin/perl -w
 
-$^W = 1;
-$| = 1;
 use strict;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use FileHandle;

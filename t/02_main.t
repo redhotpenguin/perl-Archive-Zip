@@ -1,7 +1,7 @@
-#!perl -w
-# vim: ts=4 sw=4 ft=perl
+#!/usr/bin/perl -w
 
-$^W = 1;
+# Main testing for Archive::Zip
+
 use strict;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use FileHandle;

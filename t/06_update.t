@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
+
 # Test Archive::Zip updating
 
-$| = 1;
 use strict;
-use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
-use IO::File;
-use File::Spec 0.8;
+use File::Spec ();
+use IO::File   ();
 use File::Find ();
+use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 use Test::More tests => 12;
 BEGIN {
