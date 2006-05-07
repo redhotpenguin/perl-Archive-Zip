@@ -26,7 +26,6 @@ pods:
 	}
 }
 
-
 WriteMakefile(
 	NAME          => 'Archive::Zip',
 	VERSION_FROM  => 'lib/Archive/Zip.pm', # finds $VERSION
@@ -50,7 +49,6 @@ WriteMakefile(
 		'IO::File'       => 0,
 		'IO::Handle'     => 0,
 		'IO::Seekable'   => 0,
-		'Test'           => 0,
 		'Test::More'     => '0.42',
 		'Time::Local'    => 0,
 	},
