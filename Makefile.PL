@@ -32,7 +32,7 @@ WriteMakefile(
 	($] < 5.005 ? () :
 		(
 			BINARY_LOCATION => $Config{'archname'} . "/\$(DISTVNAME)-PPD.tar\$(SUFFIX)",
-			AUTHOR          => 'Ned Konz (perl@bike-nomad.com)',
+			AUTHOR          => 'Ned Konz <perl@bike-nomad.com>',
 			ABSTRACT_FROM   => 'lib/Archive/Zip.pod',
 		)),
 	PREREQ_PM => {
@@ -64,4 +64,3 @@ WriteMakefile(
 	},
 );
 
-# vim: ts=4 sw=4

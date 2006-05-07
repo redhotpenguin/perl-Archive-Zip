@@ -1,7 +1,7 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Archive-Zip
-version:      1.16
+version:      1.17_02
 version_from: lib/Archive/Zip.pm
 installdirs:  site
 requires:
@@ -12,13 +12,13 @@ requires:
     File::Copy:                    0
     File::Find:                    0
     File::Path:                    0
-    File::Spec:                    0.8
+    File::Spec:                    0.80
     File::Temp:                    0
     Getopt::Std:                   0
     IO::File:                      0
     IO::Handle:                    0
     IO::Seekable:                  0
-    Test::More:                    0
+    Test::More:                    0.42
     Time::Local:                   0
 
 distribution_type: module
