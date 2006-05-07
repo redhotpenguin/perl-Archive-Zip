@@ -7,10 +7,9 @@
 $^W = 1;
 $| = 1;
 use strict;
-use Test;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use FileHandle;
-use File::Spec 0.8;
+use File::Spec;
 
 my $zip;
 my @memberNames;
@@ -32,9 +31,10 @@ sub makeZipAndLookFor
 		or print STDERR "Can't find $lookFor in (" . join(",", @memberNames) . ")\n";
 }
 
-BEGIN { plan tests => 6, todo => [] }
-
-BEGIN { require 't/common.pl' }
+use Test::More tests =>6;
+BEGIN {
+	require catfile('t', 'common.pl');
+}
 
 use constant FILENAME => File::Spec->catfile(TESTDIR, 'testing.txt');
 

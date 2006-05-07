@@ -6,16 +6,19 @@
 
 $^W = 1;
 use strict;
-use Test;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Archive::Zip::MemberRead;
 
-BEGIN { plan tests => 7, todo => [] }
-BEGIN { require 't/common.pl' }
+use Test::More tests => 7;
+BEGIN {
+	require catfile('t', 'common.pl');
+}
+
 use constant FILENAME => File::Spec->catfile(TESTDIR, 'member_read.zip');
 
 my ($zip, $member, $fh, @data);
 $zip  = new Archive::Zip;
+isa_ok( $zip, 'Archive::Zip' );
 @data = ( 'Line 1', 'Line 2', '', 'Line 3', 'Line 4' );
 
 $zip->addString(join("\n", @data), 'string.txt');

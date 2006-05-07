@@ -4,8 +4,8 @@ Still to do:
 * check for dups on addition/renaming?
 * Text file extraction (line end translation)
 * Reading zip files from non-seekable inputs
+  (Perhaps by proxying through IO::String?)
 * separate unused constants into separate module
 * cookbook style docs
 * Handle tainted paths correctly
 * Work on better compatability with other IO:: modules
-* Move all the tests to Test::More

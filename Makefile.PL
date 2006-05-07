@@ -37,21 +37,21 @@ WriteMakefile(
 			ABSTRACT_FROM   => 'lib/Archive/Zip.pod',
 		)),
 	PREREQ_PM => {
-		'Compress::Zlib' => 1.14,
+		'Compress::Zlib' => '1.14',
 		'Carp'           => 0,
 		'Data::Dumper'   => 0,   # examples/zipinfo.pl
 		'File::Path'     => 0,
 		'File::Find'     => 0,
 		'File::Basename' => 0,
-		'File::Spec'     => 0.8, # need splitpath()
+		'File::Spec'     => '0.80', # need splitpath()
 		'File::Copy'     => 0,
 		'File::Temp'     => 0,
 		'Getopt::Std'    => 0,   # examples/extract.pl
 		'IO::File'       => 0,
 		'IO::Handle'     => 0,
 		'IO::Seekable'   => 0,
-		# 'Test'         => 0,   ### Why is this commented out?
-		'Test::More'     => 0,
+		'Test'           => 0,
+		'Test::More'     => '0.42',
 		'Time::Local'    => 0,
 	},
 	EXE_FILES => [ 'bin/crc32' ],
