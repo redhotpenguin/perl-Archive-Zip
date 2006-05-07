@@ -13,7 +13,9 @@ use IO::File;
 
 use Test::More tests => 17;
 BEGIN {
-	require catfile('t', 'common.pl');
+    unshift @INC, "t/"; 
+    require( File::Spec->catfile('t', 'common.pl') )
+		or die "Can't load t/common.pl";
 }
 
 sub runPerlCommand

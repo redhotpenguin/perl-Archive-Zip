@@ -11,7 +11,9 @@ use Archive::Zip::MemberRead;
 
 use Test::More tests => 7;
 BEGIN {
-	require catfile('t', 'common.pl');
+    unshift @INC, "t/"; 
+    require( File::Spec->catfile('t', 'common.pl') )
+		or die "Can't load t/common.pl";
 }
 
 use constant FILENAME => File::Spec->catfile(TESTDIR, 'member_read.zip');

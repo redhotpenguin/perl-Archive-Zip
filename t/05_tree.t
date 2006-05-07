@@ -11,6 +11,15 @@ use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use FileHandle;
 use File::Spec;
 
+use Test::More tests =>6;
+BEGIN {
+    unshift @INC, "t/"; 
+    require( File::Spec->catfile('t', 'common.pl') )
+		or die "Can't load t/common.pl";
+}
+
+use constant FILENAME => File::Spec->catfile(TESTDIR, 'testing.txt');
+
 my $zip;
 my @memberNames;
 
@@ -30,13 +39,6 @@ sub makeZipAndLookFor
 	ok( (grep { $_ eq $lookFor } @memberNames) == 1 )
 		or print STDERR "Can't find $lookFor in (" . join(",", @memberNames) . ")\n";
 }
-
-use Test::More tests =>6;
-BEGIN {
-	require catfile('t', 'common.pl');
-}
-
-use constant FILENAME => File::Spec->catfile(TESTDIR, 'testing.txt');
 
 my ($testFileVolume, $testFileDirs, $testFileName) = File::Spec->splitpath($0);
 
