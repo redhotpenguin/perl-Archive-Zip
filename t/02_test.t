@@ -13,7 +13,7 @@ use Test::More tests => 141;
 BEGIN {
     unshift @INC, "t/"; 
     require( File::Spec->catfile('t', 'common.pl') )
-	or die "Can't get t/common.pl";
+		or die "Can't get t/common.pl";
 }
 
 
@@ -474,10 +474,16 @@ is($zip->extractMember($members[8]), AZ_OK);
 		$fh = FileHandle->new( CATPIPE . OUTPUTZIP );
 		binmode($fh);
 	}
-	skip(!$catWorks, $fh);
+	SKIP: {
+		skip('cat does not work on this platform', 1) unless $catWorks;
+		ok( $fh );
+	}
 #	$status = $zip->writeToFileHandle($fh, 0) if ($catWorks);
 	$status = $zip->writeToFileHandle($fh) if ($catWorks);
-	skip(!$catWorks, $status, AZ_OK);
+	SKIP: {
+		skip('cat does not work on this platform', 1) unless $catWorks;
+		is( $status, AZ_OK );
+	}
 	$fh->close() if ($catWorks);
 	($status, $zipout) = testZip();
 	is($status, 0);
@@ -555,3 +561,5 @@ SKIP: {
 # sub isDirectory	# Archive::Zip::DirectoryMember
 # sub _becomeDirectory	# Archive::Zip::DirectoryMember
 # sub diskNumberStart	# Archive::Zip::ZipFileMember
+
+
