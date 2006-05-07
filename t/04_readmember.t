@@ -4,7 +4,7 @@ use strict;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Archive::Zip::MemberRead;
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 BEGIN {
     unshift @INC, "t/"; 
     require( File::Spec->catfile('t', 'common.pl') )

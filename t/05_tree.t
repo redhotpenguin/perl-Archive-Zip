@@ -36,6 +36,6 @@ sub makeZipAndLookFor
 
 my ($testFileVolume, $testFileDirs, $testFileName) = File::Spec->splitpath($0);
 
-makeZipAndLookFor('.', '', sub { print "file $_\n"; -f && /\.t$/ }, 't/test.t' );
-makeZipAndLookFor('.', 'e/', sub { -f && /\.t$/ }, 'e/t/test.t');
-makeZipAndLookFor('./t', '', sub { -f && /\.t$/ }, 'test.t' );
+makeZipAndLookFor('.', '', sub { print "file $_\n"; -f && /\.t$/ }, 't/02_main.t' );
+makeZipAndLookFor('.', 'e/', sub { -f && /\.t$/ }, 'e/t/02_main.t');
+makeZipAndLookFor('./t', '', sub { -f && /\.t$/ }, '02_main.t' );
