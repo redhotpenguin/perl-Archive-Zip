@@ -1409,6 +1409,22 @@ L<IO::Seekable>
 
 L<Time::Local>
 
+=head1 BUGS AND CAVEATS
+
+One of the most common ways to use Archive::Zip is to generate Zip files
+in-memory. Most people have use L<IO::Scalar> for this purpose.
+
+Unfortunately, as of 1.11 this module no longer works with L<IO::Scalar>
+as it incorrectly implements seeking.
+
+Anybody using L<IO::Scalar> should consider porting to L<IO::String>,
+which is smaller, lighter, and is implemented to be perfectly compatible
+with regular seekable filehandles.
+
+Support for L<IO::Scalar> most likely will B<not> be restored in the
+future, as L<IO::Scalar> itself cannot change the way it is implemented
+due to back-compatibility issues.
+
 =head1 TO DO
 
 * auto-choosing storing vs compression

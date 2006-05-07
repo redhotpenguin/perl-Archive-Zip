@@ -6,6 +6,9 @@ Revision history for Perl extension Archive::Zip.
   - Various other miscellaneous cleanups of the test scripts
   - Removed MANIFEST and pod.t from repository (will be auto-generated)
   - Some cleaning up of the POD documentation for readability
+  - Added SUPPORT section to docs
+  - Merged external TODO file into the POD as a more-common TO DO section
+  - Added a BUGS section to the docs
 
 1.17_01 Sun 30 Apr 2006 - Adam Kennedy
   - Imported Archive::Zip into http://svn.phase-n.com/svn/cpan/ orphanage.
