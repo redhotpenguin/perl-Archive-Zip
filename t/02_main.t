@@ -162,6 +162,7 @@ is($status, AZ_OK);
 SKIP: {
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
+}
 
 is($member->crc32(), TESTSTRINGCRC);
 
@@ -556,10 +557,7 @@ SKIP: {
 # sub isBinaryFile	# Archive::Zip::Member
 # sub isDirectory	# Archive::Zip::Member
 # sub lastModTime	# Archive::Zip::Member
-# sub _dosToUnixTime	# Archive::Zip::Member
 # sub _writeDataDescriptor	# Archive::Zip::Member
 # sub isDirectory	# Archive::Zip::DirectoryMember
 # sub _becomeDirectory	# Archive::Zip::DirectoryMember
 # sub diskNumberStart	# Archive::Zip::ZipFileMember
-
-
