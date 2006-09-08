@@ -477,7 +477,7 @@ sub _asLocalName    # Archive::Zip
 	my @paths = split ( /\//, $name );
 	my $filename = pop (@paths);
 	$filename = '' unless defined($filename);
-	my $localDirs = File::Spec->catdir(@paths);
+	my $localDirs = @paths?File::Spec->catdir(@paths):'';
 	my $localName = File::Spec->catpath( $volume, $localDirs, $filename );
 	$localName = File::Spec->rel2abs($localName) unless $volume;
 	return $localName;
