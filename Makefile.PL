@@ -1,15 +1,16 @@
 require 5.003_96;
+
 use Config;
 use ExtUtils::MakeMaker;
 
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
-sub MY::postamble
-{
-	if ($^O eq 'VMS') { '' }
-	else
-	{
-'
+sub MY::postamble {
+	if ( $^O eq 'VMS' ) {
+		return '';
+	}
+
+	return '
 
 docs/Archive-Zip.pdf:  docs/Archive-Zip.ps
 	ps2pdf $<
@@ -22,8 +23,7 @@ docs/Archive-Zip.ps:  docs/Archive-Zip.ssd
 pods:
 	otl2pod lib/Archive/Zip.otl > lib/Archive/Zip.pod
 	otl2pod lib/Archive/Zip/FAQ.otl > lib/Archive/Zip/FAQ.pod
-' 
-	}
+';
 }
 
 WriteMakefile(
@@ -38,14 +38,15 @@ WriteMakefile(
 	PREREQ_PM => {
 		'Compress::Zlib' => '1.14',
 		'Carp'           => 0,
-		'Data::Dumper'   => 0,   # examples/zipinfo.pl
+		'Data::Dumper'   => 0,      # examples/zipinfo.pl
 		'File::Path'     => 0,
 		'File::Find'     => 0,
 		'File::Basename' => 0,
 		'File::Spec'     => '0.80', # need splitpath()
 		'File::Copy'     => 0,
 		'File::Temp'     => 0,
-		'Getopt::Std'    => 0,   # examples/extract.pl
+		'File::Which'    => '0.05', # Should really be build_requires
+		'Getopt::Std'    => 0,      # examples/extract.pl
 		'IO::File'       => 0,
 		'IO::Handle'     => 0,
 		'IO::Seekable'   => 0,
@@ -63,4 +64,3 @@ WriteMakefile(
 		ZIPFLAGS => '-r'
 	},
 );
-

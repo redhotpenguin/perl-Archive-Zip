@@ -74,13 +74,15 @@ is($numberOfMembers, 0, '->numberofMembers is 0' );
 my $status = $zip->writeToFileNamed( OUTPUTZIP );
 is($status, AZ_OK, '->writeToFileNames ok' );
 
-if ( $^O eq 'MSWin32' ) {
-	print STDERR "\n# You might see an expected 'zipfile is empty' warning now.\n";
-}
 my $zipout;
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	if ( $^O eq 'MSWin32' ) {
+		print STDERR "\n# You might see an expected 'zipfile is empty' warning now.\n";
+	}
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
+
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	ok( $status != 0 );
 }
@@ -116,9 +118,10 @@ is($status, AZ_OK);
 # Does the modification time get corrupted?
 is( ($zip->members)[0]->lastModFileDateTime(), $dir_time );
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -157,9 +160,10 @@ is($numberOfMembers, 2);
 $status = $zip->writeToFileNamed( OUTPUTZIP );
 is($status, AZ_OK);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -185,9 +189,10 @@ is($status, AZ_OK, 'writeToFileNamed returns AZ_OK');
 is($member->crc32(), TESTSTRINGCRC);
 is($member->uncompressedSize(), TESTSTRINGLENGTH);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -215,9 +220,10 @@ is($status, AZ_OK);
 is($member->crc32(), TESTSTRINGCRC);
 is($member->uncompressedSize(), TESTSTRINGLENGTH);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -243,9 +249,10 @@ is($status, AZ_OK);
 is($member->crc32(), TESTSTRINGCRC);
 is($member->uncompressedSize(), TESTSTRINGLENGTH);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -295,9 +302,10 @@ is($member, $members[0]);
 $status = $zip->writeToFileNamed( OUTPUTZIP );
 is($status, AZ_OK);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -318,9 +326,10 @@ is($memberNames[1], $memberName);
 $status = $zip->writeToFileNamed( OUTPUTZIP );
 is($status, AZ_OK);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -344,9 +353,10 @@ is($zip->numberOfMembers(), 3);
 $status = $zip->writeToFileNamed( OUTPUTZIP );
 is($status, AZ_OK);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -397,9 +407,10 @@ is($members[4]->contents(), TESTSTRING);
 $status = $zip->writeToFileNamed( INPUTZIP );
 is($status, AZ_OK);
 
-($status, $zipout) = testZip(INPUTZIP);
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip(INPUTZIP);
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -415,7 +426,7 @@ is($zip->numberOfMembers(), 10);
 $member = $zip->removeMember($members[5]);
 is($member->fileName(), TESTDIR . '/');
 
-{
+SCOPE: {
 	for my $i (6..9)
 	{
 		$memberName = $members[$i]->fileName();
@@ -429,9 +440,10 @@ is(scalar($zip->membersMatching('2.txt')), 4);
 $status = $zip->writeToFileNamed( OUTPUTZIP );
 is($status, AZ_OK);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -486,8 +498,11 @@ is($zip->extractMember($members[8]), AZ_OK);
 		is( $status, AZ_OK );
 	}
 	$fh->close() if ($catWorks);
-	($status, $zipout) = testZip();
-	is($status, 0);
+	SKIP: {
+		skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+		($status, $zipout) = testZip();
+		is($status, 0);
+	}
 }
 
 #--------- Change the contents of a string member
@@ -498,9 +513,10 @@ $members[2]->contents( "This is my new contents\n" );
 $status = $zip->writeToFileNamed( OUTPUTZIP );
 is($status, AZ_OK);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -513,9 +529,10 @@ $members[1]->contents( "This is my new contents\n" );
 $status = $zip->writeToFileNamed( OUTPUTZIP );
 is($status, AZ_OK);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }
@@ -529,9 +546,10 @@ $members[7]->contents( "This is my new contents\n" );
 $status = $zip->writeToFileNamed( OUTPUTZIP );
 is($status, AZ_OK);
 
-($status, $zipout) = testZip();
-# STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
+	skip( "No 'unzip' program to test against", 1 ) unless HAVEUNZIP;
+	($status, $zipout) = testZip();
+	# STDERR->print("status= $status, out=$zipout\n");
 	skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
 	is( $status, 0 );
 }

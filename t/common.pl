@@ -5,11 +5,16 @@ use constant TESTDIR   => 'testdir';
 use constant INPUTZIP  => 'testin.zip';
 use constant OUTPUTZIP => 'testout.zip';
 
+# Do we have the 'zip' and 'unzip' programs?
+use File::Which ();
+use constant HAVEZIP   => !! File::Which::which('zip');
+use constant HAVEUNZIP => !! File::Which::which('unzip');
+
 use constant ZIP     => 'zip ';
 use constant ZIPTEST => 'unzip -t ';
 
 # 300-character test string
-use constant TESTSTRING => join ( "\n", 1 .. 102 ) . "\n";
+use constant TESTSTRING       => join ( "\n", 1 .. 102 ) . "\n";
 use constant TESTSTRINGLENGTH => length(TESTSTRING);
 
 # CRC-32 should be ac373f32
@@ -23,11 +28,9 @@ use vars qw($zipWorks $testZipDoesntWork $catWorks);
 local ( $zipWorks, $testZipDoesntWork, $catWorks );
 
 # Run ZIPTEST to test a zip file.
-sub testZip
-{
+sub testZip {
 	my $zipName = shift || OUTPUTZIP;
-	if ($testZipDoesntWork)
-	{
+	if ( $testZipDoesntWork ) {
 		return wantarray ? ( 0, '' ) : 0;
 	}
 	my $cmd = ZIPTEST . $zipName . ( $^O eq 'MSWin32' ? '' : ' 2>&1' );
@@ -36,8 +39,7 @@ sub testZip
 }
 
 # Return the crc-32 of the given file (0 if empty or error)
-sub fileCRC
-{
+sub fileCRC {
 	my $fileName = shift;
 	local $/ = undef;
 	my $fh = IO::File->new( $fileName, "r" );
@@ -49,12 +51,11 @@ sub fileCRC
 
 #--------- check to see if cat works
 
-sub testCat
-{
+sub testCat {
 	my $fh = IO::File->new( CATPIPE . OUTPUTZIP );
 	binmode($fh);
 	my $testString = pack( 'C256', 0 .. 255 );
-	my $testCrc = Archive::Zip::computeCRC32($testString);
+	my $testCrc    = Archive::Zip::computeCRC32($testString);
 	$fh->write( $testString, length($testString) ) or return 0;
 	$fh->close();
 	( -f OUTPUTZIP ) or return 0;
@@ -65,34 +66,42 @@ sub testCat
 	return 1;
 }
 
-BEGIN
-{
+BEGIN {
 	$catWorks = testCat();
-	warn( 'warning: ', CAT, " doesn't seem to work, may skip some tests" )
-	  if !$catWorks;
+	unless ( $catWorks ) {
+		warn( 'warning: ', CAT, " doesn't seem to work, may skip some tests" );
+	}
 }
 
 #--------- check to see if zip works (and make INPUTZIP)
 
-BEGIN
-{
+BEGIN {
 	unlink(INPUTZIP);
-	my $cmd = ZIP . INPUTZIP . ' *' . ( $^O eq 'MSWin32' ? '' : ' 2>&1' );
-	my $zipout = `$cmd`;
-	$zipWorks = not $?;
-	warn( 'warning: ', ZIP, " doesn't seem to work, may skip some tests" )
-	  if not $zipWorks;
+
+	# Do we have zip installed?
+	if ( HAVEZIP ) {
+		my $cmd    = ZIP . INPUTZIP . ' *' . ( $^O eq 'MSWin32' ? '' : ' 2>&1' );
+		$zipout = `$cmd`;
+		$zipWorks  = not $?;
+		unless ( $zipWorks ) {
+			warn( 'warning: ', ZIP, " doesn't seem to work, may skip some tests" );
+		}
+	}
 }
 
 #--------- check to see if unzip -t works
 
-BEGIN
-{
+BEGIN {
 	$testZipDoesntWork = 0;
-	my ( $status, $zipout ) = testZip(INPUTZIP);
-	$testZipDoesntWork = $status;
-	warn( 'warning: ', ZIPTEST, " doesn't seem to work, may skip some tests" )
-	  if $testZipDoesntWork;
+	if ( HAVEUNZIP ) {
+		my ( $status, $zipout ) = testZip(INPUTZIP);
+		$testZipDoesntWork = $status;
+
+		# Again, on Win32 no big surprise if this doesn't work
+		if ( $testZipDoesntWork ) {
+			warn( 'warning: ', ZIPTEST, " doesn't seem to work, may skip some tests" );
+		}
+	}
 }
 
 1;
