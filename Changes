@@ -1,5 +1,11 @@
 Revision history for Perl extension Archive::Zip.
 
+1.17_03 Sat 16 Sep 2006 - Adam Kennedy
+  - Adding dependency on File::Which to deal with problems on systems
+    that lack zip and unzip programs. This really should be a build-time
+    dependency only, but ExtUtils::MakeMaker lacks that capability.
+  - Builds and tests cleanly on Win32 now.
+
 1.17_02 Sun  7 May 2006 - Adam Kennedy
   - Renamed the test scripts to the more conventional 01_name.t style
   - Upgraded all test scripts from Test.pm to Test::More (removing Test.pm dependency)
