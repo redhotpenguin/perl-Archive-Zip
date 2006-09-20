@@ -1,5 +1,11 @@
 Revision history for Perl extension Archive::Zip.
 
+1.17_05 Tue 19 Sep 2006 - Adam Kennedy
+  - Seperated the classes from the main file into seperate packages.
+  - Merged the Zip.pod into the main Zip.pm file.
+  - Applied default Perl::Tidy to all of the source files, to improve
+    the readability and maintainability of the files.
+
 1.17_03 Sat 16 Sep 2006 - Adam Kennedy
   - Adding dependency on File::Which to deal with problems on systems
     that lack zip and unzip programs. This really should be a build-time
