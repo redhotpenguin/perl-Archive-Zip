@@ -236,6 +236,7 @@ sub addFileOrDirectory {
 
 sub contents {
     my ( $self, $member, $newContents ) = @_;
+    return _error('No member name given') unless $member;
     $member = $self->memberNamed($member) unless ref($member);
     return undef unless $member;
     return $member->contents($newContents);
