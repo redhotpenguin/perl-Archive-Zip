@@ -40,4 +40,6 @@ WriteMakefile(
 		ZIP      => 'zip',
 		ZIPFLAGS => '-r'
 	},
+	($ExtUtils::MakeMaker::VERSION ge '6.30_00'? 
+		('LICENSE'	=> 'perl', ) : ()),
 );

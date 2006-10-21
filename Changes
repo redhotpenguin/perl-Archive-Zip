@@ -5,6 +5,7 @@ Revision history for Perl extension Archive::Zip.
   - Merged the Zip.pod into the main Zip.pm file.
   - Applied default Perl::Tidy to all of the source files, to improve
     the readability and maintainability of the files.
+  - Added license in Makefile.PL
 
 1.17_03 Sat 16 Sep 2006 - Adam Kennedy
   - Adding dependency on File::Which to deal with problems on systems
