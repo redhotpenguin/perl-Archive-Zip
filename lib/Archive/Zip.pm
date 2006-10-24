@@ -27,7 +27,7 @@ use File::Temp     ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-	$VERSION = '1.17_02';
+	$VERSION = '1.17_05';
 	$VERSION = eval $VERSION;
 
 	require Exporter;

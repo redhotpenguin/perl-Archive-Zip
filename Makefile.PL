@@ -32,7 +32,7 @@ WriteMakefile(
 	},
 	EXE_FILES => [ 'bin/crc32' ],
 	clean => {
-		FILES => 'test.log testDir/* testDir/ testin.zip testout.zip test2.zip'
+		FILES => 'test.log testdir/* testdir/ extracted/testdir/* extracted/testdir extracted/ testin.zip testout.zip test2.zip'
 	},
 	dist => {
 		COMPRESS => 'gzip',

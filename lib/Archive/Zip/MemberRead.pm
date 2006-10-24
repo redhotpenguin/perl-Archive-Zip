@@ -41,7 +41,7 @@ use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use vars qw{$VERSION};
 
 BEGIN {
-    $VERSION = '1.17_02';
+    $VERSION = '1.17_05';
     $VERSION = eval $VERSION;
 }
 
