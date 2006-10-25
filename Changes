@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive::Zip.
 
+1.18 Wed 25 Oct 2006 - Adam Kennedy
+  - Changing to a production version for final release
+  - No other changes of any kind
+
 1.17_05 Tue 19 Sep 2006 - Adam Kennedy
   - Seperated the classes from the main file into seperate packages.
   - Merged the Zip.pod into the main Zip.pm file.

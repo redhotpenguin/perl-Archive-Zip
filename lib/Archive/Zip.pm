@@ -27,7 +27,7 @@ use File::Temp     ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-	$VERSION = '1.17_05';
+	$VERSION = '1.18';
 	$VERSION = eval $VERSION;
 
 	require Exporter;
@@ -1959,6 +1959,14 @@ L<Time::Local>
 
 =head1 BUGS AND CAVEATS
 
+=head2 When not to use Archive::Zip
+
+If you are just going to be extracting zips (and/or other archives) you
+are recommended to look at using L<Archive::Extract> instead, as it is much
+easier to use and factors out archive-specific functionality.
+
+=head2 Try to avoid IO::Scalar
+
 One of the most common ways to use Archive::Zip is to generate Zip files
 in-memory. Most people have use L<IO::Scalar> for this purpose.
 
@@ -2004,13 +2012,13 @@ For other issues contact the maintainer
 
 =head1 AUTHOR
 
-Ned Konz E<lt>nedkonz@cpan.orgE<gt>
+Adam Kennedy E<lt>adamk@cpan.orgE<gt>
 
-Currently maintained by Adam Kennedy E<lt>adamk@cpan.orgE<gt>
+Previously maintained by Steve Peters E<lt>steve@fisharerojo.orgE<gt>.
 
-Previously maintained by Steve Peters E<lt>steve@fisharerojo.orgE<gt>
+File attributes code by Maurice Aubrey E<lt>maurice@lovelyfilth.comE<gt>.
 
-File attributes code by Maurice Aubrey E<lt>maurice@lovelyfilth.comE<gt>
+Originally by Ned Konz E<lt>nedkonz@cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
