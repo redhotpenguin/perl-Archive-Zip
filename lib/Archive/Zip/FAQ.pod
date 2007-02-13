@@ -454,7 +454,7 @@ B<Q:> I want to read a Zip file from (or write one to) a scalar variable instead
 of a file. How can I do this?
 
 
-B<A:> Use C<IO::Scalar> and the C<readFromFileHandle()> and
+B<A:> Use C<IO::String> and the C<readFromFileHandle()> and
 C<writeToFileHandle()> methods.
 See C<examples/readScalar.pl> and C<examples/writeScalar.pl>.
 
