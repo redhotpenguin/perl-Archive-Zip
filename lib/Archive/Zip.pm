@@ -27,21 +27,21 @@ use File::Temp     ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-	$VERSION = '1.18';
-	$VERSION = eval $VERSION;
+	$VERSION = '1.19';
 
 	require Exporter;
 	@ISA = qw( Exporter );
 }
 
 use vars qw( $ChunkSize $ErrorHandler );
+BEGIN {
+	# This is the size we'll try to read, write, and (de)compress.
+	# You could set it to something different if you had lots of memory
+	# and needed more speed.
+	$ChunkSize ||= 32768;
 
-# This is the size we'll try to read, write, and (de)compress.
-# You could set it to something different if you had lots of memory
-# and needed more speed.
-$ChunkSize = 32768;
-
-$ErrorHandler = \&Carp::carp;
+	$ErrorHandler = \&Carp::carp;
+}
 
 # BEGIN block is necessary here so that other modules can use the constants.
 use vars qw( @EXPORT_OK %EXPORT_TAGS );
@@ -273,14 +273,30 @@ require Archive::Zip::StringMember;
 use constant ZIPARCHIVECLASS => 'Archive::Zip::Archive';
 use constant ZIPMEMBERCLASS  => 'Archive::Zip::Member';
 
-sub new    
-{
+# Convenience functions
+
+sub _ISA ($$) {
+	# Can't rely on Scalar::Util, so use the next best way
+	!! eval { ref $_[0] and $_[0]->isa($_[1]) };
+}
+
+sub _CAN ($$) {
+	!! eval { ref $_[0] and $_[0]->can($_[1]) };
+}
+
+
+
+
+
+#####################################################################
+# Methods
+
+sub new {
 	my $class = shift;
 	return $class->ZIPARCHIVECLASS->new(@_);
 }
 
-sub computeCRC32    
-{
+sub computeCRC32 {
 	my $data = shift;
 	$data = shift if ref($data);    # allow calling as an obj method
 	my $crc = shift;
@@ -289,8 +305,7 @@ sub computeCRC32
 
 # Report or change chunk size used for reading and writing.
 # Also sets Zlib's default buffer size (eventually).
-sub setChunkSize    
-{
+sub setChunkSize {
 	my $chunkSize = shift;
 	$chunkSize = shift if ref($chunkSize);    # object method on zip?
 	my $oldChunkSize = $Archive::Zip::ChunkSize;
@@ -298,13 +313,11 @@ sub setChunkSize
 	return $oldChunkSize;
 }
 
-sub chunkSize    
-{
+sub chunkSize {
 	return $Archive::Zip::ChunkSize;
 }
 
-sub setErrorHandler (&)    
-{
+sub setErrorHandler (&) {
 	my $errorHandler = shift;
 	$errorHandler = \&Carp::carp unless defined($errorHandler);
 	my $oldErrorHandler = $Archive::Zip::ErrorHandler;
@@ -316,8 +329,7 @@ sub setErrorHandler (&)
 # Private utility functions (not methods).
 # ----------------------------------------------------------------------
 
-sub _printError    
-{
+sub _printError {
 	my $string = join ( ' ', @_, "\n" );
 	my $oldCarpLevel = $Carp::CarpLevel;
 	$Carp::CarpLevel += 2;
@@ -326,24 +338,21 @@ sub _printError
 }
 
 # This is called on format errors.
-sub _formatError    
-{
+sub _formatError {
 	shift if ref( $_[0] );
 	_printError( 'format error:', @_ );
 	return AZ_FORMAT_ERROR;
 }
 
 # This is called on IO errors.
-sub _ioError    
-{
+sub _ioError {
 	shift if ref( $_[0] );
 	_printError( 'IO error:', @_, ':', $! );
 	return AZ_IO_ERROR;
 }
 
 # This is called on generic errors.
-sub _error    
-{
+sub _error {
 	shift if ref( $_[0] );
 	_printError( 'error:', @_ );
 	return AZ_ERROR;
@@ -351,43 +360,43 @@ sub _error
 
 # Called when a subclass should have implemented
 # something but didn't
-sub _subclassResponsibility    
-{
+sub _subclassResponsibility {
 	Carp::croak("subclass Responsibility\n");
 }
 
 # Try to set the given file handle or object into binary mode.
-sub _binmode    
-{
+sub _binmode {
 	my $fh = shift;
-	return UNIVERSAL::can( $fh, 'binmode' ) ? $fh->binmode() : binmode($fh);
+	return _CAN( $fh, 'binmode' ) ? $fh->binmode() : binmode($fh);
 }
 
 # Attempt to guess whether file handle is seekable.
 # Because of problems with Windoze, this only returns true when
 # the file handle is a real file.  
-sub _isSeekable    
-{
+sub _isSeekable {
 	my $fh = shift;
-	if ( UNIVERSAL::isa($fh, 'IO::Scalar') ) {
+	return 0 unless ref $fh;
+	if ( _ISA($fh, 'IO::Scalar') ) {
+		# IO::Scalar objects are brokenly-seekable
 		return 0;
 	}
-	if ( UNIVERSAL::isa($fh, 'IO::String') ) {
+	if ( _ISA($fh, 'IO::String') ) {
 		return 1;
 	}
-	if ( UNIVERSAL::isa($fh, 'IO::Seekable') ) {
+	if ( _ISA($fh, 'IO::Seekable') ) {
 		# Unfortunately, some things like FileHandle objects
 		# return true for Seekable, but AREN'T!!!!!
-		if ( UNIVERSAL::isa($fh, 'FileHandle') ) {
+		if ( _ISA($fh, 'FileHandle') ) {
 			return 0;
+		} else {
+			return 1;
 		}
-		return 1;
 	}
-	if ( UNIVERSAL::can($fh, 'stat') ) {
+	if ( _CAN($fh, 'stat') ) {
 		return -f $fh;
 	}
 	return (
-		UNIVERSAL::can($fh, 'seek') and UNIVERSAL::can($fh, 'tell')
+		_CAN($fh, 'seek') and _CAN($fh, 'tell')
 		) ? 1 : 0;
 }
 
@@ -396,32 +405,21 @@ sub _isSeekable
 # Can take a filename, file handle, or ref to GLOB
 # Or, if given something that is a ref but not an IO::Handle,
 # passes back the same thing.
-sub _newFileHandle    
-{
+sub _newFileHandle {
 	my $fd     = shift;
 	my $status = 1;
 	my $handle;
 
-	if ( ref($fd) )
-	{
-		if ( UNIVERSAL::isa( $fd, 'IO::Scalar' )
-			or UNIVERSAL::isa( $fd, 'IO::String' ) )
-		{
+	if ( ref($fd) ) {
+		if ( _ISA($fd, 'IO::Scalar') or _ISA($fd, 'IO::String') ) {
 			$handle = $fd;
-		}
-		elsif ( UNIVERSAL::isa( $fd, 'IO::Handle' )
-			or UNIVERSAL::isa( $fd, 'GLOB' ) )
-		{
+		} elsif ( _ISA($fd, 'IO::Handle') or ref($fd) eq 'GLOB' ) {
 			$handle = IO::File->new();
 			$status = $handle->fdopen( $fd, @_ );
-		}
-		else
-		{
+		} else {
 			$handle = $fd;
 		}
-	}
-	else
-	{
+	} else {
 		$handle = IO::File->new();
 		$status = $handle->open( $fd, @_ );
 	}
@@ -434,16 +432,16 @@ sub _newFileHandle
 # In list context, returns ($status, $signature)
 # ( $status, $signature) = _readSignature( $fh, $fileName );
 
-sub _readSignature    
-{
+sub _readSignature {
 	my $fh                = shift;
 	my $fileName          = shift;
 	my $expectedSignature = shift;    # optional
 
 	my $signatureData;
 	my $bytesRead = $fh->read( $signatureData, SIGNATURE_LENGTH );
-	return _ioError("reading header signature")
-	  if $bytesRead != SIGNATURE_LENGTH;
+	if ( $bytesRead != SIGNATURE_LENGTH ) {
+		return _ioError("reading header signature");
+	}
 	my $signature = unpack( SIGNATURE_FORMAT, $signatureData );
 	my $status    = AZ_OK;
 
@@ -476,8 +474,7 @@ sub _readSignature
 # my ($fh, $name) = Archive::Zip::tempFile('mytempdir');
 #
 
-sub tempFile    
-{
+sub tempFile {
 	my $dir = shift;
 	my ( $fh, $filename ) = File::Temp::tempfile(
 		SUFFIX => '.zip',

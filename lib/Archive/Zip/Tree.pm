@@ -1,5 +1,10 @@
 use Archive::Zip;
 
+use vars qw{$VERSION};
+BEGIN {
+	$VERSION = '1.19';
+}
+
 warn(
 "Archive::Zip::Tree is deprecated; its methods have been moved into Archive::Zip."
 ) if $^W;

@@ -22,7 +22,7 @@ WriteMakefile(
 		'File::Spec'     => '0.80', # need splitpath()
 		'File::Copy'     => 0,
 		'File::Temp'     => 0,
-		'File::Which'    => '0.05', # Should really be build_requires
+		# 'File::Which'    => '0.05', # Embedded in common.pl
 		# 'Getopt::Std'    => 0,      # examples/extract.pl
 		'IO::File'       => 0,
 		'IO::Handle'     => 0,

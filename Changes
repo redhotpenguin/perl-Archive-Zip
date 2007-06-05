@@ -1,4 +1,16 @@
-Revision history for Perl extension Archive::Zip.
+Revision history for Perl extension Archive::Zip
+
+1.20 Tue  5 Jun 2007 - Adam Kennedy
+  - Removing dependency on File::Which due to public outburst of flaming
+    on cpanra(n)tings by H.Merijn Brand. Try a simple email next time. :(
+  - Embedding an entire copy of File::Which inside the tests instead as
+    an alternative to compensating for the lack of build_requires.
+  - Removing the docs directory.
+    It only had out of date files and non-free copyrighted materials.
+    The tarball was probably illegal to distribute as a result.
+    (reported by Debian devs)
+
+1.19 Internal use, public release skipped
 
 1.18 Wed 25 Oct 2006 - Adam Kennedy
   - Changing to a production version for final release
