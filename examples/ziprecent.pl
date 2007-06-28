@@ -251,12 +251,12 @@ ziprecent.pl
 
 =head1 DESCRIPTION
 
-=over 4
-
 This script helps to collect recently modified files in a source directory 
 into a zip file (new or existing).
 
 It uses Archive::Zip.
+
+=over 4
 
 =item C<  ziprecent h:/myperl  >
 
