@@ -2019,11 +2019,11 @@ Originally by Ned Konz E<lt>nedkonz@cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2000-2004 Ned Konz. All rights reserved.
+Copyright 2000 - 2004 Ned Konz.
 
-Some parts copyright (c) 2005 Steve Peters. All rights reserved.
+Some parts copyright 2005 Steve Peters.
 
-Some parts copyright (c) 2006 Adam Kennedy. All rights reserved. 
+Some parts copyright 2006 Adam Kennedy.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
