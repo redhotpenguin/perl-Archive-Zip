@@ -41,7 +41,7 @@ Revision history for Perl extension Archive::Zip
   - Added a BUGS section to the docs
 
 1.17_01 Sun 30 Apr 2006 - Adam Kennedy
-  - Imported Archive::Zip into http://svn.phase-n.com/svn/cpan/ orphanage.
+  - Imported Archive::Zip into http://svn.ali.as/cpan/ orphanage.
     If you have a CPAN login and have released a module, ask ADAMK about an
     account and you can repair your bug directly in the repository.
   - Removed the revision comments from the old CVS repository
