@@ -514,7 +514,7 @@ sub _asZipDirName
 	$$volReturn = $volume if ( ref($volReturn) );
 	my @dirs = map { $_ =~ s{/}{_}g; $_ } File::Spec->splitdir($directories);
 	if ( @dirs > 0 ) { pop (@dirs) unless $dirs[-1] }   # remove empty component
-	push ( @dirs, $file || '' );
+	push ( @dirs, defined($file) ? $file : '' );
 	#return wantarray ? @dirs : join ( '/', @dirs );
     return join ( '/', @dirs );
 }
