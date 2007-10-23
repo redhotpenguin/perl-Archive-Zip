@@ -5,7 +5,7 @@ use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Archive::Zip::MemberRead;
 use File::Spec;
 
-use Test::More tests => 7;
+use Test::More tests => 10;
 
 BEGIN {
     unshift @INC, "t/"; 
@@ -56,12 +56,33 @@ EOF
     }
     
     {
-        # Testing for setting input_record_separator
+        # Testing for setting the input record separator of the Perl
+        # global variable.
         
         local $/ = "</tag>\n";
 
         my $member = $zip->memberNamed("string.txt");
         my $fh = $member->readFileHandle();
+
+        # TEST
+        ok ($fh, "Filehandle is valid");
+        # TEST
+        is ($fh->getline(), "One Line\nTwo Lines\n", 
+            "Testing the first line in a normal read."
+        );
+        # TEST
+        is ($fh->getline(), "Three Lines\nFour Lines\nFive Lines\n", 
+            "Testing the second line in a normal read."
+        );
+    }
+
+    {
+        # Testing for setting input_record_separator in the filehandle.
+        
+        my $member = $zip->memberNamed("string.txt");
+        my $fh = $member->readFileHandle();
+
+        $fh->input_record_separator("</tag>\n");
 
         # TEST
         ok ($fh, "Filehandle is valid");
