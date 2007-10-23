@@ -36,13 +36,19 @@ just like you read data from files.
 =cut
 
 use strict;
+use warnings;
+
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 use vars qw{$VERSION};
 
+my $nl;
+
 BEGIN {
-    $VERSION = '1.20';
+    $VERSION = '1.18';
     $VERSION = eval $VERSION;
+     # Requirement for newline conversion. Should check for e.g., DOS and OS/2 as well, but am too lazy.
+     $nl = $^O eq 'MSWin32' ? "\r\n" : "\n";
 }
 
 =item Archive::Zip::Member::readFileHandle()
@@ -54,7 +60,7 @@ calling C<readFileHandle()>:
   my $fh = $member->readFileHandle();
   while (defined($line = $fh->getline()))
   {
-	  # ...
+      # ...
   }
   $fh->close();
 
@@ -113,6 +119,21 @@ sub set_compression {
     $self->{member}->desiredCompressionMethod($compression) if $self->{member};
 }
 
+=item setLineEnd(expr)
+
+Set the line end character to use. This is set to \n by default
+except on Windows systems where it is set to \r\n. You will
+only need to set this on systems which are not Windows or Unix
+based and require a line end diffrent from \n.
+This is a class method so call as C<Archive::Zip::MemberRead>->C<setLineEnd($nl)>
+
+=cut
+
+sub setLineEnd {
+    shift;
+    $nl = shift;
+}
+
 =item rewind()
 
 Rewinds an C<Archive::Zip::MemberRead> so that you can read from it again
@@ -129,9 +150,54 @@ sub rewind {
 
 sub _reset_vars {
     my $self = shift;
-    $self->{lines}   = [];
-    $self->{partial} = 0;
+
     $self->{line_no} = 0;
+    $self->{at_end}  = 0;
+
+    delete $self->{buffer};
+}
+
+=item input_record_separator(expr)
+
+If the argumnet is given, input_record_separator for this
+instance is set to it. The current setting (which may be
+the global $/) is always returned.
+
+=cut
+
+sub input_record_separator {
+    my $self = shift;
+     if (@_) {
+         $self->{sep}    = shift;
+         $self->{sep_re} = _sep_as_re($self->{sep}); # Cache the RE as an optimization
+     }
+     return exists $self->{sep} ? $self->{sep} : $/;
+}
+
+# Return the input_record_separator in use as an RE fragment
+# Note that if we have a per-instance input_record_separator
+# we can just return the already converted value. Otherwise,
+# the conversion must be done on $/ every time since we cannot
+# know whether it has changed or not.
+sub _sep_re {
+    my $self = shift;
+    # Important to phrase this way: sep's value may be undef.
+    return exists $self->{sep} ? $self->{sep_re} : _sep_as_re($/);
+}
+
+# Convert the input record separator into an RE and return it.
+sub _sep_as_re {
+    my $sep = shift;
+    if (defined $sep) {
+        if ($sep eq '') {
+            return "(?:$nl){2,}";
+        } else {
+            $sep =~ s/\n/$nl/og;
+            return quotemeta $sep;
+        }
+    } else {
+        return undef;
+    }
 }
 
 =item input_line_number()
@@ -184,42 +250,33 @@ Makes sense only for text files.
 A read error is considered fatal enough to die.
 Returns undef on eof. All subsequent calls would return undef,
 unless a rewind() is called.
-Note: The line returned has the newline removed.
+Note: The line returned has the input_record_separator (default: newline) removed.
 
 =cut
 
-# $self->{partial} flags whether the last line in the buffer is partial or not.
-# A line is treated as partial if it does not ends with \n
 sub getline {
     my $self = shift;
-    my ( $temp, $status, $size, $buffer, @lines );
+    my $size = $self->buffer_size();
+    my $sep  = $self->_sep_re();
 
-    $status = AZ_OK;
-    $size   = $self->buffer_size();
-    $temp   = \$status;
-    while ( $$temp !~ /\n/ && $status != AZ_STREAM_END ) {
-        ( $temp, $status ) = $self->{member}->readChunk($size);
-        if ( $status != AZ_OK && $status != AZ_STREAM_END ) {
-            die "ERROR: Error reading chunk from archive - $status\n";
+    for (;;) {
+        if (   $sep
+            && defined($self->{buffer})
+            && $self->{buffer} =~ s/^(.*?)$sep//s
+           ) {
+            $self->{line_no}++;
+            return $1;
+        } elsif ($self->{at_end}) {
+            $self->{line_no}++ if $self->{buffer};
+            return delete $self->{buffer};
         }
-
-        $buffer .= $$temp;
+        my ($temp,$status) = $self->{member}->readChunk($size);
+        if ($status != AZ_OK && $status != AZ_STREAM_END) {
+            die "ERROR: Error reading chunk from archive - $status";
+        }
+        $self->{at_end} = $status == AZ_STREAM_END;
+        $self->{buffer} .= $$temp;
     }
-
-    @lines = split( /\n/, $buffer );
-    $self->{line_no}++;
-    if ( $#lines == -1 ) {
-        return ( $#{ $self->{lines} } == -1 )
-          ? undef
-          : shift( @{ $self->{lines} } );
-    }
-
-    $self->{lines}->[ $#{ $self->{lines} } ] .= shift(@lines)
-      if $self->{partial};
-
-    splice( @{ $self->{lines} }, @{ $self->{lines} }, 0, @lines );
-    $self->{partial} = !( $buffer =~ /\n$/ );
-    return shift( @{ $self->{lines} } );
 }
 
 =item read($buffer, $num_bytes_to_read)
