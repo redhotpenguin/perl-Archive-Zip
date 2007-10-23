@@ -36,7 +36,6 @@ just like you read data from files.
 =cut
 
 use strict;
-use warnings;
 
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 

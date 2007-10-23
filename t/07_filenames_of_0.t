@@ -6,7 +6,6 @@
 # It tests that one can add files to the archive whose filenames are "0".
 
 use strict;
-use warnings;
 
 use Test::More tests => 1;
 use Archive::Zip;

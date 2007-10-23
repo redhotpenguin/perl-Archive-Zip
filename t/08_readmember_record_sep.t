@@ -1,5 +1,6 @@
+#!/usr/bin/perl -w
+
 use strict;
-use warnings;
 
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Archive::Zip::MemberRead;
