@@ -5,7 +5,7 @@ use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Archive::Zip::MemberRead;
 use File::Spec;
 
-use Test::More tests => 10;
+use Test::More tests => 13;
 
 BEGIN {
     unshift @INC, "t/"; 
@@ -68,11 +68,11 @@ EOF
         ok ($fh, "Filehandle is valid");
         # TEST
         is ($fh->getline(), "One Line\nTwo Lines\n", 
-            "Testing the first line in a normal read."
+            "Testing the first \"line\" when \$/ is set."
         );
         # TEST
         is ($fh->getline(), "Three Lines\nFour Lines\nFive Lines\n", 
-            "Testing the second line in a normal read."
+            "Testing the second \"line\" when \$/ is set."
         );
     }
 
@@ -82,17 +82,40 @@ EOF
         my $member = $zip->memberNamed("string.txt");
         my $fh = $member->readFileHandle();
 
+        # TEST
+        ok ($fh, "Filehandle is valid");
+       
         $fh->input_record_separator("</tag>\n");
 
         # TEST
-        ok ($fh, "Filehandle is valid");
-        # TEST
         is ($fh->getline(), "One Line\nTwo Lines\n", 
-            "Testing the first line in a normal read."
+            "Testing the first line when input_record_separator is set."
         );
         # TEST
         is ($fh->getline(), "Three Lines\nFour Lines\nFive Lines\n", 
-            "Testing the second line in a normal read."
+            "Testing the second line when input_record_separator is set."
+        );
+    }
+    {
+        # Test setting both input_record_separator in the filehandle
+        # and in Perl.
+
+        local $/ = "</t";
+
+        my $member = $zip->memberNamed("string.txt");
+        my $fh = $member->readFileHandle();
+
+        # TEST
+        ok ($fh, "Filehandle is valid");
+
+        $fh->input_record_separator(" ");
+        # TEST
+        is ($fh->getline(), "One", 
+            "Testing the first \"line\" in a both set read"
+        );
+        # TEST
+        is ($fh->getline(), "Line\nTwo", 
+            "Testing the second \"line\" in a both set read."
         );
     }
 }

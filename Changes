@@ -1,7 +1,15 @@
 Revision history for Perl extension Archive::Zip
 
-  - fixed http://rt.cpan.org/Public/Bug/Display.html?id=27463 with a regression
-    test - cannot add files whose entire filenames are "0". (SHLOMIF).
+  - fixed http://rt.cpan.org/Public/Bug/Display.html?id=27463 with a
+    regression test - cannot add files whose entire filenames are "0". 
+    (SHLOMIF).
+  - fixed http://rt.cpan.org/Public/Bug/Display.html?id=26384 with a 
+    regression test - Archive::Zip::MemberRead::getline ignores 
+    $INPUT_RECORD_SEPARATOR . The modified file in the bug had it to be
+    reworked a bit and tests were added in the file
+    08_readmember_record_sep.t. 
+      - Thanks to kovesp [...] sympatico.ca 
+      - (SHLOMIF)
 
 1.20 Tue  5 Jun 2007 - Adam Kennedy
   - Removing dependency on File::Which due to public outburst of flaming
