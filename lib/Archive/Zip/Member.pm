@@ -130,8 +130,9 @@ sub desiredCompressionMethod {
         $self->{'desiredCompressionMethod'} = $newDesiredCompressionMethod;
         if ( $newDesiredCompressionMethod == COMPRESSION_STORED ) {
             $self->{'desiredCompressionLevel'} = 0;
-        }
-        elsif ( $oldDesiredCompressionMethod == COMPRESSION_STORED ) {
+            $self->{'bitFlag'} &= ~GPBF_HAS_DATA_DESCRIPTOR_MASK;
+
+        } elsif ( $oldDesiredCompressionMethod == COMPRESSION_STORED ) {
             $self->{'desiredCompressionLevel'} = COMPRESSION_LEVEL_DEFAULT;
         }
     }
