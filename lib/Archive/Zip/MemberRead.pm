@@ -1,9 +1,5 @@
 package Archive::Zip::MemberRead;
 
-# Copyright (c) 2002 Sreeji K. Das. All rights reserved.  This program is free
-# software; you can redistribute it and/or modify it under the same terms
-# as Perl itself.
-
 =head1 NAME
 
 Archive::Zip::MemberRead - A wrapper that lets you read Zip archive members as if they were files.
@@ -44,7 +40,7 @@ use vars qw{$VERSION};
 my $nl;
 
 BEGIN {
-    $VERSION = '1.18';
+    $VERSION = '1.21';
     $VERSION = eval $VERSION;
      # Requirement for newline conversion. Should check for e.g., DOS and OS/2 as well, but am too lazy.
      $nl = $^O eq 'MSWin32' ? "\r\n" : "\n";
@@ -329,8 +325,9 @@ Minor mods by Ned Konz.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2002 Sreeji K. Das. All rights reserved.  This program is free
-software; you can redistribute it and/or modify it under the same terms
-as Perl itself.
+Copyright 2002 Sreeji K. Das.
+
+This program is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
 
 =cut

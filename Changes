@@ -1,10 +1,11 @@
 Revision history for Perl extension Archive::Zip
 
 1.21 Thu  1 Nov 2007 - Adam Kennedy
+  - Tidying up copyright formatting a bit.
   - Disable the GPBF_HAS_DATA_DESCRIPTOR_MASK bit when auto-switching
-    directory storage to STORED,
-    that was confusing JAR and... ok, I really don't understand, but
-    Roland from Verisign says this one extra line unbreaks JAR files,
+    directory storage to STORED because of a WinZip workaround because
+    the read code in Java JAR which was... ok, I really don't understand,
+    but Roland from Verisign says this one extra line unbreaks JAR files,
     so I just applied it :)
   - fixed http://rt.cpan.org/Public/Bug/Display.html?id=27463 with a
     regression test - cannot add files whose entire filenames are "0". 

@@ -1,8 +1,9 @@
 package Archive::Zip;
 
-# Copyright 2000 - 2002 Ned Konz. All rights reserved. This program is free
-# software; you can redistribute it and/or modify it under the same terms as
-# Perl itself.
+# Copyright 2000 - 2002 Ned Konz.
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the same terms as Perl itself.
 
 # ----------------------------------------------------------------------
 # class Archive::Zip
@@ -325,9 +326,12 @@ sub setErrorHandler (&) {
 	return $oldErrorHandler;
 }
 
-# ----------------------------------------------------------------------
+
+
+
+
+######################################################################
 # Private utility functions (not methods).
-# ----------------------------------------------------------------------
 
 sub _printError {
 	my $string = join ( ' ', @_, "\n" );
@@ -371,7 +375,7 @@ sub _binmode {
 }
 
 # Attempt to guess whether file handle is seekable.
-# Because of problems with Windoze, this only returns true when
+# Because of problems with Windows, this only returns true when
 # the file handle is a real file.  
 sub _isSeekable {
 	my $fh = shift;
@@ -2023,17 +2027,17 @@ Copyright 2000 - 2004 Ned Konz.
 
 Some parts copyright 2005 Steve Peters.
 
-Some parts copyright 2006 Adam Kennedy.
+Some parts copyright 2006 - 2007 Adam Kennedy.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
 L<Compress::Zlib>, L<Archive::Tar>, L<Archive::Extract>
 
 There is a Japanese translation of this
-document at L<http://www.memb.jp/~deq/perl/doc-ja/Archive-Zip.html> that
-was done by DEQ E<lt>deq@oct.zaq.ne.jpE<gt> . Thanks! 
+document at L<http://www.memb.jp/~deq/perl/doc-ja/Archive-Zip.html>
+that was done by DEQ E<lt>deq@oct.zaq.ne.jpE<gt> . Thanks! 
 
 =cut
