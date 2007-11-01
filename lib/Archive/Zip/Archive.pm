@@ -13,7 +13,7 @@ use Cwd;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.20';
+    $VERSION = '1.21';
     @ISA     = qw( Archive::Zip );
 }
 

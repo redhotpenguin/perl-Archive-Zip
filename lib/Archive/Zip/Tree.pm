@@ -2,7 +2,7 @@ use Archive::Zip;
 
 use vars qw{$VERSION};
 BEGIN {
-	$VERSION = '1.20';
+	$VERSION = '1.21';
 }
 
 warn(
@@ -34,13 +34,13 @@ Ned Konz, perl@bike-nomad.com
 
 =head1 COPYRIGHT
 
-Copyright (c) 2000-2002 Ned Konz.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+Copyright (c) 2000-2002 Ned Konz. All rights reserved.  This program is free
+software; you can redistribute it and/or modify it under the same terms
+as Perl itself.
 
 =head1 SEE ALSO
 
 L<Archive::Zip>
 
 =cut
+

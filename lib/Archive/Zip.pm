@@ -1,19 +1,5 @@
 package Archive::Zip;
 
-# Copyright 2000 - 2002 Ned Konz.
-# 
-# This program is free software; you can redistribute it and/or modify it
-# under the same terms as Perl itself.
-
-# ----------------------------------------------------------------------
-# class Archive::Zip
-# Note that the package Archive::Zip exists only for exporting and
-# sharing constants. Everything else is in another package
-# in this file.
-# Creation of a new Archive::Zip object actually creates a new object
-# of class Archive::Zip::Archive.
-# ----------------------------------------------------------------------
-
 BEGIN {
 	require 5.003_96;
 }
@@ -28,7 +14,7 @@ use File::Temp     ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-	$VERSION = '1.20';
+	$VERSION = '1.21';
 
 	require Exporter;
 	@ISA = qw( Exporter );
