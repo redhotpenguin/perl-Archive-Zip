@@ -1,8 +1,12 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 # Test Archive::Zip updating
 
 use strict;
+BEGIN {
+	$|  = 1;
+	$^W = 1;
+}
 use File::Spec ();
 use IO::File   ();
 use File::Find ();

@@ -1,6 +1,10 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 use strict;
+BEGIN {
+	$|  = 1;
+	$^W = 1;
+}
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use File::Spec;
 use IO::File;

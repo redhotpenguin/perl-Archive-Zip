@@ -1,7 +1,10 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 use strict;
-
+BEGIN {
+	$|  = 1;
+	$^W = 1;
+}
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Archive::Zip::MemberRead;
 use File::Spec;
@@ -14,8 +17,8 @@ BEGIN {
 		or die "Can't load t/common.pl";
 }
 
-{
-    my $filename = File::Spec->catfile(TESTDIR, "member_read_xml_like1.zip");
+SCOPE: {
+    my $filename = File::Spec->catfile('testdir', "member_read_xml_like1.zip");
     my $zip  = new Archive::Zip;
     # TEST
     isa_ok( $zip, "Archive::Zip", 

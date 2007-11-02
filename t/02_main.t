@@ -1,8 +1,12 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 # Main testing for Archive::Zip
 
 use strict;
+BEGIN {
+	$|  = 1;
+	$^W = 1;
+}
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use FileHandle;
 use File::Path;
