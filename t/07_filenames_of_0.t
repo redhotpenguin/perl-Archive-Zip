@@ -19,7 +19,7 @@ use File::Spec;
 
 mkpath([ File::Spec->catdir('testdir', 'folder') ]);
 
-my $zero_file = File::Spec->catfile('testdir', 'folder', "0")
+my $zero_file = File::Spec->catfile('testdir', 'folder', "0");
 open( O, ">$zero_file" );
 print O "File 0\n";
 close(O);
