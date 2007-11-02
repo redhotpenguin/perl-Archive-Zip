@@ -1,9 +1,9 @@
 package Archive::Zip;
 
+use strict;
 BEGIN {
 	require 5.003_96;
 }
-use strict;
 use UNIVERSAL      ();
 use Carp           ();
 use IO::File       ();

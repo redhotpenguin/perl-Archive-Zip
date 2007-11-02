@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive::Zip
 
+1.22 Fri  2 Nov 2007 - Adam Kennedy
+  - Fixing platform compatibility bugs in the new regression tests
+    from 1.21.
+
 1.21 Thu  1 Nov 2007 - Adam Kennedy
   - Tidying up copyright formatting a bit.
   - Disable the GPBF_HAS_DATA_DESCRIPTOR_MASK bit when auto-switching
