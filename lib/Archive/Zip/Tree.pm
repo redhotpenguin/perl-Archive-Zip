@@ -2,7 +2,7 @@ use Archive::Zip;
 
 use vars qw{$VERSION};
 BEGIN {
-	$VERSION = '1.22';
+	$VERSION = '1.23';
 }
 
 warn(
