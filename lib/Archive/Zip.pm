@@ -390,6 +390,17 @@ sub _isSeekable {
 		) ? 1 : 0;
 }
 
+# Print to the filehandle, while making sure the pesky Perl special global 
+# variables don't interfere.
+sub _print
+{
+    my ($self, $fh, @data) = @_;
+
+    local $\;
+
+    return $fh->print(@data);
+}
+
 # Return an opened IO::Handle
 # my ( $status, fh ) = _newFileHandle( 'fileName', 'w' );
 # Can take a filename, file handle, or ref to GLOB

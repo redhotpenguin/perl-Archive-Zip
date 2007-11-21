@@ -1,5 +1,13 @@
 Revision history for Perl extension Archive::Zip
 
+  - Fixed http://rt.cpan.org/Public/Bug/Display.html?id=25925 :
+    - Archive-Zip wrote faulty .zip files when $\ was set (such as when running
+    using perl -l).
+    - Incorporated a heavily modified version of ECARROLL's test file.
+    - Thanks for ECARROLL for reporting it, and helping with the investigation.
+    - The fix was to convert all $fh->print(@data) to $self->_print($fh, @data)
+    where the _print() method localizes $\ to undef.
+
 1.23 Thu  8 Nov 2007 - Adam Kennedy
   - Temporarily skilling some failing tests on Win32 in the
     interests of toolchain sanity. (until we work out the
