@@ -7,6 +7,15 @@ Revision history for Perl extension Archive::Zip
     - Thanks for ECARROLL for reporting it, and helping with the investigation.
     - The fix was to convert all $fh->print(@data) to $self->_print($fh, @data)
     where the _print() method localizes $\ to undef.
+  - Fixed http://rt.cpan.org/Ticket/Display.html?id=14132 :
+    - Incorrect file permissions after extraction.
+    - Archive-Zip did not set the file permissions correctly in
+      extractToFileNamed(). 
+    - Added t/10_chmod.t and t/data/chmod.zip. Changed 
+      lib/Archive/Zip/Member.pm.
+    - Reported by ak2 and jlv (Thanks!)
+    - SHLOMIF wrote the test script.
+    - (SHLOMIF)
 
 1.23 Thu  8 Nov 2007 - Adam Kennedy
   - Temporarily skilling some failing tests on Win32 in the

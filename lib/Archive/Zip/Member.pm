@@ -390,6 +390,8 @@ sub extractToFileNamed {
     return _ioError("Can't open file $name for write") unless $status;
     my $retval = $self->extractToFileHandle($fh);
     $fh->close();
+    chmod ($self->unixFileAttributes(), $name)
+        or return _error("Can't chmod() ${name}: $!");
     utime( $self->lastModTime(), $self->lastModTime(), $name );
     return $retval;
 }
