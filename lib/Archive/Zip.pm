@@ -1947,8 +1947,6 @@ L<File::Path>
 
 L<File::Spec>
 
-L<File::Spec>
-
 L<IO::File>
 
 L<IO::Seekable>

@@ -16,6 +16,7 @@ Revision history for Perl extension Archive::Zip
     - Reported by ak2 and jlv (Thanks!)
     - SHLOMIF wrote the test script.
     - (SHLOMIF)
+  - Removed a double "required module" from the Archive::Zip POD.
 
 1.23 Thu  8 Nov 2007 - Adam Kennedy
   - Temporarily skilling some failing tests on Win32 in the
