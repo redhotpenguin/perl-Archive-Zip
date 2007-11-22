@@ -17,6 +17,14 @@ Revision history for Perl extension Archive::Zip
     - SHLOMIF wrote the test script.
     - (SHLOMIF)
   - Removed a double "required module" from the Archive::Zip POD.
+  - Fixed http://rt.cpan.org/Ticket/Display.html?id=24557 ("documentation 
+    improvement"):
+    - mentioned Archive::Zip::MemberRead in a few places.
+    - TODO: 
+      - 1. Add a method to Archive::Zip to get a ::MemberRead from an
+        archive member using -> notation. (?)
+      - 2. In the POD of ::MemberRead - replace the indirect object
+        call.
 
 1.23 Thu  8 Nov 2007 - Adam Kennedy
   - Temporarily skilling some failing tests on Win32 in the

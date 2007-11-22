@@ -601,6 +601,9 @@ directories, files, or strings.
 This module uses the L<Compress::Zlib> library to read and write the
 compressed streams inside the files.
 
+One can use L<Archive::Zip::MemberRead> to read the zip file archive members
+as if they were files.
+
 =head2 File Naming
 
 Regardless of what your local file system uses for file naming, names in a
@@ -2028,6 +2031,9 @@ This program is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =head1 SEE ALSO
+
+Look at L<Archive::Zip::MemberRead> which is a wrapper that allows one to
+read Zip archive members as if they were files.
 
 L<Compress::Zlib>, L<Archive::Tar>, L<Archive::Extract>
 
