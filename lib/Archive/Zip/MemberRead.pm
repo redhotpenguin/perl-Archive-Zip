@@ -10,8 +10,8 @@ Archive::Zip::MemberRead - A wrapper that lets you read Zip archive members as i
 
   use Archive::Zip;
   use Archive::Zip::MemberRead;
-  $zip = new Archive::Zip("file.zip");
-  $fh  = new Archive::Zip::MemberRead($zip, "subdir/abc.txt");
+  $zip = Archive::Zip->new("file.zip");
+  $fh  = Archive::Zip::MemberRead->new($zip, "subdir/abc.txt");
   while (defined($line = $fh->getline()))
   {
       print $fh->input_line_number . "#: $line\n";
@@ -279,7 +279,7 @@ sub getline {
 Simulates a normal C<read()> system call.
 Returns the no. of bytes read. C<undef> on error, 0 on eof, I<e.g.>:
 
-  $fh = new Archive::Zip::MemberRead($zip, "sreeji/secrets.bin");
+  $fh = Archive::Zip::MemberRead->new($zip, "sreeji/secrets.bin");
   while (1)
   {
     $read = $fh->read($buffer, 1024);

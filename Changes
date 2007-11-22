@@ -25,6 +25,8 @@ Revision history for Perl extension Archive::Zip
         archive member using -> notation. (?)
       - 2. In the POD of ::MemberRead - replace the indirect object
         call.
+  - Changed the POD of ::MemberRead:
+    - replaced the indirect object construction with $PKG->new().
 
 1.23 Thu  8 Nov 2007 - Adam Kennedy
   - Temporarily skilling some failing tests on Win32 in the
