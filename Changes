@@ -27,6 +27,9 @@ Revision history for Perl extension Archive::Zip
         call.
   - Changed the POD of ::MemberRead:
     - replaced the indirect object construction with $PKG->new().
+  - Fixed http://rt.cpan.org/Public/Bug/Display.html?id=34103 :
+    - changed the example to read unless ( .. == AZ_OK) instead of
+    unless ( != AZ_OK), which was incorrect.
 
 1.23 Thu  8 Nov 2007 - Adam Kennedy
   - Temporarily skilling some failing tests on Win32 in the

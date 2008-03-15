@@ -1224,7 +1224,7 @@ set if the Perl C<-f> test returns true. This could fail on
 some operating systems, though.
 
     my $fh = IO::File->new( 'someFile.zip', 'w' );
-    unless ( $zip->writeToFileHandle( $fh ) != AZ_OK ) {
+    unless ( $zip->writeToFileHandle( $fh ) == AZ_OK ) {
         # error handling
     }
 
