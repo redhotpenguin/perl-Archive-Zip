@@ -1,5 +1,7 @@
 Revision history for Perl extension Archive::Zip
 
+  - Add an explicit load of FileHandle since in some circumstances,
+    calling GLOB->print() failed.
   - Fixed http://rt.cpan.org/Public/Bug/Display.html?id=25925 :
     - Archive-Zip wrote faulty .zip files when $\ was set (such as when running
     using perl -l).

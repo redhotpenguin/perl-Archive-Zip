@@ -11,6 +11,7 @@ use IO::Seekable   ();
 use Compress::Zlib ();
 use File::Spec     ();
 use File::Temp     ();
+use FileHandle     ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
