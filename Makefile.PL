@@ -12,7 +12,6 @@ WriteMakefile(
 	EXE_FILES     => [ 'bin/crc32' ],
 	PREREQ_PM     => {
 		'Compress::Zlib'   => '1.14',
-		'Carp'             => 0,
 		# 'Data::Dumper'   => 0,      # examples/zipinfo.pl
 		'File::Path'       => 0,
 		'File::Find'       => 0,
