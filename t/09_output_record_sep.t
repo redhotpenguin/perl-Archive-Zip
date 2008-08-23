@@ -8,11 +8,15 @@ use Digest::MD5;
 use Test::More tests => 6;
 use Carp;
 use File::Spec;
+use File::Spec::Unix;
 
 # TEST:$n=0
 
 my $expected_fn = File::Spec->catfile(
     File::Spec->curdir(), "t", "badjpeg", "expected.jpg"
+);
+my $expected_zip = File::Spec::Unix->catfile(
+    File::Spec::Unix->curdir(), "t", "badjpeg", "expected.jpg",
 );
 
 my $got_fn = "got.jpg";
@@ -102,10 +106,8 @@ sub run_tests
     # Zip the file.
     {
         my $zip = Archive::Zip->new();
-
         $zip->addFile( $expected_fn );
-        $zip->extractMember( $expected_fn, $got_fn );
-        
+        $zip->extractMember( $expected_zip, $got_fn );
         $after = slurp_file($got_fn);
         
         unlink $got_fn;
@@ -126,7 +128,7 @@ sub run_tests
         my $zip2;
         $zip2 = Archive::Zip->new( $archive_fn );
 
-        $zip2->extractMember( $expected_fn, $got_fn );
+        $zip2->extractMember( $expected_zip, $got_fn );
 
         $after = slurp_file( $got_fn );
 
