@@ -1,5 +1,7 @@
-Revision history for Perl extension Archive::Zip
+Revision history for Perl extension Archive-Zip
 
+1.24 Sun 23 Aug 2008 - Adam Kennedy
+  - Blatantly pander to CPANTS by adding use strict to a deprecated module
   - Add an explicit load of FileHandle since in some circumstances,
     calling GLOB->print() failed.
   - Fixed http://rt.cpan.org/Public/Bug/Display.html?id=25925 :
