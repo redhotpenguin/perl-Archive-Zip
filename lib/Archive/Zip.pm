@@ -2024,11 +2024,11 @@ Originally by Ned Konz E<lt>nedkonz@cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-Copyright 2000 - 2004 Ned Konz.
+Some parts copyright 2006 - 2008 Adam Kennedy.
 
 Some parts copyright 2005 Steve Peters.
 
-Some parts copyright 2006 - 2007 Adam Kennedy.
+Original work copyright 2000 - 2004 Ned Konz.
 
 This program is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
