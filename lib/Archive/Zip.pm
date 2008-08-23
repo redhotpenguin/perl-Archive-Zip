@@ -265,10 +265,12 @@ use constant ZIPMEMBERCLASS  => 'Archive::Zip::Member';
 
 sub _ISA ($$) {
 	# Can't rely on Scalar::Util, so use the next best way
+	local $@;
 	!! eval { ref $_[0] and $_[0]->isa($_[1]) };
 }
 
 sub _CAN ($$) {
+	local $@;
 	!! eval { ref $_[0] and $_[0]->can($_[1]) };
 }
 
@@ -416,13 +418,13 @@ sub _newFileHandle {
 		if ( _ISA($fd, 'IO::Scalar') or _ISA($fd, 'IO::String') ) {
 			$handle = $fd;
 		} elsif ( _ISA($fd, 'IO::Handle') or ref($fd) eq 'GLOB' ) {
-			$handle = IO::File->new();
+			$handle = IO::File->new;
 			$status = $handle->fdopen( $fd, @_ );
 		} else {
 			$handle = $fd;
 		}
 	} else {
-		$handle = IO::File->new();
+		$handle = IO::File->new;
 		$status = $handle->open( $fd, @_ );
 	}
 
