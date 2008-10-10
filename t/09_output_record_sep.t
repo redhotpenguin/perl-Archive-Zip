@@ -1,84 +1,62 @@
 #!/usr/bin/perl
 
 use strict;
-use warnings;
+BEGIN {
+	$|  = 1;
+	$^W = 1;
+}
 
-use Archive::Zip qw( :ERROR_CODES );
-use Digest::MD5;
 use Test::More tests => 6;
-use Carp;
-use File::Spec;
-use File::Spec::Unix;
-
-# TEST:$n=0
+use File::Spec       ();
+use File::Spec::Unix ();
+use Archive::Zip     qw( :ERROR_CODES );
 
 my $expected_fn = File::Spec->catfile(
-    File::Spec->curdir(), "t", "badjpeg", "expected.jpg"
+    File::Spec->curdir, "t", "badjpeg", "expected.jpg"
 );
 my $expected_zip = File::Spec::Unix->catfile(
-    File::Spec::Unix->curdir(), "t", "badjpeg", "expected.jpg",
+    File::Spec::Unix->curdir, "t", "badjpeg", "expected.jpg",
 );
 
 my $got_fn = "got.jpg";
-
 my $archive_fn = "out.zip";
-
-
 my ( $before, $after );
-
-sub slurp_file
-{
-    my $filename = shift;
-
+sub slurp_file {
+	my $filename = shift;
 	open ( my $fh, '<', $filename)
-		or die 'Can not open file';
-
-    my $contents;
+	or die 'Can not open file';
+	my $contents;
 	binmode( $fh );
-    {
-        local $/;
-        $contents = <$fh>;
-    }
+	SCOPE: {
+		local $/;
+		$contents = <$fh>;
+	}
 	close $fh;
-    
-    return $contents;
+	return $contents;
 }
 
-sub binary_is
-{
+sub binary_is {
     my ($got, $expected, $msg) = @_;
-
     local $Test::Builder::Level = $Test::Builder::Level+1;
-
     my $verdict = ($got eq $expected);
-    
     ok ($verdict, $msg);
-
-    if (!$verdict)
-    {
+    if (!$verdict) {
         my $len;
-        if (length($got) > length($expected))
-        {
+        if (length($got) > length($expected)) {
             $len = length($expected);
             diag("got is longer than expected");
-        }
-        elsif (length($got) < length($expected))
-        {
+        } elsif (length($got) < length($expected)) {
             $len = length($got);
             diag("expected is longer than got");
-        }
-        else
-        {
+        } else {
             $len = length($got);
         }
 
         BYTE_LOOP:
-        for my $byte_idx (0 .. ($len-1))
-        {
-            my $got_byte = substr($got, $byte_idx, 1);
+        for my $byte_idx (0 .. ($len-1)) {
+            my $got_byte      = substr($got, $byte_idx, 1);
             my $expected_byte = substr($expected, $byte_idx, 1);
-            if ($got_byte ne $expected_byte)
-            {
+            if ($got_byte ne $expected_byte) {
                 diag(
                     sprintf(
                         "Byte %i differ: got == 0x%.2x, expected == 0x%.2x",
@@ -91,10 +69,8 @@ sub binary_is
     }
 }
 
-sub run_tests
-{
+sub run_tests {
     my $id = shift;
-
     my $msg_it = sub {
         my $msg_raw = shift;
         return "$id - $msg_raw";
@@ -104,7 +80,7 @@ sub run_tests
     $before = slurp_file($expected_fn);
 
     # Zip the file.
-    {
+    SCOPE: {
         my $zip = Archive::Zip->new();
         $zip->addFile( $expected_fn );
         $zip->extractMember( $expected_zip, $got_fn );
@@ -124,7 +100,7 @@ sub run_tests
     }
 
     # Read back the file from the archive.
-    {
+    SCOPE: {
         my $zip2;
         $zip2 = Archive::Zip->new( $archive_fn );
 
@@ -143,15 +119,11 @@ sub run_tests
     }    
 }
 
-
 # Run the tests once with $\ undef.
 run_tests("Normal");
+
 # Run them once while setting $\.
-{
+SCOPE: {
     local $\ = "\n";
     run_tests(q{$\ is \n});
 }
-
-# TEST*$n*2
-
-1;

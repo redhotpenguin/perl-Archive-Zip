@@ -6,7 +6,7 @@ use File::Path;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.24';
+    $VERSION = '1.25';
     @ISA     = qw( Archive::Zip::Member );
 }
 

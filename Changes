@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive-Zip
 
+1.25 (missing) - Adam Kennedy
+  - Removing "use warnings" instances that somehow slipped in
+  - Skip test if Digest::MD5 is not available
+
 1.24 Sun 23 Aug 2008 - Adam Kennedy
   - Blatantly pander to CPANTS by adding use strict to a deprecated module
   - Add an explicit load of FileHandle since in some circumstances,

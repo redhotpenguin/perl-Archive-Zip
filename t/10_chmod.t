@@ -1,11 +1,13 @@
+#!/usr/bin/perl
+
 use strict;
-use warnings;
-
+BEGIN {
+	$|  = 1;
+	$^W = 1;
+}
 use Test::More;
-
 use File::Spec;
 use File::Path;
-
 use Archive::Zip;
 
 sub get_perm

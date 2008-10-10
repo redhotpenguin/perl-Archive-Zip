@@ -3,7 +3,7 @@ package Archive::Zip::Tree;
 use strict;
 use vars qw{$VERSION};
 BEGIN {
-	$VERSION = '1.24';
+	$VERSION = '1.25';
 }
 
 use Archive::Zip;
