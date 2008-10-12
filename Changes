@@ -1,6 +1,14 @@
 Revision history for Perl extension Archive-Zip
 
-1.25 (missing) - Adam Kennedy
+1.26 Mon 13 Oct 2008 - Adam Kennedy
+  - Fixed the dreaded but #24036: WinXP Explorer Exposes Problems.
+    This caused directories to appear as files in Windows Explorer
+    and was caused by Windows always reading the msdos directory bit
+    even when the file attributes are types as unix.
+    Resolved by emulating the behaviour of Info-Zip and setting
+    the 5th bit in the externalFileAttributes field.
+
+1.25 Sat 11 Oct 2008 - Adam Kennedy
   - Removing "use warnings" instances that somehow slipped in
   - Skip test if Digest::MD5 is not available
 

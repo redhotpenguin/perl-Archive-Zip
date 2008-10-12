@@ -6,7 +6,7 @@ use strict;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.25';
+    $VERSION = '1.26';
     @ISA     = qw( Archive::Zip );
 }
 
@@ -190,14 +190,21 @@ sub externalFileAttributes {
 }
 
 # Convert UNIX permissions into proper value for zip file
-# NOT A METHOD!
+# Usable as a function or a method
 sub _mapPermissionsFromUnix {
-    my $perms = shift;
-    return $perms << 16;
+    my $self    = shift;
+    my $mode    = shift;
+    my $attribs = $mode << 16;
 
-    # TODO: map MS-DOS perms too (RHSA?)
+    # Microsoft Windows Explorer needs this bit set for directories
+    if ( $mode & DIRECTORY_ATTRIB ) {
+        $attribs |= 16;
+    }
+
+    return $attribs;
+
+    # TODO: map more MS-DOS perms
 }
-
 
 # Convert ZIP permissions into Unix ones
 #
@@ -286,18 +293,17 @@ sub _mapPermissionsToUnix {
 
 sub unixFileAttributes {
     my $self     = shift;
-    my $oldPerms = $self->_mapPermissionsToUnix();
-    if (@_) {
+    my $oldPerms = $self->_mapPermissionsToUnix;
+    if ( @_ ) {
         my $perms = shift;
-        if ( $self->isDirectory() ) {
+        if ( $self->isDirectory ) {
             $perms &= ~FILE_ATTRIB;
             $perms |= DIRECTORY_ATTRIB;
-        }
-        else {
+        } else {
             $perms &= ~DIRECTORY_ATTRIB;
             $perms |= FILE_ATTRIB;
         }
-        $self->{'externalFileAttributes'} = _mapPermissionsFromUnix($perms);
+        $self->{externalFileAttributes} = $self->_mapPermissionsFromUnix($perms);
     }
     return $oldPerms;
 }
