@@ -53,6 +53,11 @@ sub new {
     return $self;
 }
 
+sub storeSymbolicLink {
+    my $self = shift;
+    $self->{'storeSymbolicLink'} = shift;
+}
+
 sub members {
     @{ shift->{'members'} };
 }
@@ -200,7 +205,14 @@ sub addFile {
     my $fileName  = shift;
     my $newName   = shift;
     my $newMember = $self->ZIPMEMBERCLASS->newFromFile( $fileName, $newName );
-    $self->addMember($newMember) if defined($newMember);
+    if ( $self->{'storeSymbolicLink'} && -l $fileName ) {
+        my $newMember = $self->ZIPMEMBERCLASS->newFromString(readlink $fileName, $newName);
+        # For symbolic links, External File Attribute is set to 0000FFA1 by Info-ZIP
+        $newMember->{'externalFileAttributes'} = 2717843456;
+        $self->addMember($newMember);
+    } else {
+        $self->addMember($newMember);
+    }
     return $newMember;
 }
 
@@ -213,7 +225,16 @@ sub addString {
 sub addDirectory {
     my ( $self, $name, $newName ) = @_;
     my $newMember = $self->ZIPMEMBERCLASS->newDirectoryNamed( $name, $newName );
-    $self->addMember($newMember);
+    if ( $self->{'storeSymbolicLink'} && -l $name ) {
+        my $link = readlink $name;
+        $newName = $1 if $newName =~ m{(.*?)/$}; # Strip trailing /
+        my $newMember = $self->ZIPMEMBERCLASS->newFromString($link, $newName);
+        # For symbolic links, External File Attribute is set to 0000FFA1 by Info-ZIP
+        $newMember->{'externalFileAttributes'} = 2717843456;
+        $self->addMember($newMember);
+    } else {
+        $self->addMember($newMember);
+    }
     return $newMember;
 }
 
@@ -607,6 +628,7 @@ sub addTree {
         my $member = $isDir
           ? $self->addDirectory( $fileName, $archiveName )
           : $self->addFile( $fileName, $archiveName );
+
         return _error("add $fileName failed in addTree()") if !$member;
     }
     return AZ_OK;
