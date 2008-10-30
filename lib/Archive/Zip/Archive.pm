@@ -598,6 +598,7 @@ sub addTree {
     my $dest = shift;
     $dest = '' unless defined($dest);
     my $pred = shift || sub { -r };
+    my $compressionLevel = shift;
     my @files;
     my $startDir = _untaintDir( cwd() );
 
@@ -632,6 +633,7 @@ sub addTree {
         my $member = $isDir
           ? $self->addDirectory( $fileName, $archiveName )
           : $self->addFile( $fileName, $archiveName );
+        $member->desiredCompressionLevel($compressionLevel);
 
         return _error("add $fileName failed in addTree()") if !$member;
     }
