@@ -583,7 +583,9 @@ sub _writeLocalFileHeader {
     );
 
     $self->_print($fh, $header) or return _ioError("writing local header");
-    if ( $self->fileName() ) {
+
+    # Check for a valid filename or a filename equal to a literal `0'
+    if ( $self->fileName() || $self->fileName eq '0' ) {
         $self->_print($fh, $self->fileName() )
           or return _ioError("writing local header filename");
     }
@@ -915,7 +917,7 @@ sub extractToFileHandle {
     my $self = shift;
     return _error("encryption unsupported") if $self->isEncrypted();
     my $fh = shift;
-    #_binmode($fh);
+    _binmode($fh);
     my $oldCompression = $self->desiredCompressionMethod(COMPRESSION_STORED);
     my $status         = $self->rewindData(@_);
     $status = $self->_writeData($fh) if $status == AZ_OK;
@@ -932,7 +934,7 @@ sub _writeToFileHandle {
     my $offset       = shift;
 
     return _error("no member name given for $self")
-      unless $self->fileName();
+      if $self->fileName() eq '';
 
     $self->{'writeLocalHeaderRelativeOffset'} = $offset;
     $self->{'wasWritten'}                     = 0;
