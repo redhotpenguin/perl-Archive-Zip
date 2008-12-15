@@ -538,7 +538,8 @@ sub _asLocalName
 	$filename = '' unless defined($filename);
 	my $localDirs = @paths?File::Spec->catdir(@paths):'';
 	my $localName = File::Spec->catpath( $volume, $localDirs, $filename );
-	$localName = File::Spec->rel2abs($localName) unless $volume;
+    use Cwd;
+    $localName = File::Spec->catfile(getcwd, $localName) unless $volume;
 	return $localName;
 }
 
