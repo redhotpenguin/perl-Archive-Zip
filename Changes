@@ -1,315 +1,333 @@
 Revision history for Perl extension Archive-Zip
 
+1.27_01 Tue 16 Dec 2008 - Adam Kennedy
+	- This is a test release for various improvements provided by
+	  Alan Haggai. The entire release is credited to his grant work.
+	- Fixed #25726: extractMembers failing across fork on Windows.
+	- Fixed #12493: Can't add new files to archives which contain
+	  files named 0,1,2,3,4,5,6,7,8,9 with no extension.
+	  (Files named "0" are not archived)
+	- Fixed #22933: Properly extract symbolic links.
+	- Fixed #20246: Ability to assign a compression level to addTree
+	  calls.
+	- Corrected regular expression for stripping trailing /
+	- Corrected addFileOrDirectory() behaviour and cleaned up some code
+	- Added symbolic link support to addFileOrDirectory
+	- Fixed #34657: No option, undefined behavior zipping symbolic
+	  links (symlinks)
+	- Added storeSymbolicLink()
+	- Fixed bitFlag() to set General Pupose Bit Flags
+
 1.26 Mon 13 Oct 2008 - Adam Kennedy
-  - Fixed the dreaded but #24036: WinXP Explorer Exposes Problems.
-    This caused directories to appear as files in Windows Explorer
-    and was caused by Windows always reading the msdos directory bit
-    even when the file attributes are types as unix.
-    Resolved by emulating the behaviour of Info-Zip and setting
-    the 5th bit in the externalFileAttributes field.
+	- Fixed the dreaded but #24036: WinXP Explorer Exposes Problems.
+	  This caused directories to appear as files in Windows Explorer
+	  and was caused by Windows always reading the msdos directory bit
+	  even when the file attributes are types as unix.
+	  Resolved by emulating the behaviour of Info-Zip and setting
+	  the 5th bit in the externalFileAttributes field.
 
 1.25 Sat 11 Oct 2008 - Adam Kennedy
-  - Removing "use warnings" instances that somehow slipped in
-  - Skip test if Digest::MD5 is not available
+	- Removing "use warnings" instances that somehow slipped in
+	- Skip test if Digest::MD5 is not available
 
 1.24 Sun 23 Aug 2008 - Adam Kennedy
-  - Blatantly pander to CPANTS by adding use strict to a deprecated module
-  - Add an explicit load of FileHandle since in some circumstances,
-    calling GLOB->print() failed.
-  - Fixed http://rt.cpan.org/Public/Bug/Display.html?id=25925 :
-    - Archive-Zip wrote faulty .zip files when $\ was set (such as when running
-    using perl -l).
-    - Incorporated a heavily modified version of ECARROLL's test file.
-    - Thanks for ECARROLL for reporting it, and helping with the investigation.
-    - The fix was to convert all $fh->print(@data) to $self->_print($fh, @data)
-    where the _print() method localizes $\ to undef.
-  - Fixed http://rt.cpan.org/Ticket/Display.html?id=14132 :
-    - Incorrect file permissions after extraction.
-    - Archive-Zip did not set the file permissions correctly in
-      extractToFileNamed(). 
-    - Added t/10_chmod.t and t/data/chmod.zip. Changed 
-      lib/Archive/Zip/Member.pm.
-    - Reported by ak2 and jlv (Thanks!)
-    - SHLOMIF wrote the test script.
-    - (SHLOMIF)
-  - Removed a double "required module" from the Archive::Zip POD.
-  - Fixed http://rt.cpan.org/Ticket/Display.html?id=24557 ("documentation 
-    improvement"):
-    - mentioned Archive::Zip::MemberRead in a few places.
-    - TODO: 
-      - 1. Add a method to Archive::Zip to get a ::MemberRead from an
-        archive member using -> notation. (?)
-      - 2. In the POD of ::MemberRead - replace the indirect object
-        call.
-  - Changed the POD of ::MemberRead:
-    - replaced the indirect object construction with $PKG->new().
-  - Fixed http://rt.cpan.org/Public/Bug/Display.html?id=34103 :
-    - changed the example to read unless ( .. == AZ_OK) instead of
-    unless ( != AZ_OK), which was incorrect.
+	- Blatantly pander to CPANTS by adding use strict to a deprecated module
+	- Add an explicit load of FileHandle since in some circumstances,
+	  calling GLOB->print() failed.
+	- Fixed http://rt.cpan.org/Public/Bug/Display.html?id=25925 :
+	- Archive-Zip wrote faulty .zip files when $\ was set (such as when running
+	  using perl -l).
+	- Incorporated a heavily modified version of ECARROLL's test file.
+	- Thanks for ECARROLL for reporting it, and helping with the investigation.
+	- The fix was to convert all $fh->print(@data) to $self->_print($fh, @data)
+	  where the _print() method localizes $\ to undef.
+	- Fixed http://rt.cpan.org/Ticket/Display.html?id=14132 :
+	- Incorrect file permissions after extraction.
+	- Archive-Zip did not set the file permissions correctly in
+	  extractToFileNamed(). 
+	- Added t/10_chmod.t and t/data/chmod.zip. Changed 
+	  lib/Archive/Zip/Member.pm.
+	- Reported by ak2 and jlv (Thanks!)
+	- SHLOMIF wrote the test script.
+	- (SHLOMIF)
+	- Removed a double "required module" from the Archive::Zip POD.
+	- Fixed http://rt.cpan.org/Ticket/Display.html?id=24557 ("documentation 
+	  improvement"):
+	- mentioned Archive::Zip::MemberRead in a few places.
+	- TODO: 
+		- 1. Add a method to Archive::Zip to get a ::MemberRead from an
+		  archive member using -> notation. (?)
+		- 2. In the POD of ::MemberRead - replace the indirect object
+		  call.
+		- Changed the POD of ::MemberRead:
+		- replaced the indirect object construction with $PKG->new().
+		- Fixed http://rt.cpan.org/Public/Bug/Display.html?id=34103 :
+		- changed the example to read unless ( .. == AZ_OK) instead of
+		  unless ( != AZ_OK), which was incorrect.
 
 1.23 Thu  8 Nov 2007 - Adam Kennedy
-  - Temporarily skilling some failing tests on Win32 in the
-    interests of toolchain sanity. (until we work out the
-    real problem here)
+	- Temporarily skilling some failing tests on Win32 in the
+	  interests of toolchain sanity. (until we work out the
+	  real problem here)
 
 1.22 Fri  2 Nov 2007 - Adam Kennedy
-  - Fixing platform compatibility bugs in the new regression tests
-    from 1.21.
+	- Fixing platform compatibility bugs in the new regression tests
+	  from 1.21.
 
 1.21 Thu  1 Nov 2007 - Adam Kennedy
-  - Tidying up copyright formatting a bit.
-  - Disable the GPBF_HAS_DATA_DESCRIPTOR_MASK bit when auto-switching
-    directory storage to STORED because of a WinZip workaround because
-    the read code in Java JAR which was... ok, I really don't understand,
-    but Roland from Verisign says this one extra line unbreaks JAR files,
-    so I just applied it :)
-  - fixed http://rt.cpan.org/Public/Bug/Display.html?id=27463 with a
-    regression test - cannot add files whose entire filenames are "0". 
-    (SHLOMIF).
-  - fixed http://rt.cpan.org/Public/Bug/Display.html?id=26384 with a 
-    regression test - Archive::Zip::MemberRead::getline ignores 
-    $INPUT_RECORD_SEPARATOR . The modified file in the bug had it to be
-    reworked a bit and tests were added in the file
-    08_readmember_record_sep.t. 
-      - Thanks to kovesp [...] sympatico.ca 
-      - (SHLOMIF)
+	- Tidying up copyright formatting a bit.
+	- Disable the GPBF_HAS_DATA_DESCRIPTOR_MASK bit when auto-switching
+	  directory storage to STORED because of a WinZip workaround because
+	  the read code in Java JAR which was... ok, I really don't understand,
+	  but Roland from Verisign says this one extra line unbreaks JAR files,
+	  so I just applied it :)
+	- fixed http://rt.cpan.org/Public/Bug/Display.html?id=27463 with a
+	  regression test - cannot add files whose entire filenames are "0". 
+	  (SHLOMIF).
+	- fixed http://rt.cpan.org/Public/Bug/Display.html?id=26384 with a 
+	  regression test - Archive::Zip::MemberRead::getline ignores 
+	  $INPUT_RECORD_SEPARATOR . The modified file in the bug had it to be
+	  reworked a bit and tests were added in the file
+	  08_readmember_record_sep.t. 
+	- Thanks to kovesp [...] sympatico.ca 
+	- (SHLOMIF)
 
 1.20 Tue  5 Jun 2007 - Adam Kennedy
-  - Removing dependency on File::Which due to public outburst of flaming
-    on cpanra(n)tings by H.Merijn Brand. Try a simple email next time. :(
-  - Embedding an entire copy of File::Which inside the tests instead as
-    an alternative to compensating for the lack of build_requires.
-  - Removing the docs directory.
-    It only had out of date files and non-free copyrighted materials.
-    The tarball was probably illegal to distribute as a result.
-    (reported by Debian devs)
+	- Removing dependency on File::Which due to public outburst of flaming
+	  on cpanra(n)tings by H.Merijn Brand. Try a simple email next time. :(
+	- Embedding an entire copy of File::Which inside the tests instead as
+	  an alternative to compensating for the lack of build_requires.
+	- Removing the docs directory.
+	  It only had out of date files and non-free copyrighted materials.
+	  The tarball was probably illegal to distribute as a result.
+	  (reported by Debian devs)
 
 1.19 Internal use, public release skipped
 
 1.18 Wed 25 Oct 2006 - Adam Kennedy
-  - Changing to a production version for final release
-  - No other changes of any kind
+	- Changing to a production version for final release
+	- No other changes of any kind
 
 1.17_05 Tue 19 Sep 2006 - Adam Kennedy
-  - Seperated the classes from the main file into seperate packages.
-  - Merged the Zip.pod into the main Zip.pm file.
-  - Applied default Perl::Tidy to all of the source files, to improve
-    the readability and maintainability of the files.
-  - Added license in Makefile.PL
-  - Added some additional entries to the realclean files
+	- Seperated the classes from the main file into seperate packages.
+	- Merged the Zip.pod into the main Zip.pm file.
+	- Applied default Perl::Tidy to all of the source files, to improve
+	  the readability and maintainability of the files.
+	- Added license in Makefile.PL
+	- Added some additional entries to the realclean files
 
 1.17_03 Sat 16 Sep 2006 - Adam Kennedy
-  - Adding dependency on File::Which to deal with problems on systems
-    that lack zip and unzip programs. This really should be a build-time
-    dependency only, but ExtUtils::MakeMaker lacks that capability.
-  - Builds and tests cleanly on Win32 now.
+	- Adding dependency on File::Which to deal with problems on systems
+	  that lack zip and unzip programs. This really should be a build-time
+	  dependency only, but ExtUtils::MakeMaker lacks that capability.
+	- Builds and tests cleanly on Win32 now.
 
 1.17_02 Sun  7 May 2006 - Adam Kennedy
-  - Renamed the test scripts to the more conventional 01_name.t style
-  - Upgraded all test scripts from Test.pm to Test::More (removing Test.pm dependency)
-  - Various other miscellaneous cleanups of the test scripts
-  - Removed MANIFEST and pod.t from repository (will be auto-generated)
-  - Some cleaning up of the POD documentation for readability
-  - Added SUPPORT section to docs
-  - Merged external TODO file into the POD as a more-common TO DO section
-  - Added a BUGS section to the docs
+	- Renamed the test scripts to the more conventional 01_name.t style
+	- Upgraded all test scripts from Test.pm to Test::More (removing Test.pm dependency)
+	- Various other miscellaneous cleanups of the test scripts
+	- Removed MANIFEST and pod.t from repository (will be auto-generated)
+	- Some cleaning up of the POD documentation for readability
+	- Added SUPPORT section to docs
+	- Merged external TODO file into the POD as a more-common TO DO section
+	- Added a BUGS section to the docs
 
 1.17_01 Sun 30 Apr 2006 - Adam Kennedy
-  - Imported Archive::Zip into http://svn.ali.as/cpan/ orphanage.
-    If you have a CPAN login and have released a module, ask ADAMK about an
-    account and you can repair your bug directly in the repository.
-  - Removed the revision comments from the old CVS repository
-  - DOS DateTime Format doesn't support dates before 1980 and goes crazy when
-    decoding back to unix time. If we don't get passed a time at all
-    (0 or undef) we now throw an error.
-  - DOS DateTime Format doesn't support dates before 1980, so if we find any
-    we warn and use Jan 1 12:01pm 1980 if we encounter any
-  - Win32 doesn't support directory modification times.
-    Tentatively use the current time as the mod-time to prevent sending
-    null times to the unix2dos converter (and the resulting error)
-  - Reformat the expected empty zip warning in the output to add a note that
-    the warning is entirely normal. Would be nice if some time later we can
-    suppress it altogether, but I don't have the cross-platform STDERR-fu
-    without adding a dependency to IPC::Run3 (which would be bad).
-  - Adding a proper $VERSION to all classes, and synchronising them to the
-    same value.
-  - Adding a BEGIN block around the require 5.003_96 so it works at
-    compile-time instead of post-compile.
-  - Moved crc32 to bin/crc32 in line with package layout conventions
+	- Imported Archive::Zip into http://svn.ali.as/cpan/ orphanage.
+	  If you have a CPAN login and have released a module, ask ADAMK about an
+	  account and you can repair your bug directly in the repository.
+	- Removed the revision comments from the old CVS repository
+	- DOS DateTime Format doesn't support dates before 1980 and goes crazy when
+	  decoding back to unix time. If we don't get passed a time at all
+	  (0 or undef) we now throw an error.
+	- DOS DateTime Format doesn't support dates before 1980, so if we find any
+	  we warn and use Jan 1 12:01pm 1980 if we encounter any
+	- Win32 doesn't support directory modification times.
+	  Tentatively use the current time as the mod-time to prevent sending
+	  null times to the unix2dos converter (and the resulting error)
+	- Reformat the expected empty zip warning in the output to add a note that
+	  the warning is entirely normal. Would be nice if some time later we can
+	  suppress it altogether, but I don't have the cross-platform STDERR-fu
+	  without adding a dependency to IPC::Run3 (which would be bad).
+	- Adding a proper $VERSION to all classes, and synchronising them to the
+	  same value.
+	- Adding a BEGIN block around the require 5.003_96 so it works at
+	  compile-time instead of post-compile.
+	- Moved crc32 to bin/crc32 in line with package layout conventions
 
 1.16 Mon Jul 04 12:49:30 CDT 2005
-  - Grrrr...removed test that fails when installing under CPANPLUS.
+	- Grrrr...removed test that fails when installing under CPANPLUS.
 
 1.15 Wed Jun 22 10:24:25 CDT 2005
-  - added fix for RT #12771 Minor nit: warning in Archive::Zip::DirectoryMember::contents() 
-  - added fix for RT #13327 Formatting problem in Archive::Zip::Tree manpage
+	- added fix for RT #12771 Minor nit: warning in Archive::Zip::DirectoryMember::contents() 
+	- added fix for RT #13327 Formatting problem in Archive::Zip::Tree manpage
 
 1.15_02 Sat Mar 12 09:16:30 CST 2005 
-  - fixed dates in previous entry!
-  - began the process of migrating from the monolithic t/test.t to 
-    smaller scripts using Test::More.
-  - started work on improving Archive::Zip's test coverage.  Coverage
-    is now up to just over 80%.
-  - added error handling to writeToFileHandle
-  - fixed small bug in extractMember from previous version
- 
+	- fixed dates in previous entry!
+	- began the process of migrating from the monolithic t/test.t to 
+	  smaller scripts using Test::More.
+	- started work on improving Archive::Zip's test coverage.  Coverage
+	  is now up to just over 80%.
+	- added error handling to writeToFileHandle
+	- fixed small bug in extractMember from previous version
+	  
 1.15_01 Wed Mar  9 22:26:52 CST 2005
-  - added fix for RT #11818 extractMember method corrupts archive
-  - added t/pod.t to test for pod correctness
+	- added fix for RT #11818 extractMember method corrupts archive
+	- added t/pod.t to test for pod correctness
 
 1.10 Thu Mar 25 06:24:17 PST 2004
-  - Fixed documentation of setErrorHandler()
-  - Fixed link to Japanese translation of docs
-  - Added Compress::Zlib Bufsize patch from Yeasah Pell that was supposed to
-    have been added in 1.02
-  - Fixed problems with backup filenames for zips with no extension
-  - Fixed problems with undef volume names in _asLocalName()
+	- Fixed documentation of setErrorHandler()
+	- Fixed link to Japanese translation of docs
+	- Added Compress::Zlib Bufsize patch from Yeasah Pell that was supposed to
+	  have been added in 1.02
+	- Fixed problems with backup filenames for zips with no extension
+	- Fixed problems with undef volume names in _asLocalName()
 
 1.09 Wed Nov 26 17:43:49 PST 2003
-  - Fixed handling of inserted garbage (as from viruses)
-  - Always check for local header signatures before using them
-  - Added updateMember() and updateTree() functions
-  - Added examples/mailZip.pl
-  - Added examples/updateTree.pl
-  - Fixed some potential but unreported bugs with function parameters like '0'
-  - Removed stray warn() call
-  - Caught undef second arg to replaceMember()
-  - Fixed test suite run with spaces in build dir name (ticket 4214)
+	- Fixed handling of inserted garbage (as from viruses)
+	- Always check for local header signatures before using them
+	- Added updateMember() and updateTree() functions
+	- Added examples/mailZip.pl
+	- Added examples/updateTree.pl
+	- Fixed some potential but unreported bugs with function parameters like '0'
+	- Removed stray warn() call
+	- Caught undef second arg to replaceMember()
+	- Fixed test suite run with spaces in build dir name (ticket 4214)
 
 1.08 Tue Oct 21 07:01:29 PDT 2003
-  - test noise fix from Michael Schwern (ticket 4174)
-  - FAQ NAME fix from Michael Schwern (ticket 4175)
+	- test noise fix from Michael Schwern (ticket 4174)
+	- FAQ NAME fix from Michael Schwern (ticket 4175)
 
 1.07 Mon Oct 20 06:48:41 PDT 2003
-  - Added file attribute code by Maurice Aubrey
-  - Added FAQ about RedHat 9
-  - Added check for empty filenames
+	- Added file attribute code by Maurice Aubrey
+	- Added FAQ about RedHat 9
+	- Added check for empty filenames
 
 1.06 Thu Jul 17 11:06:18 PDT 2003
-  - Fixed seek use with IO::Scalar and IO::String
-  - Fixed use of binmode with pseudo-file handles
-  - Removed qr{} form for older Perl versions
-  - Changed rel2abs logic in _asLocalName() if there is a volume
-  - Fixed errors with making directories in extractMember() when none provided
-  - Return AZ_OK in extractMemberWithoutPaths() if member is a directory
-  - Fixed problem in extractTree with blank directory becoming "." prefix
-  - Added examples/writeScalar2.pl to show how to use IO::String as destination of Zip write
-  - Edited docs and FAQ to recommend against using absolute path names in zip files.
+	- Fixed seek use with IO::Scalar and IO::String
+	- Fixed use of binmode with pseudo-file handles
+	- Removed qr{} form for older Perl versions
+	- Changed rel2abs logic in _asLocalName() if there is a volume
+	- Fixed errors with making directories in extractMember() when none provided
+	- Return AZ_OK in extractMemberWithoutPaths() if member is a directory
+	- Fixed problem in extractTree with blank directory becoming "." prefix
+	- Added examples/writeScalar2.pl to show how to use IO::String as destination of Zip write
+	- Edited docs and FAQ to recommend against using absolute path names in zip files.
 
 1.05 Wed Sep 11 12:31:20 PDT 2002
-  - fixed untaint from 1.04
+	- fixed untaint from 1.04
 
 1.04 Wed Sep 11 07:22:04 PDT 2002
-  - added untaint of lastModFileDateTime
+	- added untaint of lastModFileDateTime
 
 1.03 Mon Sep  2 20:42:43 PDT 2002
-  - Removed dependency on IO::Scalar
-  - Set required version of File::Spec to 0.8
-  - Removed tests of examples that needed IO::Scalar
-  - Added binmode() call to read/writeScalar examples
-  - Fixed addTree() for 5.005 compatibility (still untested with 5.004)
-  - Fixed mkdir() calls for 5.005
-  - Clarified documentation of tree operations
+	- Removed dependency on IO::Scalar
+	- Set required version of File::Spec to 0.8
+	- Removed tests of examples that needed IO::Scalar
+	- Added binmode() call to read/writeScalar examples
+	- Fixed addTree() for 5.005 compatibility (still untested with 5.004)
+	- Fixed mkdir() calls for 5.005
+	- Clarified documentation of tree operations
 
 1.02 Fri Aug 23 17:07:22 PDT 2002
-  - Many changes for cross-platform use (use File::Spec everywhere)
-  - Separated POD from Perl
-  - Moved Archive::Zip::Tree contents into Archive::Zip
-    A::Z::Tree is now deprecated and will warn with -w
-  - Reorganized docs
-  - Added FAQ
-  - Added chunkSize() call to report current chunk size
-    and added C::Z BufSize patch from Yeasah Pell.
-  - Added fileName() to report last read zip file name
-  - Added capability to prepend data, like for SFX files
-  - Added examples/selfex.pl for self-extracting archives creation
-  - Added examples/zipcheck.pl for validity testing
-  - Made extractToFileNamed() set access/modification times
-  - Added t/testTree.t to test A::Z::Tree
-  - Fix/speed up memberNamed()
-  - Added Archive::Zip::MemberRead by Sreeji K. Das
-  - Added tempFile(), tempName()
-  - Added overwrite() and overwriteAs() to allow read/modify/write of zip
-  - added examples/updateZip.pl to show how to read/modify/write
+	- Many changes for cross-platform use (use File::Spec everywhere)
+	- Separated POD from Perl
+	- Moved Archive::Zip::Tree contents into Archive::Zip
+	  A::Z::Tree is now deprecated and will warn with -w
+	- Reorganized docs
+	- Added FAQ
+	- Added chunkSize() call to report current chunk size
+	  and added C::Z BufSize patch from Yeasah Pell.
+	- Added fileName() to report last read zip file name
+	- Added capability to prepend data, like for SFX files
+	- Added examples/selfex.pl for self-extracting archives creation
+	- Added examples/zipcheck.pl for validity testing
+	- Made extractToFileNamed() set access/modification times
+	- Added t/testTree.t to test A::Z::Tree
+	- Fix/speed up memberNamed()
+	- Added Archive::Zip::MemberRead by Sreeji K. Das
+	- Added tempFile(), tempName()
+	- Added overwrite() and overwriteAs() to allow read/modify/write of zip
+	- added examples/updateZip.pl to show how to read/modify/write
 
 1.01 Tue Apr 30 10:34:44 PDT 2002
-  - Changed mkpath call for directories to work with BSD/OS
-  - Changed tests to work with BSD/OS
+	- Changed mkpath call for directories to work with BSD/OS
+	- Changed tests to work with BSD/OS
 
 1.00 Sun Apr 28 2002
-  - Added several examples:
-    - examples/calcSizes.pl
-      How to find out how big a zip file will be before writing it
-    - examples/readScalar.pl
-      shows how to use IO::Scalar as the source of a zip read
-    - examples/unzipAll.pl
-      uses Archive::Zip::Tree to unzip an entire zip
-    - examples/writeScalar.pl
-      shows how to use IO::Scalar as the destination of a zip write
-    - examples/zipGrep.pl
-      Searches for text in zip files
-  - Changed required version of Compress::Zlib to 1.08
-  - Added detection and repair of zips with added garbage (as caused by
-    the Sircam worm)
-  - Added more documentation for FAQ-type questions, though few seem to
-    actually read the documentation.
-  - Fixed problem with stat vs lstat
-  - Changed version number to 1.00 for PHB compatibility
+	- Added several examples:
+	- examples/calcSizes.pl
+	  How to find out how big a zip file will be before writing it
+	- examples/readScalar.pl
+	  shows how to use IO::Scalar as the source of a zip read
+	- examples/unzipAll.pl
+	  uses Archive::Zip::Tree to unzip an entire zip
+	- examples/writeScalar.pl
+	  shows how to use IO::Scalar as the destination of a zip write
+	- examples/zipGrep.pl
+	  Searches for text in zip files
+	- Changed required version of Compress::Zlib to 1.08
+	- Added detection and repair of zips with added garbage (as caused by
+	  the Sircam worm)
+	- Added more documentation for FAQ-type questions, though few seem to
+	  actually read the documentation.
+	- Fixed problem with stat vs lstat
+	- Changed version number to 1.00 for PHB compatibility
 
 0.12 Wed May 23 17:48:21 PDT 2001
-  - Added writeScalar.pl and readScalar.pl to show use of IO::Scalar
-  - Fixed docs
-  - Fixed bug with EOCD signature on block boundary
-  - Made it work with IO::Scalar as file handles
-  - added readFromFileHandle()
-  - remove guess at seekability for Windows compatibility
+	- Added writeScalar.pl and readScalar.pl to show use of IO::Scalar
+	- Fixed docs
+	- Fixed bug with EOCD signature on block boundary
+	- Made it work with IO::Scalar as file handles
+	- added readFromFileHandle()
+	- remove guess at seekability for Windows compatibility
 
 0.11 Tue Jan  9 11:40:10 PST 2001
-  - Added examples/ziprecent.pl (by Rudi Farkas)
-  - Fixed up documentation in Archive::Zip::Tree
-  - Added to documentation in Archive::Zip::Tree
-  - Fixed bugs in Archive::Zip::Tree that kept predicates from working
-  - Detected file not existing errors in addFile
+	- Added examples/ziprecent.pl (by Rudi Farkas)
+	- Fixed up documentation in Archive::Zip::Tree
+	- Added to documentation in Archive::Zip::Tree
+	- Fixed bugs in Archive::Zip::Tree that kept predicates from working
+	- Detected file not existing errors in addFile
 
 0.10 Tue Aug  8 13:50:19 PDT 2000
-  - Several bug fixes
-  - More robust new file handle logic can (again)
-    take opened file handles
-  - Detect attempts to overwrite zip file when members
-    depend on it
+	- Several bug fixes
+	- More robust new file handle logic can (again)
+	  take opened file handles
+	- Detect attempts to overwrite zip file when members
+	  depend on it
 
 0.09 Tue May  9 13:27:35 PDT 2000
-  - Added fix for bug in contents()
-  - removed system("rm") call in t/test.t for Windows.
+	- Added fix for bug in contents()
+	- removed system("rm") call in t/test.t for Windows.
 
 0.08 March 27 2000 (unreleased)
-  - Fixed documentation
-  - Used IO::File instead of FileHandle, allowed for use of almost anything as
-    a file handle.
-  - Extra filenames can be passed to extractMember(),
-    extractMemberWithoutPaths(), addFile(), addDirectory()
-  - Added work-around for WinZip bug with 0-length DEFLATED files
-  - Added Archive::Zip::Tree module for adding/extracting hierarchies
+	- Fixed documentation
+	- Used IO::File instead of FileHandle, allowed for use of almost anything as
+	  a file handle.
+	- Extra filenames can be passed to extractMember(),
+	  extractMemberWithoutPaths(), addFile(), addDirectory()
+	- Added work-around for WinZip bug with 0-length DEFLATED files
+	- Added Archive::Zip::Tree module for adding/extracting hierarchies
 
 0.07  Fri Mar 24 10:26:51 PST 2000
-  - Added copyright
-  - Added desiredCompressionLevel() and documentation
-  - Made writeToFileHandle() detect seekability by default
-  - Allowed Archive::Zip->new() to take filename for read()
-  - Added crc32String() to Archive::Zip::Member
-  - Changed requirement in Makefile.PL to Compress::Zip
-    version 1.06 or later (bug in earlier versions can truncate data)
-  - Moved BufferedFileHandle and MockFileHandle into
-    Archive::Zip namespace
-  - Allowed changing error printing routine
-  - Factored out reading of signatures
-  - Made re-read of local header for directory members
-    depend on file handle seekability
-  - Added ability to change member contents
-  - Fixed a possible truncation bug in contents() method
+	- Added copyright
+	- Added desiredCompressionLevel() and documentation
+	- Made writeToFileHandle() detect seekability by default
+	- Allowed Archive::Zip->new() to take filename for read()
+	- Added crc32String() to Archive::Zip::Member
+	- Changed requirement in Makefile.PL to Compress::Zip
+	  version 1.06 or later (bug in earlier versions can truncate data)
+	- Moved BufferedFileHandle and MockFileHandle into
+	  Archive::Zip namespace
+	- Allowed changing error printing routine
+	- Factored out reading of signatures
+	- Made re-read of local header for directory members
+	  depend on file handle seekability
+	- Added ability to change member contents
+	- Fixed a possible truncation bug in contents() method
 
 0.06  Tue Mar 21 15:28:22 PST 2000
-  - first release to CPAN
+	- first release to CPAN
 
 0.01  Sun Mar 12 18:59:55 2000
-  - original version; created by h2xs 1.19
+	- original version; created by h2xs 1.19
