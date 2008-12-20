@@ -405,6 +405,9 @@ sub extractToFileNamed {
     my $name = shift;    # local FS name
     $self->{'isSymbolicLink'} = 0;
 
+    require Encode;
+    $name = Encode::decode( 'cp437', $name );
+    $name = Encode::encode( 'iso-8859-1', $name );
     # Check if the file / directory is a symbolic link or not
     if ( $self->{'externalFileAttributes'} == 2717843456 ) {
         $self->{'isSymbolicLink'} = 1;

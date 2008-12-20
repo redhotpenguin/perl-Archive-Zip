@@ -74,6 +74,8 @@ sub memberNames {
 # return ref to member with given name or undef
 sub memberNamed {
     my ( $self, $fileName ) = @_;
+    require Encode;
+    $fileName = Encode::encode( 'cp437', $fileName );
     foreach my $member ( $self->members() ) {
         return $member if $member->fileName() eq $fileName;
     }
@@ -156,6 +158,8 @@ sub extractMember {
     my $name         = shift;                       # local FS name if given
     my ( $volumeName, $dirName, $fileName );
     if ( defined($name) ) {
+        require Encode;
+        $name = Encode::encode( 'cp437', $name );
         ( $volumeName, $dirName, $fileName ) = File::Spec->splitpath($name);
         $dirName = File::Spec->catpath( $volumeName, $dirName, '' );
     }
@@ -165,10 +169,11 @@ sub extractMember {
         $dirName = Archive::Zip::_asLocalName($dirName);
         $name    = Archive::Zip::_asLocalName($name);
     }
-    if ( $dirName && !-d $dirName ) {
-        mkpath($dirName);
-        return _ioError("can't create dir $dirName") if ( !-d $dirName );
-    }
+    # Need to test if this is needed or not:
+    #if ( $dirName && !-d $dirName ) {
+    #    mkpath($dirName);
+    #    return _ioError("can't create dir $dirName") if ( !-d $dirName );
+    #}
     my $rc = $member->extractToFileNamed( $name, @_ );
 
     # TODO refactor this fix into extractToFileNamed()
@@ -184,7 +189,11 @@ sub extractMemberWithoutPaths {
     my $originalSize = $member->compressedSize();
     return AZ_OK if $member->isDirectory();
     my $name = shift;
-    unless ($name) {
+    if ( defined($name) ) {
+        require Encode;
+        $name = Encode::encode( 'cp437', $name );
+    }
+    else {
         $name = $member->fileName();
         $name =~ s{.*/}{};    # strip off directories, if any
         $name = Archive::Zip::_asLocalName($name);
@@ -665,6 +674,8 @@ sub extractTree {
     $root = '' unless defined($root);
     my $dest = shift;    # Zip format
     $dest = './' unless defined($dest);
+    require Encode;
+    $dest = Encode::encode( 'cp437', $dest );
     my $volume  = shift;                              # optional
     my $pattern = "^\Q$root";
     my @members = $self->membersMatching($pattern);

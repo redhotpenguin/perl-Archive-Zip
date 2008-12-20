@@ -531,15 +531,15 @@ sub _asLocalName
 {
 	my $name   = shift;    # zip format
 	my $volume = shift;
-	$volume = '' unless defined($volume);    # local FS format
+	$volume = '' unless defined( $volume );    # local FS format
 
 	my @paths = split ( /\//, $name );
-	my $filename = pop (@paths);
-	$filename = '' unless defined($filename);
-	my $localDirs = @paths?File::Spec->catdir(@paths):'';
+	my $filename = pop ( @paths );
+	$filename = '' unless defined( $filename );
+	my $localDirs = @paths ? File::Spec->catdir( @paths ) : '';
 	my $localName = File::Spec->catpath( $volume, $localDirs, $filename );
-    use Cwd;
-    $localName = File::Spec->catfile(getcwd, $localName) unless $volume;
+    require Cwd;
+    $localName = File::Spec->catfile( Cwd::getcwd, $localName ) unless $volume;
 	return $localName;
 }
 

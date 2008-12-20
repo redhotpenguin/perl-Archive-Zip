@@ -22,10 +22,14 @@ sub _newFromFileNamed {
     $newName = _asZipDirName($fileName) unless defined($newName);
     return undef unless ( stat($fileName) && -r _ && !-d _ );
     my $self = $class->new(@_);
+    my @stat = stat(_);
+    require Encode;
+    $newName = Encode::encode( 'cp437', $newName );
+    $fileName = Encode::encode( 'cp437', $fileName );
     $self->{'fileName'} = $newName;
     $self->{'externalFileName'}  = $fileName;
     $self->{'compressionMethod'} = COMPRESSION_STORED;
-    my @stat = stat(_);
+    
     $self->{'compressedSize'} = $self->{'uncompressedSize'} = $stat[7];
     $self->desiredCompressionMethod(
         ( $self->compressedSize() > 0 )
