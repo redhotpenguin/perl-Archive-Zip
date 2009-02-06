@@ -19,8 +19,6 @@ sub _newFromString {
     my $class  = shift;
     my $string = shift;
     my $name   = shift;
-    require Encode;
-    $name = Encode::encode( 'cp437', $name );
     my $self   = $class->new(@_);
     $self->contents($string);
     $self->fileName($name) if defined($name);

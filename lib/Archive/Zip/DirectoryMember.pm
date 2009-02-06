@@ -21,9 +21,6 @@ sub _newNamed {
     my $newName  = shift;    # Zip name
     $newName = _asZipDirName($fileName) unless $newName;
     my $self = $class->new(@_);
-    require Encode;
-    $fileName = Encode::encode( 'cp437', $fileName );
-    $newName = Encode::encode( 'cp437', $newName );
     $self->{'externalFileName'} = $fileName;
     $self->fileName($newName);
 
@@ -61,9 +58,6 @@ sub isDirectory {
 sub extractToFileNamed {
     my $self    = shift;
     my $name    = shift;                                 # local FS name
-    require Encode;
-    $name = Encode::decode( 'cp437', $name );
-    $name = Encode::encode( 'iso-8859-1', $name );
     my $attribs = $self->unixFileAttributes() & 07777;
     mkpath( $name, 0, $attribs );                        # croaks on error
     utime( $self->lastModTime(), $self->lastModTime(), $name );

@@ -405,11 +405,8 @@ sub extractToFileNamed {
     my $name = shift;    # local FS name
     $self->{'isSymbolicLink'} = 0;
 
-    require Encode;
-    $name = Encode::decode( 'cp437', $name );
-    $name = Encode::encode( 'iso-8859-1', $name );
     # Check if the file / directory is a symbolic link or not
-    if ( $self->{'externalFileAttributes'} == 2717843456 ) {
+    if ( $self->{'externalFileAttributes'} == 0xA1FF0000 ) {
         $self->{'isSymbolicLink'} = 1;
         $self->{'newName'} = $name;
         my ( $status, $fh ) = _newFileHandle( $name, 'r' );
@@ -442,7 +439,7 @@ sub _writeSymbolicLink {
 
 sub isSymbolicLink {
     my $self = shift;
-    if ( $self->{'externalFileAttributes'} == 2717843456 ) {
+    if ( $self->{'externalFileAttributes'} == 0xA1FF0000 ) {
         $self->{'isSymbolicLink'} = 1;
     } else {
         return 0;

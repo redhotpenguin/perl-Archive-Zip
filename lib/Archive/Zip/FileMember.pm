@@ -35,13 +35,9 @@ sub fh {
 # opens my file handle from my file name
 sub _openFile {
     my $self = shift;
-    my $fileName = $self->externalFileName;
-    require Encode;
-    $fileName = Encode::decode( 'cp437', $fileName );
-    $fileName = Encode::encode( 'iso-8859-1', $fileName );
-    my ( $status, $fh ) = _newFileHandle( $fileName, 'r' );
+    my ( $status, $fh ) = _newFileHandle( $self->externalFileName(), 'r' );
     if ( !$status ) {
-        _ioError( "Can't open", $fileName );
+        _ioError( "Can't open", $self->externalFileName() );
         return undef;
     }
     $self->{'fh'} = $fh;
