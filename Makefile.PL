@@ -46,9 +46,17 @@ WriteMakefile(
 		ZIP      => 'zip',
 		ZIPFLAGS => '-r'
 	},
-	( $ExtUtils::MakeMaker::VERSION ge '6.30_00' ? (
+	( $ExtUtils::MakeMaker::VERSION ge '6.31' ? (
 		LICENSE => 'perl',
 	) : () ),
+	($ExtUtils::MakeMaker::VERSION ge '6.48' ? (
+		'MIN_PERL_VERSION' => 5.003_96,
+		'META_MERGE' => {
+			'resources'=> {
+				'repository' => 'http://svn.ali.as/cpan/trunk/Archive-Zip',
+			},
+		},
+	) : ()),
 	( $] >= 5.005 ? (
 		BINARY_LOCATION => $Config{'archname'} . "/\$(DISTVNAME)-PPD.tar\$(SUFFIX)",
 		AUTHOR          => 'Ned Konz <perl@bike-nomad.com>',

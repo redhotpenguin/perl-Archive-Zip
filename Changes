@@ -1,6 +1,7 @@
 Revision history for Perl extension Archive-Zip
 
 1.27_01 Tue 16 Dec 2008 - Adam Kennedy
+        - Makefile.PL will create a better META.yml
 	- This is a test release for various improvements provided by
 	  Alan Haggai. The entire release is credited to his grant work.
 	- Fixed #25726: extractMembers failing across fork on Windows.
