@@ -1,5 +1,7 @@
-#!/usr/bin/perl -w
-# computes and prints to stdout the CRC-32 values of the given files
+#!/usr/bin/perl
+
+# Computes and prints to stdout the CRC-32 values of the given files
+
 use strict;
 use lib qw( blib/lib lib );
 use Archive::Zip;

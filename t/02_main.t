@@ -29,7 +29,7 @@ BEGIN {
 # Testing Utility Functions
 
 #--------- check CRC
-is(TESTSTRINGCRC, 0xac373f32, 'Testing CRC matches expected');
+is( TESTSTRINGCRC, 0xac373f32, 'Testing CRC matches expected' );
 
 # Bad times die
 SCOPE: {
