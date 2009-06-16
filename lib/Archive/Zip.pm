@@ -4,18 +4,18 @@ use strict;
 BEGIN {
 	require 5.003_96;
 }
-use UNIVERSAL      ();
-use Carp           ();
-use IO::File       ();
-use IO::Seekable   ();
-use Compress::Zlib ();
-use File::Spec     ();
-use File::Temp     ();
-use FileHandle     ();
+use UNIVERSAL           ();
+use Carp                ();
+use IO::File            ();
+use IO::Seekable        ();
+use Compress::Raw::Zlib ();
+use File::Spec          ();
+use File::Temp          ();
+use FileHandle          ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-	$VERSION = '1.27_01';
+	$VERSION = '1.27_02';
 
 	require Exporter;
 	@ISA = qw( Exporter );
@@ -290,7 +290,7 @@ sub computeCRC32 {
 	my $data = shift;
 	$data = shift if ref($data);    # allow calling as an obj method
 	my $crc = shift;
-	return Compress::Zlib::crc32( $data, $crc );
+	return Compress::Raw::Zlib::crc32( $data, $crc );
 }
 
 # Report or change chunk size used for reading and writing.
@@ -602,7 +602,7 @@ queried or modified. Their data can be compressed or uncompressed as needed.
 Members can be created from members in existing Zip files, or from existing
 directories, files, or strings.
 
-This module uses the L<Compress::Zlib> library to read and write the
+This module uses the L<Compress::Raw::Zlib> library to read and write the
 compressed streams inside the files.
 
 One can use L<Archive::Zip::MemberRead> to read the zip file archive members
@@ -863,7 +863,7 @@ methods. Do not call them as class methods:
 
 =item Archive::Zip::computeCRC32( $string [, $crc] )
 
-This is a utility function that uses the Compress::Zlib CRC
+This is a utility function that uses the Compress::Raw::Zlib CRC
 routine to compute a CRC-32. You can get the CRC of a string:
 
     $crc = Archive::Zip::computeCRC32( $string );
@@ -879,7 +879,7 @@ Or you can compute the running CRC:
 Report or change chunk size used for reading and writing.
 This can make big differences in dealing with large files.
 Currently, this defaults to 32K. This also changes the chunk
-size used for Compress::Zlib. You must call setChunkSize()
+size used for Compress::Raw::Zlib. You must call setChunkSize()
 before reading or writing. This is not exportable, so you
 must call it like:
 
@@ -1940,7 +1940,7 @@ L<Archive::Zip> requires several other modules:
 
 L<Carp>
 
-L<Compress::Zlib>
+L<Compress::Raw::Zlib>
 
 L<Cwd>
 
@@ -2039,7 +2039,7 @@ it under the same terms as Perl itself.
 Look at L<Archive::Zip::MemberRead> which is a wrapper that allows one to
 read Zip archive members as if they were files.
 
-L<Compress::Zlib>, L<Archive::Tar>, L<Archive::Extract>
+L<Compress::Raw::Zlib>, L<Archive::Tar>, L<Archive::Extract>
 
 There is a Japanese translation of this
 document at L<http://www.memb.jp/~deq/perl/doc-ja/Archive-Zip.html>

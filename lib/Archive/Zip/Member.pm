@@ -19,7 +19,7 @@ use Archive::Zip qw(
 );
 
 use Time::Local ();
-use Compress::Zlib qw( Z_OK Z_STREAM_END MAX_WBITS );
+use Compress::Raw::Zlib qw( Z_OK Z_STREAM_END MAX_WBITS );
 use File::Path;
 use File::Basename;
 
@@ -760,11 +760,11 @@ sub _copyChunk {
 # ( $outputRef, $status) = $self->_deflateChunk( \$buffer );
 sub _deflateChunk {
     my ( $self, $buffer ) = @_;
-    my ( $out,  $status ) = $self->_deflater()->deflate($buffer);
+    my ( $status ) = $self->_deflater()->deflate( $buffer, my $out );
 
     if ( $self->_readDataRemaining() == 0 ) {
         my $extraOutput;
-        ( $extraOutput, $status ) = $self->_deflater()->flush();
+        ( $status ) = $self->_deflater()->flush($extraOutput);
         $out .= $extraOutput;
         $self->endRead();
         return ( \$out, AZ_STREAM_END );
@@ -783,7 +783,7 @@ sub _deflateChunk {
 # ( $outputRef, $status) = $self->_inflateChunk( \$buffer );
 sub _inflateChunk {
     my ( $self, $buffer ) = @_;
-    my ( $out,  $status ) = $self->_inflater()->inflate($buffer);
+    my ( $status ) = $self->_inflater()->inflate( $buffer, my $out );
     my $retval;
     $self->endRead() unless $status == Z_OK;
     if ( $status == Z_OK || $status == Z_STREAM_END ) {
@@ -816,7 +816,7 @@ sub rewindData {
     if (    $self->compressionMethod() == COMPRESSION_STORED
         and $self->desiredCompressionMethod() == COMPRESSION_DEFLATED )
     {
-        ( $self->{'deflater'}, $status ) = Compress::Zlib::deflateInit(
+        ( $self->{'deflater'}, $status ) = Compress::Raw::Zlib::Deflate->new(
             '-Level'      => $self->desiredCompressionLevel(),
             '-WindowBits' => -MAX_WBITS(),                     # necessary magic
             '-Bufsize'    => $Archive::Zip::ChunkSize,
@@ -829,7 +829,7 @@ sub rewindData {
     elsif ( $self->compressionMethod() == COMPRESSION_DEFLATED
         and $self->desiredCompressionMethod() == COMPRESSION_STORED )
     {
-        ( $self->{'inflater'}, $status ) = Compress::Zlib::inflateInit(
+        ( $self->{'inflater'}, $status ) = Compress::Raw::Zlib::Inflate->new(
             '-WindowBits' => -MAX_WBITS(),               # necessary magic
             '-Bufsize'    => $Archive::Zip::ChunkSize,
             @_
