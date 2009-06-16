@@ -1,6 +1,7 @@
 Revision history for Perl extension Archive-Zip
 
-1.27_02
+1.28 Tue 16 Jun 2009 - Adam Kennedy
+	- Changing to production version for release
 	- Reverted to revision 4736 and converted `External File Attribute'
 	  values for symbolic links to hexadecimal (HAGGAI)
 	- Fixed: #15026: AddTree does not include files with german
