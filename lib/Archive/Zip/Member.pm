@@ -45,19 +45,52 @@ sub _newFromZipFile {
 
 sub newFromString {
     my $class = shift;
-    my $self  = $class->STRINGMEMBERCLASS->_newFromString(@_);
+
+    my ( $stringOrStringRef, $fileName );
+    if ( ref( $_[0] ) eq 'HASH' ) {
+        $stringOrStringRef = $_[0]->{string};
+        $fileName          = $_[0]->{zipName};
+    }
+    else {
+        ( $stringOrStringRef, $fileName ) = @_;
+    }
+
+    my $self  = $class->STRINGMEMBERCLASS->_newFromString( $stringOrStringRef,
+        $fileName );
     return $self;
 }
 
 sub newFromFile {
     my $class = shift;
-    my $self  = $class->NEWFILEMEMBERCLASS->_newFromFileNamed(@_);
+
+    my ( $fileName, $zipName );
+    if ( ref( $_[0] ) eq 'HASH' ) {
+        $fileName = $_[0]->{fileName};
+        $zipName  = $_[0]->{zipName};
+    }
+    else {
+        ( $fileName, $zipName ) = @_;
+    }
+
+    my $self = $class->NEWFILEMEMBERCLASS->_newFromFileNamed( $fileName,
+      $zipName );
     return $self;
 }
 
 sub newDirectoryNamed {
     my $class = shift;
-    my $self  = $class->DIRECTORYMEMBERCLASS->_newNamed(@_);
+
+    my ( $directoryName, $newName );
+    if ( ref( $_[0] ) eq 'HASH' ) {
+        $directoryName = $_[0]->{directoryName};
+        $newName       = $_[0]->{zipName};
+    }
+    else {
+        ( $directoryName, $newName ) = @_;
+    }
+
+    my $self  = $class->DIRECTORYMEMBERCLASS->_newNamed( $directoryName,
+        $newName );
     return $self;
 }
 
@@ -106,9 +139,15 @@ sub versionMadeBy {
 }
 
 sub fileAttributeFormat {
-    ( $#_ > 0 )
-      ? ( $_[0]->{'fileAttributeFormat'} = $_[1] )
-      : $_[0]->{'fileAttributeFormat'};
+    my $self = shift;
+
+    if (@_) {
+        $self->{fileAttributeFormat} = ( ref( $_[0] ) eq 'HASH' )
+        ? $_[0]->{format} : $_[0];
+    }
+    else {
+        return $self->{fileAttributeFormat};
+    }
 }
 
 sub versionNeededToExtract {
@@ -136,8 +175,9 @@ sub compressionMethod {
 }
 
 sub desiredCompressionMethod {
-    my $self                        = shift;
-    my $newDesiredCompressionMethod = shift;
+    my $self = shift;
+    my $newDesiredCompressionMethod =
+      ( ref( $_[0] ) eq 'HASH' ) ? shift->{compressionMethod} : shift;
     my $oldDesiredCompressionMethod = $self->{'desiredCompressionMethod'};
     if ( defined($newDesiredCompressionMethod) ) {
         $self->{'desiredCompressionMethod'} = $newDesiredCompressionMethod;
@@ -153,8 +193,9 @@ sub desiredCompressionMethod {
 }
 
 sub desiredCompressionLevel {
-    my $self                       = shift;
-    my $newDesiredCompressionLevel = shift;
+    my $self = shift;
+    my $newDesiredCompressionLevel =
+      ( ref( $_[0] ) eq 'HASH' ) ? shift->{compressionLevel} : shift;
     my $oldDesiredCompressionLevel = $self->{'desiredCompressionLevel'};
     if ( defined($newDesiredCompressionLevel) ) {
         $self->{'desiredCompressionLevel'}  = $newDesiredCompressionLevel;
@@ -307,8 +348,11 @@ sub _mapPermissionsToUnix {
 sub unixFileAttributes {
     my $self     = shift;
     my $oldPerms = $self->_mapPermissionsToUnix;
+
+    my $perms;
     if ( @_ ) {
-        my $perms = shift;
+        $perms = ( ref( $_[0] ) eq 'HASH' ) ? $_[0]->{attributes} : $_[0];
+
         if ( $self->isDirectory ) {
             $perms &= ~FILE_ATTRIB;
             $perms |= DIRECTORY_ATTRIB;
@@ -318,17 +362,32 @@ sub unixFileAttributes {
         }
         $self->{externalFileAttributes} = $self->_mapPermissionsFromUnix($perms);
     }
+
     return $oldPerms;
 }
 
 sub localExtraField {
-    ( $#_ > 0 )
-      ? ( $_[0]->{'localExtraField'} = $_[1] )
-      : $_[0]->{'localExtraField'};
+    my $self = shift;
+
+    if (@_) {
+        $self->{localExtraField} = ( ref( $_[0] ) eq 'HASH' )
+          ? $_[0]->{field} : $_[0];
+    }
+    else {
+        return $self->{localExtraField};
+    }
 }
 
 sub cdExtraField {
-    ( $#_ > 0 ) ? ( $_[0]->{'cdExtraField'} = $_[1] ) : $_[0]->{'cdExtraField'};
+    my $self = shift;
+
+    if (@_) {
+        $self->{cdExtraField} = ( ref( $_[0] ) eq 'HASH' )
+          ? $_[0]->{field} : $_[0];
+    }
+    else {
+        return $self->{cdExtraField};
+    }
 }
 
 sub extraFields {
@@ -337,9 +396,15 @@ sub extraFields {
 }
 
 sub fileComment {
-    ( $#_ > 0 )
-      ? ( $_[0]->{'fileComment'} = pack( 'C0a*', $_[1] ) )
-      : $_[0]->{'fileComment'};
+    my $self = shift;
+
+    if (@_) {
+        $self->{fileComment} = ( ref( $_[0] ) eq 'HASH' )
+          ? pack( 'C0a*', $_[0]->{comment} ) : pack( 'C0a*', $_[0] );
+    }
+    else {
+        return $self->{fileComment};
+    }
 }
 
 sub hasDataDescriptor {
@@ -380,7 +445,7 @@ sub isTextFile {
     my $self = shift;
     my $bit  = $self->internalFileAttributes() & IFA_TEXT_FILE_MASK;
     if (@_) {
-        my $flag = shift;
+        my $flag = ( ref( $_[0] ) eq 'HASH' ) ? shift->{flag} : shift;
         $self->{'internalFileAttributes'} &= ~IFA_TEXT_FILE_MASK;
         $self->{'internalFileAttributes'} |=
           ( $flag ? IFA_TEXT_FILE: IFA_BINARY_FILE );
@@ -402,7 +467,9 @@ sub isBinaryFile {
 
 sub extractToFileNamed {
     my $self = shift;
-    my $name = shift;    # local FS name
+
+    # local FS name
+    my $name = ( ref( $_[0] ) eq 'HASH' ) ? $_[0]->{name} : $_[0];
     $self->{'isSymbolicLink'} = 0;
 
     # Check if the file / directory is a symbolic link or not
@@ -703,7 +770,8 @@ sub _refreshLocalFileHeader {
 }
 
 sub readChunk {
-    my ( $self, $chunkSize ) = @_;
+    my $self = shift;
+    my $chunkSize = ( ref( $_[0] ) eq 'HASH' ) ? $_[0]->{chunkSize} : $_[0];
 
     if ( $self->readIsDone() ) {
         $self->endRead();
@@ -916,7 +984,7 @@ sub contents {
 sub extractToFileHandle {
     my $self = shift;
     return _error("encryption unsupported") if $self->isEncrypted();
-    my $fh = shift;
+    my $fh = ( ref( $_[0] ) eq 'HASH' ) ? shift->{fileHandle} : shift;
     _binmode($fh);
     my $oldCompression = $self->desiredCompressionMethod(COMPRESSION_STORED);
     my $status         = $self->rewindData(@_);
