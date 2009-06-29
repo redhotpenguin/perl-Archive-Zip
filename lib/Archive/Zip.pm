@@ -15,7 +15,7 @@ use FileHandle          ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-	$VERSION = '1.28';
+    $VERSION = '1.29';
 
     require Exporter;
     @ISA = qw( Exporter );
@@ -545,10 +545,12 @@ sub _asLocalName
     my @paths = split ( /\//, $name );
     my $filename = pop (@paths);
     $filename = '' unless defined($filename);
-    my $localDirs = @paths?File::Spec->catdir(@paths):'';
+    my $localDirs = @paths ? File::Spec->catdir(@paths) : '';
     my $localName = File::Spec->catpath( $volume, $localDirs, $filename );
-    use Cwd;
-    $localName = File::Spec->catfile(getcwd, $localName) unless $volume;
+    require Cwd;
+    unless ( $volume ) {
+        $localName = File::Spec->rel2abs( $localName, Cwd::getcwd );
+    }
     return $localName;
 }
 
