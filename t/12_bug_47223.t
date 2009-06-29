@@ -16,7 +16,7 @@ use File::Spec;
 if ($^O eq 'MSWin32') {
 	plan( tests => 1 );
 } else {
-	plan( skip_all => 'Bug 47223 is only known to exist on Win32.' );
+	plan( skip_all => 'Only required on Win32.' );
 }
 
 my $dist   = Win32::GetShortPathName(File::Spec->rel2abs(File::Spec->catfile(qw(t data winzip.zip))));
