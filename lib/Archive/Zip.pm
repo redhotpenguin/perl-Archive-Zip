@@ -6,6 +6,7 @@ BEGIN {
 }
 use UNIVERSAL           ();
 use Carp                ();
+use Cwd                 ();
 use IO::File            ();
 use IO::Seekable        ();
 use Compress::Raw::Zlib ();
@@ -15,7 +16,7 @@ use FileHandle          ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-    $VERSION = '1.29';
+    $VERSION = '1.30';
 
     require Exporter;
     @ISA = qw( Exporter );
@@ -547,9 +548,8 @@ sub _asLocalName
     $filename = '' unless defined($filename);
     my $localDirs = @paths ? File::Spec->catdir(@paths) : '';
     my $localName = File::Spec->catpath( $volume, $localDirs, $filename );
-    require Cwd;
     unless ( $volume ) {
-        $localName = File::Spec->rel2abs( $localName, Cwd::getcwd );
+        $localName = File::Spec->rel2abs( $localName, Cwd::getcwd() );
     }
     return $localName;
 }
