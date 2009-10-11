@@ -6,7 +6,14 @@ BEGIN {
 use Config;
 use ExtUtils::MakeMaker;
 
-WriteMakefile(
+WriteMakefile1(
+	MIN_PERL_VERSION => '5.00396',
+	META_MERGE => {
+		resources => {
+			repository => 'http://svn.ali.as/cpan/trunk/Archive-Zip',
+			bugtracker => 'http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Archive-Zip',
+		},
+	},
 	NAME          => 'Archive::Zip',
 	VERSION_FROM  => 'lib/Archive/Zip.pm',
 	EXE_FILES     => [ 'script/crc32' ],
@@ -46,15 +53,36 @@ WriteMakefile(
 		ZIP      => 'zip',
 		ZIPFLAGS => '-r'
 	},
-	( $ExtUtils::MakeMaker::VERSION ge '6.31' ? (
-		LICENSE => 'perl',
-	) : () ),
-	($ExtUtils::MakeMaker::VERSION ge '6.48' ? (
-		'MIN_PERL_VERSION' => 5.003_96,
-	) : ()),
+	LICENSE => 'perl',
+	'MIN_PERL_VERSION' => 5.003_96,
 	( $] >= 5.005 ? (
 		BINARY_LOCATION => $Config{'archname'} . "/\$(DISTVNAME)-PPD.tar\$(SUFFIX)",
 		AUTHOR          => 'Ned Konz <perl@bike-nomad.com>',
                 ABSTRACT_FROM   => 'lib/Archive/Zip.pm',
 	) : () ),
 );
+
+sub WriteMakefile1 {  #Written by Alexandr Ciornii, version 0.20
+	my %params=@_;
+	my $eumm_version=$ExtUtils::MakeMaker::VERSION;
+	$eumm_version=eval $eumm_version;
+	die "EXTRA_META is deprecated" if exists $params{EXTRA_META};
+	die "License not specified" if not exists $params{LICENSE};
+	if ($params{BUILD_REQUIRES}) { #and $eumm_version < 6.5503
+		#Should be modified in future when EUMM will
+		#correctly support BUILD_REQUIRES.
+		#EUMM 6.5502 has problems with BUILD_REQUIRES
+		$params{PREREQ_PM}={ %{$params{PREREQ_PM} || {}} , %{$params{BUILD_REQUIRES}} };
+		delete $params{BUILD_REQUIRES};
+	}
+	delete $params{CONFIGURE_REQUIRES} if $eumm_version < 6.52;
+	delete $params{MIN_PERL_VERSION} if $eumm_version < 6.48;
+	delete $params{META_MERGE} if $eumm_version < 6.46;
+	delete $params{META_ADD} if $eumm_version < 6.46;
+	delete $params{LICENSE} if $eumm_version < 6.31;
+	delete $params{AUTHOR} if $] < 5.005;
+	delete $params{ABSTRACT_FROM} if $] < 5.005;
+	delete $params{BINARY_LOCATION} if $] < 5.005;
+
+	WriteMakefile(%params);
+}
