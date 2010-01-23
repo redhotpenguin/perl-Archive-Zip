@@ -23,7 +23,7 @@ my $archive_fn = "out.zip";
 my ( $before, $after );
 sub slurp_file {
 	my $filename = shift;
-	open ( my $fh, '<', $filename)
+	open my $fh, "<$filename"
 	or die 'Can not open file';
 	my $contents;
 	binmode( $fh );

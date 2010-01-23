@@ -2,7 +2,7 @@ package Archive::Zip;
 
 use strict;
 BEGIN {
-    require 5.003_96;
+    require 5.004;
 }
 use UNIVERSAL           ();
 use Carp                ();

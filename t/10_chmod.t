@@ -27,7 +27,7 @@ sub test_if_chmod_is_working
 
     mkdir($test_dir, 0755);
 
-    open my $out, ">", $test_file;
+    open my $out, ">$test_file";
     print {$out} "Foobar.";
     close($out);
 

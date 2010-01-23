@@ -1,13 +1,13 @@
 use strict;
 BEGIN {
-	require 5.003_96;
+	require 5.004;
 }
 
 use Config;
 use ExtUtils::MakeMaker;
 
 WriteMakefile1(
-	MIN_PERL_VERSION => '5.00396',
+	MIN_PERL_VERSION => '5.004',
 	META_MERGE => {
 		resources => {
 			repository => 'http://svn.ali.as/cpan/trunk/Archive-Zip',
@@ -54,7 +54,7 @@ WriteMakefile1(
 		ZIPFLAGS => '-r'
 	},
 	LICENSE => 'perl',
-	'MIN_PERL_VERSION' => 5.003_96,
+	'MIN_PERL_VERSION' => 5.004,
 	( $] >= 5.005 ? (
 		BINARY_LOCATION => $Config{'archname'} . "/\$(DISTVNAME)-PPD.tar\$(SUFFIX)",
 		AUTHOR          => 'Ned Konz <perl@bike-nomad.com>',
