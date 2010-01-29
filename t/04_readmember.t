@@ -8,7 +8,7 @@ BEGIN {
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Archive::Zip::MemberRead;
 
-use Test::More tests => 8;
+use Test::More tests => 10;
 BEGIN {
     unshift @INC, "t/"; 
     require( File::Spec->catfile('t', 'common.pl') )
@@ -39,6 +39,12 @@ SKIP: {
 	}
 	ok( !$not_ok );
 }
+
+my $member_read = Archive::Zip::MemberRead->new( $zip, 'string.txt' );
+$line = $member_read->getline( { 'preserve_line_ending' => 1 } );
+is( $line, "Line 1\n", 'Preserve line ending' );
+$line = $member_read->getline( { 'preserve_line_ending' => 0 } );
+is( $line, "Line 2" , 'Do not preserve line ending' );
 
 $fh->rewind();
 $ret = $fh->read($buffer, length($data[0]));
