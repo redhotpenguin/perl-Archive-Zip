@@ -810,7 +810,15 @@ sub extractTree {
     }
 
     $root = '' unless defined($root);
-    $dest = './' unless defined($dest);
+    if ( defined $dest ) {
+        if ( $dest !~ m{/$} ) {
+            $dest .= '/';
+        }
+    }
+    else {
+        $dest = './';
+    }
+
     my $pattern = "^\Q$root";
     my @members = $self->membersMatching($pattern);
 
