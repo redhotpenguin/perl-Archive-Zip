@@ -15,6 +15,12 @@ use vars qw( $VERSION @ISA );
 BEGIN {
     $VERSION = '1.30';
     @ISA     = qw( Archive::Zip );
+
+    if ( $^O eq 'MSWin32' ) {
+        require Win32;
+        require Encode;
+        Encode->import( qw{ encode_utf8 decode_utf8 } );
+    }
 }
 
 use Archive::Zip qw(
@@ -23,6 +29,8 @@ use Archive::Zip qw(
   :PKZIP_CONSTANTS
   :UTILITY_METHODS
 );
+
+our $UNICODE;
 
 # Note that this returns undef on read errors, else new zip object.
 
@@ -245,6 +253,10 @@ sub addFile {
         ( $fileName, $newName, $compressionLevel ) = @_;
     }
 
+    if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+        $fileName = Win32::GetANSIPathName($fileName);
+    }
+
     my $newMember = $self->ZIPMEMBERCLASS->newFromFile( $fileName, $newName );
     $newMember->desiredCompressionLevel($compressionLevel);
     if ( $self->{'storeSymbolicLink'} && -l $fileName ) {
@@ -254,6 +266,9 @@ sub addFile {
         $self->addMember($newMember);
     } else {
         $self->addMember($newMember);
+    }
+    if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+        $newMember->{'fileName'} = encode_utf8( Win32::GetLongPathName($fileName) );
     }
     return $newMember;
 }
@@ -290,6 +305,10 @@ sub addDirectory {
         ( $name, $newName ) = @_;
     }
 
+    if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+        $name = Win32::GetANSIPathName($name);
+    }
+
     my $newMember = $self->ZIPMEMBERCLASS->newDirectoryNamed( $name, $newName );
     if ( $self->{'storeSymbolicLink'} && -l $name ) {
         my $link = readlink $name;
@@ -300,6 +319,9 @@ sub addDirectory {
         $self->addMember($newMember);
     } else {
         $self->addMember($newMember);
+    }
+    if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+        $newMember->{'fileName'} = encode_utf8( Win32::GetLongPathName($name) );
     }
     return $newMember;
 }
@@ -317,6 +339,10 @@ sub addFileOrDirectory {
     }
     else {
         ( $name, $newName, $compressionLevel ) = @_;
+    }
+
+    if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+        $name = Win32::GetANSIPathName($name);
     }
 
     $name =~ s{/$}{};
@@ -737,10 +763,17 @@ sub addTree {
         local $main::_ = $File::Find::name;
         my $dir = _untaintDir($File::Find::dir);
         chdir($startDir);
-        push( @files, $File::Find::name ) if (&$pred);
+        if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+            push( @files, Win32::GetANSIPathName($File::Find::name) ) if (&$pred);
+            $dir = Win32::GetANSIPathName($dir);
+        }
+        else {
+            push( @files, $File::Find::name ) if (&$pred);
+        }
         chdir($dir);
     };
 
+    $root = Win32::GetANSIPathName($root);
     File::Find::find( $wanted, $root );
 
     my $rootZipName = _asZipDirName( $root, 1 );    # with trailing slash
@@ -749,7 +782,13 @@ sub addTree {
     $dest = _asZipDirName( $dest, 1 );              # with trailing slash
 
     foreach my $fileName (@files) {
-        my $isDir = -d $fileName;
+        my $isDir;
+        if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+            $isDir = -d Win32::GetANSIPathName($fileName);
+        }
+        else {
+            $isDir = -d $fileName;
+        }
 
         # normalize, remove leading ./
         my $archiveName = _asZipDirName( $fileName, $isDir );

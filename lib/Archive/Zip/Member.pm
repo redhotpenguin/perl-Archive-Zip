@@ -8,6 +8,12 @@ use vars qw( $VERSION @ISA );
 BEGIN {
     $VERSION = '1.30';
     @ISA     = qw( Archive::Zip );
+
+    if ( $^O eq 'MSWin32' ) {
+        require Win32;
+        require Encode;
+        Encode->import( qw{ decode_utf8 } );
+    }
 }
 
 use Archive::Zip qw(
@@ -166,6 +172,10 @@ sub bitFlag {
         $self->{'bitFlag'} = DEFLATING_COMPRESSION_NORMAL;
     } elsif ( $self->desiredCompressionLevel == 8 || $self->desiredCompressionLevel == 9 ) {
         $self->{'bitFlag'} = DEFLATING_COMPRESSION_MAXIMUM;
+    }
+
+    if ($Archive::Zip::UNICODE) {
+        $self->{'bitFlag'} = $self->{'bitFlag'} | 0x0800;
     }
     $self->{'bitFlag'};
 }
@@ -482,8 +492,20 @@ sub extractToFileNamed {
     } else {
         #return _writeSymbolicLink($self, $name) if $self->isSymbolicLink();
         return _error("encryption unsupported") if $self->isEncrypted();
-        mkpath( dirname($name) );    # croaks on error
-        my ( $status, $fh ) = _newFileHandle( $name, 'w' );
+        if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+            $name = decode_utf8( Win32::GetFullPathName($name) );
+            mkpath_win32($name);
+            if ( $self->{'compressedSize'} == 0 ) {
+                return;
+            }
+            else {
+                Win32::CreateFile($name);
+            }
+        }
+        else {
+            mkpath( dirname($name) );    # croaks on error
+        }
+        my ( $status, $fh ) = _newFileHandle( Win32::GetANSIPathName($name), 'w' );
         return _ioError("Can't open file $name for write") unless $status;
         my $retval = $self->extractToFileHandle($fh);
         $fh->close();
@@ -491,6 +513,19 @@ sub extractToFileNamed {
             or return _error("Can't chmod() ${name}: $!");
         utime( $self->lastModTime(), $self->lastModTime(), $name );
         return $retval;
+    }
+}
+
+sub mkpath_win32 {
+    my $path = shift;
+    use File::Spec;
+
+    my ( $volume, @path ) = File::Spec->splitdir($path);
+    $path = File::Spec->catfile( $volume, shift @path );
+    pop @path;
+    while (@path) {
+        $path = File::Spec->catfile( $path, shift @path );
+        Win32::CreateDirectory($path);
     }
 }
 
@@ -556,16 +591,22 @@ sub _deflater {
 # Return the total size of my local header
 sub _localHeaderSize {
     my $self = shift;
-    return SIGNATURE_LENGTH + LOCAL_FILE_HEADER_LENGTH +
-      length( $self->fileName() ) + length( $self->localExtraField() );
+    {
+        use bytes;
+        return SIGNATURE_LENGTH + LOCAL_FILE_HEADER_LENGTH +
+          length( $self->fileName() ) + length( $self->localExtraField() );
+    }
 }
 
 # Return the total size of my CD header
 sub _centralDirectoryHeaderSize {
     my $self = shift;
-    return SIGNATURE_LENGTH + CENTRAL_DIRECTORY_FILE_HEADER_LENGTH +
-      length( $self->fileName() ) + length( $self->cdExtraField() ) +
-      length( $self->fileComment() );
+    {
+        use bytes;
+        return SIGNATURE_LENGTH + CENTRAL_DIRECTORY_FILE_HEADER_LENGTH +
+          length( $self->fileName() ) + length( $self->cdExtraField() ) +
+          length( $self->fileComment() );
+    }
 }
 
 # DOS date/time format
@@ -636,18 +677,22 @@ sub _writeLocalFileHeader {
     $self->_print($fh, $signatureData)
       or return _ioError("writing local header signature");
 
-    my $header = pack(
-        LOCAL_FILE_HEADER_FORMAT,
-        $self->versionNeededToExtract(),
-        $self->bitFlag(),
-        $self->desiredCompressionMethod(),
-        $self->lastModFileDateTime(),
-        $self->crc32(),
-        $self->compressedSize(),    # may need to be re-written later
-        $self->uncompressedSize(),
-        length( $self->fileName() ),
-        length( $self->localExtraField() )
-    );
+    my $header;
+    {
+        use bytes;
+        $header = pack(
+            LOCAL_FILE_HEADER_FORMAT,
+            $self->versionNeededToExtract(),
+            $self->bitFlag(),
+            $self->desiredCompressionMethod(),
+            $self->lastModFileDateTime(),
+            $self->crc32(),
+            $self->compressedSize(),    # may need to be re-written later
+            $self->uncompressedSize(),
+            length( $self->fileName() ),
+            length( $self->localExtraField() )
+        );
+    }
 
     $self->_print($fh, $header) or return _ioError("writing local header");
 
@@ -673,9 +718,13 @@ sub _writeCentralDirectoryFileHeader {
     $self->_print($fh, $sigData)
       or return _ioError("writing central directory header signature");
 
-    my $fileNameLength    = length( $self->fileName() );
-    my $extraFieldLength  = length( $self->cdExtraField() );
-    my $fileCommentLength = length( $self->fileComment() );
+    my ( $fileNameLength, $extraFieldLength, $fileCommentLength );
+    {
+        use bytes;
+        $fileNameLength    = length( $self->fileName() );
+        $extraFieldLength  = length( $self->cdExtraField() );
+        $fileCommentLength = length( $self->fileComment() );
+    }
 
     my $header = pack(
         CENTRAL_DIRECTORY_FILE_HEADER_FORMAT,
@@ -748,18 +797,22 @@ sub _refreshLocalFileHeader {
         IO::Seekable::SEEK_SET )
       or return _ioError("seeking to rewrite local header");
 
-    my $header = pack(
-        LOCAL_FILE_HEADER_FORMAT,
-        $self->versionNeededToExtract(),
-        $self->bitFlag(),
-        $self->desiredCompressionMethod(),
-        $self->lastModFileDateTime(),
-        $self->crc32(),
-        $self->_writeOffset(),    # compressed size
-        $self->uncompressedSize(),
-        length( $self->fileName() ),
-        length( $self->localExtraField() )
-    );
+    my $header;
+    {
+        use bytes;
+        $header = pack(
+            LOCAL_FILE_HEADER_FORMAT,
+            $self->versionNeededToExtract(),
+            $self->bitFlag(),
+            $self->desiredCompressionMethod(),
+            $self->lastModFileDateTime(),
+            $self->crc32(),
+            $self->_writeOffset(),    # compressed size
+            $self->uncompressedSize(),
+            length( $self->fileName() ),
+            length( $self->localExtraField() )
+        );
+    }
 
     $self->_print($fh, $header)
       or return _ioError("re-writing local header");
