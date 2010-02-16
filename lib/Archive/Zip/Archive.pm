@@ -773,7 +773,9 @@ sub addTree {
         chdir($dir);
     };
 
-    $root = Win32::GetANSIPathName($root);
+    if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+        $root = Win32::GetANSIPathName($root);
+    }
     File::Find::find( $wanted, $root );
 
     my $rootZipName = _asZipDirName( $root, 1 );    # with trailing slash

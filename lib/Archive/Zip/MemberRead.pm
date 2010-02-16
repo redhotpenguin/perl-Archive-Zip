@@ -255,16 +255,17 @@ Returns the next line including the line ending.
 
 sub getline {
     my ( $self, $argref ) = @_;
-    my $preserve_line_ending;
-    if ( ref $argref eq 'HASH' ) {
-        $preserve_line_ending = $argref->{'preserve_line_ending'};
-    }
 
     my $size = $self->buffer_size();
     my $sep  = $self->_sep_re();
 
-    for (;;) {
+    my $preserve_line_ending;
+    if ( ref $argref eq 'HASH' ) {
+        $preserve_line_ending = $argref->{'preserve_line_ending'};
         $sep =~ s/\\([^A-Za-z_0-9])+/$1/g;
+    }
+
+    for (;;) {
         if (   $sep
             && defined($self->{buffer})
             && $self->{buffer} =~ s/^(.*?)$sep//s

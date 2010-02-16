@@ -492,6 +492,8 @@ sub extractToFileNamed {
     } else {
         #return _writeSymbolicLink($self, $name) if $self->isSymbolicLink();
         return _error("encryption unsupported") if $self->isEncrypted();
+        
+        my ( $status, $fh );
         if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
             $name = decode_utf8( Win32::GetFullPathName($name) );
             mkpath_win32($name);
@@ -501,11 +503,12 @@ sub extractToFileNamed {
             else {
                 Win32::CreateFile($name);
             }
+            ( $status, $fh ) = _newFileHandle( Win32::GetANSIPathName($name), 'w' );
         }
         else {
             mkpath( dirname($name) );    # croaks on error
+            ( $status, $fh ) = _newFileHandle( $name, 'w' );
         }
-        my ( $status, $fh ) = _newFileHandle( Win32::GetANSIPathName($name), 'w' );
         return _ioError("Can't open file $name for write") unless $status;
         my $retval = $self->extractToFileHandle($fh);
         $fh->close();
