@@ -441,9 +441,6 @@ B<A:> First, try the newest version of Compress::Raw::Zlib. I know of
 Windows-related problems prior to v1.14 of that library.
 
 
-If that doesn't get rid of the problem, fix your computer or get rid of
-Windows.
-
 =head1 Zip contents in a scalar
 
 
