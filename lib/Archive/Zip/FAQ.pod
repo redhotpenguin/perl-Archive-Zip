@@ -1,11 +1,8 @@
-
 =head1 NAME
-
 
 Archive::Zip::FAQ - Answers to a few frequently asked questions about Archive::Zip
 
 =head1 DESCRIPTION
-
 
 It seems that I keep answering the same questions over and over again. I
 assume that this is because my documentation is deficient, rather than that

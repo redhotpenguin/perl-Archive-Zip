@@ -20,8 +20,6 @@ __END__
 
 Archive::Zip::Tree - (DEPRECATED) methods for adding/extracting trees using Archive::Zip
 
-=head1 SYNOPSIS
-
 =head1 DESCRIPTION
 
 This module is deprecated, because all its methods were moved into the main
