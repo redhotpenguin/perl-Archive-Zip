@@ -560,6 +560,8 @@ __END__
 
 =pod
 
+=encoding utf8
+
 =head1 NAME
 
 Archive::Zip - Provide an interface to ZIP archive files.
@@ -1540,6 +1542,24 @@ a/x to f:\d\e\x
 a/b/c to f:\d\e\b\c and ignore ax/d/e and d/e
 
 Returns an error code or AZ_OK if everything worked OK.
+
+=back
+
+=head1 Archive::Zip Global Variables
+
+=over 4
+
+=item $Archive::Zip::UNICODE
+
+This variable governs how unicode file and directory names are added
+to or extracted from an archive. If set, file and directory names are considered
+to be UTF-8 encoded. This is I<EXPERIMENTAL AND BUGGY (there are some edge cases
+on Win32)>. Please report problems.
+
+    {
+        local $Archive::Zip::UNICODE = 1;
+        $zip->addFile('Déjà vu.txt');
+    }
 
 =back
 
