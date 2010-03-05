@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.31_01 Fri  5 Mar 2010 - Adam Kennedy
+	- Various fixes by HAGGAI, which he has not yet provided details on
+
 1.30 Tue 30 Jun 2009 - Adam Kennedy
 	- Fixed a bad use of Cwd::getcwd
 

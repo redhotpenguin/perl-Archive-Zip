@@ -4,7 +4,7 @@ use strict;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.30';
+    $VERSION = '1.31_01';
     @ISA     = qw ( Archive::Zip::FileMember );
 }
 
