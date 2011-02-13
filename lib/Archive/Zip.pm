@@ -2062,7 +2062,7 @@ due to back-compatibility issues.
 
 * Handle tainted paths correctly
 
-* Work on better compatability with other IO:: modules
+* Work on better compatibility with other IO:: modules
 
 =head1 SUPPORT
 
