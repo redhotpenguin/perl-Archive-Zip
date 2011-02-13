@@ -507,8 +507,8 @@ sub tempFile {
 # ./a/b         ('a','b')   a/b
 # ./a/b/        ('a','b')   a/b
 # a/b/          ('a','b')   a/b
-# /a/b/         ('','a','b')    /a/b
-# c:\a\b\c.doc  ('','a','b','c.doc')    /a/b/c.doc      # on Windoze
+# /a/b/         ('','a','b')    a/b
+# c:\a\b\c.doc  ('','a','b','c.doc')    a/b/c.doc      # on Windows
 # "i/o maps:whatever"   ('i_o maps', 'whatever')  "i_o maps/whatever"   # on Macs
 sub _asZipDirName
 {
@@ -522,7 +522,18 @@ sub _asZipDirName
     if ( @dirs > 0 ) { pop (@dirs) unless $dirs[-1] }   # remove empty component
     push ( @dirs, defined($file) ? $file : '' );
     #return wantarray ? @dirs : join ( '/', @dirs );
-    return join ( '/', @dirs );
+
+    my $normalised_path = join '/', @dirs;
+
+    # Leading directory separators should not be stored in zip archives.
+    # Example:
+    #   C:\a\b\c\      a/b/c
+    #   C:\a\b\c.txt   a/b/c.txt
+    #   /a/b/c/        a/b/c
+    #   /a/b/c.txt     a/b/c.txt
+    $normalised_path =~ s{^/}{};  # remove leading separator
+
+    return $normalised_path;
 }
 
 # Return an absolute local name for a zip name.
