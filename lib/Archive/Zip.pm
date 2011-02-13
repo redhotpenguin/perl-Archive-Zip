@@ -2100,8 +2100,4 @@ read Zip archive members as if they were files.
 
 L<Compress::Raw::Zlib>, L<Archive::Tar>, L<Archive::Extract>
 
-There is a Japanese translation of this
-document at L<http://www.memb.jp/~deq/perl/doc-ja/Archive-Zip.html>
-that was done by DEQ E<lt>deq@oct.zaq.ne.jpE<gt> . Thanks!
-
 =cut
