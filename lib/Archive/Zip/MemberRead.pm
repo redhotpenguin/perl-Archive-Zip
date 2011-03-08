@@ -40,7 +40,7 @@ use vars qw{$VERSION};
 my $nl;
 
 BEGIN {
-    $VERSION = '1.31_01';
+    $VERSION = '1.31_02';
     $VERSION = eval $VERSION;
      # Requirement for newline conversion. Should check for e.g., DOS and OS/2 as well, but am too lazy.
      $nl = $^O eq 'MSWin32' ? "\r\n" : "\n";
@@ -334,7 +334,8 @@ sub read {
 
 =head1 AUTHOR
 
-Sreeji K. Das, <sreeji_k@yahoo.com>
+Sreeji K. Das E<lt>sreeji_k@yahoo.comE<gt>
+
 See L<Archive::Zip> by Ned Konz without which this module does not make
 any sense! 
 

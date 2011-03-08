@@ -16,7 +16,7 @@ use FileHandle          ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-    $VERSION = '1.31_01';
+    $VERSION = '1.31_02';
 
     require Exporter;
     @ISA = qw( Exporter );
@@ -2084,7 +2084,7 @@ Originally by Ned Konz E<lt>nedkonz@cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-Some parts copyright 2006 - 2010 Adam Kennedy.
+Some parts copyright 2006 - 2011 Adam Kennedy.
 
 Some parts copyright 2005 Steve Peters.
 
