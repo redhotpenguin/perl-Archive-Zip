@@ -6,7 +6,7 @@ use strict;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.31_02';
+    $VERSION = '1.31_03';
     @ISA     = qw( Archive::Zip );
 
     if ( $^O eq 'MSWin32' ) {
@@ -121,6 +121,8 @@ sub new {
         'compressedSize'           => 0,
         'uncompressedSize'         => 0,
         'isSymbolicLink'           => 0,
+        'password'                 => undef,  # password for encrypted data
+        'crc32c'                   => -1,     # crc for decrypted data
         @_
     };
     bless( $self, $class );
@@ -175,9 +177,15 @@ sub bitFlag {
     }
 
     if ($Archive::Zip::UNICODE) {
-        $self->{'bitFlag'} = $self->{'bitFlag'} | 0x0800;
+        $self->{'bitFlag'} |= 0x0800;
     }
     $self->{'bitFlag'};
+}
+
+sub password {
+    my $self = shift;
+    $self->{'password'} = shift if @_;
+    $self->{'password'};
 }
 
 sub compressionMethod {
@@ -448,7 +456,7 @@ sub uncompressedSize {
 }
 
 sub isEncrypted {
-    shift->bitFlag() & GPBF_ENCRYPTED_MASK;
+    shift->{'bitFlag'} & GPBF_ENCRYPTED_MASK;
 }
 
 sub isTextFile {
@@ -491,7 +499,6 @@ sub extractToFileNamed {
         $fh->close();
     } else {
         #return _writeSymbolicLink($self, $name) if $self->isSymbolicLink();
-        return _error("encryption unsupported") if $self->isEncrypted();
         
         my ( $status, $fh );
         if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
@@ -668,6 +675,24 @@ sub _unixToDosTime {
     return $dt;
 }
 
+sub head {
+    my ($self, $mode) = (@_, 0);
+
+    use bytes;
+    return pack LOCAL_FILE_HEADER_FORMAT,
+        $self->versionNeededToExtract(),
+        $self->{'bitFlag'},
+        $self->desiredCompressionMethod(),
+        $self->lastModFileDateTime(),
+        $self->crc32(),
+        $mode
+            ? $self->_writeOffset()     # compressed size
+            : $self->compressedSize(),  # may need to be re-written later
+        $self->uncompressedSize(),
+        length( $self->fileName() ),
+        length( $self->localExtraField() );
+}
+
 # Write my local header to a file handle.
 # Stores the offset to the start of the header in my
 # writeLocalHeaderRelativeOffset member.
@@ -680,22 +705,7 @@ sub _writeLocalFileHeader {
     $self->_print($fh, $signatureData)
       or return _ioError("writing local header signature");
 
-    my $header;
-    {
-        use bytes;
-        $header = pack(
-            LOCAL_FILE_HEADER_FORMAT,
-            $self->versionNeededToExtract(),
-            $self->bitFlag(),
-            $self->desiredCompressionMethod(),
-            $self->lastModFileDateTime(),
-            $self->crc32(),
-            $self->compressedSize(),    # may need to be re-written later
-            $self->uncompressedSize(),
-            length( $self->fileName() ),
-            length( $self->localExtraField() )
-        );
-    }
+    my $header = $self->head(0);
 
     $self->_print($fh, $header) or return _ioError("writing local header");
 
@@ -800,22 +810,7 @@ sub _refreshLocalFileHeader {
         IO::Seekable::SEEK_SET )
       or return _ioError("seeking to rewrite local header");
 
-    my $header;
-    {
-        use bytes;
-        $header = pack(
-            LOCAL_FILE_HEADER_FORMAT,
-            $self->versionNeededToExtract(),
-            $self->bitFlag(),
-            $self->desiredCompressionMethod(),
-            $self->lastModFileDateTime(),
-            $self->crc32(),
-            $self->_writeOffset(),    # compressed size
-            $self->uncompressedSize(),
-            length( $self->fileName() ),
-            length( $self->localExtraField() )
-        );
-    }
+    my $header = $self->head (1);
 
     $self->_print($fh, $header)
       or return _ioError("re-writing local header");
@@ -844,6 +839,7 @@ sub readChunk {
     my ( $bytesRead, $status ) = $self->_readRawChunk( \$buffer, $chunkSize );
     return ( \$buffer, $status ) unless $status == AZ_OK;
 
+    $buffer && $self->isEncrypted and $buffer = $self->_decode ($buffer);
     $self->{'readDataRemaining'} -= $bytesRead;
     $self->{'readOffset'} += $bytesRead;
 
@@ -861,7 +857,7 @@ sub readChunk {
 }
 
 # Read the next raw chunk of my data. Subclasses MUST implement.
-#	my ( $bytesRead, $status) = $self->_readRawChunk( \$buffer, $chunkSize );
+#   my ( $bytesRead, $status) = $self->_readRawChunk( \$buffer, $chunkSize );
 sub _readRawChunk {
     my $self = shift;
     return $self->_subclassResponsibility();
@@ -1039,7 +1035,6 @@ sub contents {
 
 sub extractToFileHandle {
     my $self = shift;
-    return _error("encryption unsupported") if $self->isEncrypted();
     my $fh = ( ref( $_[0] ) eq 'HASH' ) ? shift->{fileHandle} : shift;
     _binmode($fh);
     my $oldCompression = $self->desiredCompressionMethod(COMPRESSION_STORED);
@@ -1135,5 +1130,138 @@ sub _writeData {
 sub _usesFileNamed {
     return 0;
 }
+
+# ##############################################################################
+#
+# Decrypt section
+#
+# H.Merijn Brand (Tux) 2011-06-28
+#
+# ##############################################################################
+
+# This code is derived from the crypt source of unzip-6.0 dated 05 Jan 2007
+# Its license states:
+#
+# --8<---
+# Copyright (c) 1990-2007 Info-ZIP.  All rights reserved.
+
+# See the accompanying file LICENSE, version 2005-Feb-10 or later
+# (the contents of which are also included in (un)zip.h) for terms of use.
+# If, for some reason, all these files are missing, the Info-ZIP license
+# also may be found at:  ftp://ftp.info-zip.org/pub/infozip/license.html
+#
+# crypt.c (full version) by Info-ZIP.      Last revised:  [see crypt.h]
+
+# The main encryption/decryption source code for Info-Zip software was
+# originally written in Europe.  To the best of our knowledge, it can
+# be freely distributed in both source and object forms from any country,
+# including the USA under License Exception TSU of the U.S. Export
+# Administration Regulations (section 740.13(e)) of 6 June 2002.
+
+# NOTE on copyright history:
+# Previous versions of this source package (up to version 2.8) were
+# not copyrighted and put in the public domain.  If you cannot comply
+# with the Info-Zip LICENSE, you may want to look for one of those
+# public domain versions.
+#
+# This encryption code is a direct transcription of the algorithm from
+# Roger Schlafly, described by Phil Katz in the file appnote.txt.  This
+# file (appnote.txt) is distributed with the PKZIP program (even in the
+# version without encryption capabilities).
+# -->8---
+
+# As of January 2000, US export regulations were amended to allow export
+# of free encryption source code from the US.  As of June 2002, these
+# regulations were further relaxed to allow export of encryption binaries
+# associated with free encryption source code.  The Zip 2.31, UnZip 5.52
+# and Wiz 5.02 archives now include full crypto source code.  As of the
+# Zip 2.31 release, all official binaries include encryption support; the
+# former "zcr" archives ceased to exist.
+# (Note that restrictions may still exist in other countries, of course.)
+
+# For now, we just support the decrypt stuff
+# All below methods are supposed to be private
+
+# use Data::Peek;
+
+my @keys;
+my @crct = do {
+    my $xor = 0xedb88320;
+    my @crc = (0) x 1024;
+
+    # generate a crc for every 8-bit value
+    foreach my $n (0 .. 255) {
+        my $c = $n;
+        $c = $c & 1 ? $xor ^ ($c >> 1) : $c >> 1 for 1 .. 8;
+        $crc[$n] = _revbe ($c);
+        }
+
+    # generate crc for each value followed by one, two, and three zeros */
+    foreach my $n (0 .. 255) {
+        my $c = 
+    ($crc[($crc[$n] >> 24) ^ 0] ^ ($crc[$n] << 8)) & 0xffffffff;
+        $crc[$_ * 256 + $n] = $c for 1 .. 3;
+        }
+    map { _revbe ($crc[$_]) } 0 .. 1023;
+    };
+
+sub _crc32
+{
+    my ($c, $b) = @_;
+    return ($crct[($c ^ $b) & 0xff] ^ ($c >> 8));
+    } # _crc32
+
+sub _revbe
+{
+    my $w = shift;
+    return (($w >> 24) + (($w >> 8) & 0xff00) +
+        (($w & 0xff00) << 8) + (($w & 0xff) << 24));
+    } # _revbe
+
+sub _update_keys
+{
+    my $c = shift; # signed int
+    $keys[0] = _crc32 ($keys[0], $c);
+    $keys[1] = (($keys[1] + ($keys[0] & 0xff)) * 0x08088405 + 1) & 0xffffffff;
+    my $keyshift = $keys[1] >> 24;
+    $keys[2] = _crc32 ($keys[2], $keyshift);
+    } # _update_keys
+
+sub _zdecode ($)
+{
+    my $c = shift;
+    my $t = ($keys[2] & 0xffff) | 2;
+    _update_keys ($c ^= ((($t * ($t ^ 1)) >> 8) & 0xff));
+    return $c;
+    } # _zdecode
+
+sub _decode
+{
+    my $self = shift;
+    my $buff = shift;
+
+    $self->isEncrypted or return $buff;
+
+    my $pass = $self->password;
+    defined $pass or return "";
+
+    @keys = (0x12345678, 0x23456789, 0x34567890);
+    _update_keys ($_) for unpack "C*", $pass;
+
+    my $head = substr $buff, 0, 12, "";
+    my @head = map { _zdecode ($_) } unpack "C*", $head;
+    my $x = $self->{externalFileAttributes}
+        ?  ($self->{lastModFileDateTime} >> 8) & 0xff
+        :   $self->{crc32} >> 24;
+    $head[-1] == $x or return "";       # Password fail
+
+    # Worth checking ...
+    $self->{crc32c} = (unpack LOCAL_FILE_HEADER_FORMAT, pack "C*", @head)[3];
+
+    # DHexDump ($buff);
+    $buff = pack "C*" => map { _zdecode ($_) } unpack "C*" => $buff;
+    # DHexDump ($buff);
+    return $buff;
+    } # _decode
 
 1;

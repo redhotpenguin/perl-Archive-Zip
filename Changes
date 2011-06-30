@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.31_03 Thu 30 Jun 2011 - H.Merijn Brand
+	- Add decryption support
+
 1.31_02 Wed 9 Mar 2011 - Adam Kennedy
 	- More fixes by HAGGAI, which he still doesn't detail in Changes
 

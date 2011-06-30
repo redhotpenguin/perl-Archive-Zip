@@ -16,7 +16,7 @@ use FileHandle          ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-    $VERSION = '1.31_02';
+    $VERSION = '1.31_03';
 
     require Exporter;
     @ISA = qw( Exporter );
@@ -1818,11 +1818,25 @@ external files until after the member has been written.
 
 Return the uncompressed size for this member.
 
+=item password( [ $password ] )
+
+Returns the password for this member to be used on decryption.
+If $password is given, it will set the password for the decryption.
+
 =item isEncrypted()
 
 Return true if this member is encrypted. The Archive::Zip
-module does not currently create or extract encrypted
-members.
+module does not currently support creation of encrypted
+members. Decryption works more or less like this:
+
+  my $zip = Archive::Zip->new;
+  $zip->read ("encrypted.zip");
+  for my $m (map { $zip->memberNamed ($_) } $zip->memberNames) {
+      $m->password ("secret");
+      $m->contents;  # is "" when password was wrong
+
+That shows that the password has to be set per member, and not per
+archive. This might change in the future.
 
 =item isTextFile( [ $flag ] )
 
@@ -2043,6 +2057,11 @@ Support for L<IO::Scalar> most likely will B<not> be restored in the
 future, as L<IO::Scalar> itself cannot change the way it is implemented
 due to back-compatibility issues.
 
+=head2 Wrong password for encrypted members
+
+When an encrypted member is read using the wrong password, you currently
+have to re-read the entire archive to try again with the correct password.
+
 =head1 TO DO
 
 * auto-choosing storing vs compression
@@ -2063,6 +2082,10 @@ due to back-compatibility issues.
 * Handle tainted paths correctly
 
 * Work on better compatibility with other IO:: modules
+
+* Support encryption
+
+* More user-friendly decryption
 
 =head1 SUPPORT
 
