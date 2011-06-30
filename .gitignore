@@ -1,0 +1,16 @@
+Archive-Zip-*
+blib
+cover_db
+extracted
+Makefile
+META.yml
+MYMETA.yml
+nytprof*
+pm_to_blib
+pod2htm*
+testdir
+test.log
+.releaserc
+*.old
+*.tar.gz
+*.tgz
