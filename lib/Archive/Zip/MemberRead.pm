@@ -119,7 +119,7 @@ sub set_compression {
 Set the line end character to use. This is set to \n by default
 except on Windows systems where it is set to \r\n. You will
 only need to set this on systems which are not Windows or Unix
-based and require a line end diffrent from \n.
+based and require a line end different from \n.
 This is a class method so call as C<Archive::Zip::MemberRead>->C<setLineEnd($nl)>
 
 =cut
@@ -154,7 +154,7 @@ sub _reset_vars {
 
 =item input_record_separator(expr)
 
-If the argumnet is given, input_record_separator for this
+If the argument is given, input_record_separator for this
 instance is set to it. The current setting (which may be
 the global $/) is always returned.
 

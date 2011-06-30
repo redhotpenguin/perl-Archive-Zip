@@ -473,7 +473,7 @@ sub _readSignature {
 }
 
 # Utility method to make and open a temp file.
-# Will create $temp_dir if it doesn't exist.
+# Will create $temp_dir if it does not exist.
 # Returns file handle and name:
 #
 # my ($fh, $name) = Archive::Zip::tempFile();
@@ -952,7 +952,7 @@ environment variable. But see the L<File::Spec|File::Spec>
 documentation for your system. Note that on many systems, if you're
 running in taint mode, then you must make sure that C<$ENV{TMPDIR}> is
 untainted for it to be used.
-Will I<NOT> create C<$tmpdir> if it doesn't exist (this is a change
+Will I<NOT> create C<$tmpdir> if it does not exist (this is a change
 from prior versions!). Returns file handle and name:
 
     my ($fh, $name) = Archive::Zip::tempFile();
@@ -1084,7 +1084,7 @@ that names be unique within a zip (this is not enforced).
 =item removeMember( { memberOrZipName => $memberOrName } )
 
 Remove and return the given member, or match its name and
-remove it. Returns undef if member or name doesn't exist in this
+remove it. Returns undef if member or name does not exist in this
 Zip. No-op if member does not belong to this zip.
 
 =item replaceMember( $memberOrName, $newMember )
@@ -1094,7 +1094,7 @@ Zip. No-op if member does not belong to this zip.
 
 Remove and return the given member, or match its name and
 remove it. Replace with new member. Returns undef if member or
-name doesn't exist in this Zip, or if C<$newMember> is undefined.
+name does not exist in this Zip, or if C<$newMember> is undefined.
 
 It is an (undiagnosed) error to provide a C<$newMember> that is a
 member of the zip being modified.
@@ -1110,7 +1110,7 @@ member of the zip being modified.
     [, name => $extractedName ] } )
 
 Extract the given member, or match its name and extract it.
-Returns undef if member doesn't exist in this Zip. If
+Returns undef if member does not exist in this Zip. If
 optional second arg is given, use it as the name of the
 extracted member. Otherwise, the internal filename of the
 member is used as the name of the extracted file or
@@ -1127,7 +1127,7 @@ on success.
 
 Extract the given member, or match its name and extract it.
 Does not use path information (extracts into the current
-directory). Returns undef if member doesn't exist in this
+directory). Returns undef if member does not exist in this
 Zip.
 If optional second arg is given, use it as the name of the
 extracted member (its paths will be deleted too). Otherwise,
@@ -1179,7 +1179,7 @@ The text mode bit will be set if the contents appears to be
 text (as returned by the C<-T> perl operator).
 
 
-I<NOTE> that you shouldn't (generally) use absolute path names
+I<NOTE> that you should not (generally) use absolute path names
 in zip member names, as this will cause problems with some zip
 tools as well as introduce a security hole and make the zip
 harder to use.
@@ -1471,13 +1471,13 @@ optional subroutine reference to select files: it is passed
 the name of the prospective file or directory in C<$_>, and
 if it returns true, the file or directory will be included.
 The default is to add all readable files and directories. To
-add all files in and below the current dirctory whose names
+add all files in and below the current directory whose names
 end in C<.pl>, and make them extract into a subdirectory
 named C<xyz>, do this:
 
   $zip->addTreeMatching( '.', 'xyz', '\.pl$' )
 
-To add all I<writable> files in and below the dirctory named
+To add all I<writable> files in and below the directory named
 C</abc> whose names end in C<.pl>, and make them extract into
 a subdirectory named C<xyz>, do this:
 
@@ -1498,7 +1498,7 @@ checks to see whether the file or directory already exists in the zip
 file, and whether it has been changed.
 
 If the fourth argument C<$mirror> is true, then delete all my members
-if corresponding files weren't found.
+if corresponding files were not found.
 
 Returns an error code or AZ_OK if all is well.
 
@@ -1583,7 +1583,7 @@ Returns an error code or AZ_OK if everything worked OK.
 
 =item $Archive::Zip::UNICODE
 
-This variable governs how unicode file and directory names are added
+This variable governs how Unicode file and directory names are added
 to or extracted from an archive. If set, file and directory names are considered
 to be UTF-8 encoded. This is I<EXPERIMENTAL AND BUGGY (there are some edge cases
 on Win32)>. Please report problems.
@@ -1631,7 +1631,7 @@ error.
     [, zipName => $zipname ] } )
 
 Construct a new member from the given directory.
-C<$directoryName> must be a valid name on your file system; it doesn't
+C<$directoryName> must be a valid name on your file system; it does not
 have to exist.
 
 If given, C<$zipname> will be the name of the zip member; it must be a
@@ -1758,7 +1758,7 @@ attributes. Returns old attributes.
 
 Note that the return value has more than just the file
 permissions, so you will have to mask off the lowest bits for
-comparisions.
+comparisons.
 
 =item localExtraField( [ $newField ] )
 
@@ -1925,7 +1925,7 @@ the last chunk, where it returns AZ_STREAM_END. Returns C<(
 
 Rewind data and set up for reading data streams or writing
 zip files. Can take options for C<inflateInit()> or
-C<deflateInit()>, but this isn't likely to be necessary.
+C<deflateInit()>, but this is not likely to be necessary.
 Subclass overrides should call this method. Returns C<AZ_OK>
 on success.
 
@@ -1936,7 +1936,7 @@ Must be called to close files, etc. Returns AZ_OK on success.
 
 =item readIsDone()
 
-Return true if the read has run out of data or errored out.
+Return true if the read has run out of data or encountered an error.
 
 =item contents()
 
@@ -2068,7 +2068,7 @@ have to re-read the entire archive to try again with the correct password.
 
 * extra field hooks (see notes.txt)
 
-* check for dups on addition/renaming?
+* check for duplicates on addition/renaming?
 
 * Text file extraction (line end translation)
 

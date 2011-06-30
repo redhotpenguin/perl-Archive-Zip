@@ -240,7 +240,7 @@ B<A:> You can't uncompress this archive member. Archive::Zip only supports uncom
 members, and compressed members that are compressed using the compression
 supported by Compress::Raw::Zlib. That means only Deflated and Stored members.
 
-Your file is compressed using the Shrink format, which isn't supported by
+Your file is compressed using the Shrink format, which is not supported by
 Compress::Raw::Zlib.
 
 You could, perhaps, use a command-line UnZip program (like the Info-Zip
@@ -341,4 +341,4 @@ See C<examples/readScalar.pl> and C<examples/writeScalar.pl>.
 
 B<Q:> How do I read from a stream (like for the Info-Zip C<funzip> program)?
 
-B<A:> This isn't currently supported, though writing to a stream is.
+B<A:> This is not currently supported, though writing to a stream is.

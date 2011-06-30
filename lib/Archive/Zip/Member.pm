@@ -287,7 +287,7 @@ sub _mapPermissionsFromUnix {
 # See the mapattr() function in unix/unix.c
 # See the attribute format constants in unzpriv.h
 #
-# XXX Note that there's one situation that isn't implemented
+# XXX Note that there's one situation that is not implemented
 # yet that depends on the "extra field."
 sub _mapPermissionsToUnix {
     my $self = shift;
@@ -648,7 +648,7 @@ sub _dosToUnixTime {
     return $time_t;
 }
 
-# Note, this isn't exactly UTC 1980, it's 1980 + 12 hours and 1
+# Note, this is not exactly UTC 1980, it's 1980 + 12 hours and 1
 # minute so that nothing timezoney can muck us up.
 my $safe_epoch = 315576060;
 

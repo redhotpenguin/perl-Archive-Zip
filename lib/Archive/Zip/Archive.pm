@@ -125,7 +125,7 @@ sub zipfileComment {
     my $comment = $self->{'zipfileComment'};
     if (@_) {
         my $new_comment = ( ref( $_[0] ) eq 'HASH' ) ? shift->{comment} : shift;
-        $self->{'zipfileComment'} = pack( 'C0a*', $new_comment );    # avoid unicode
+        $self->{'zipfileComment'} = pack( 'C0a*', $new_comment );    # avoid Unicode
     }
     return $comment;
 }
@@ -947,7 +947,7 @@ sub updateMember {
 # whether the file or directory already exists in the zip file.
 #
 # If the fourth argument $mirror is true, then delete all my members
-# if corresponding files weren't found.
+# if corresponding files were not found.
 
 sub updateTree {
     my $self = shift;
