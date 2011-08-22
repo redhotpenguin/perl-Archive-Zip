@@ -21,6 +21,7 @@ foreach my $pass (qw( wrong test )) {
     isa_ok ($m, "Archive::Zip::Member");
 
     is ($m->password ($pass),	$pass,		"set password");
+    is ($m->password (),	$pass,		"get password");
     is ($m->contents, $pass eq "test"
 			? "encryption test\n"
 			: "",			"Decoded buffer");

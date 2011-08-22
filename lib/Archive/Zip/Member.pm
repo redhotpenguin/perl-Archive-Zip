@@ -810,7 +810,7 @@ sub _refreshLocalFileHeader {
         IO::Seekable::SEEK_SET )
       or return _ioError("seeking to rewrite local header");
 
-    my $header = $self->head (1);
+    my $header = $self->head(1);
 
     $self->_print($fh, $header)
       or return _ioError("re-writing local header");
@@ -839,7 +839,7 @@ sub readChunk {
     my ( $bytesRead, $status ) = $self->_readRawChunk( \$buffer, $chunkSize );
     return ( \$buffer, $status ) unless $status == AZ_OK;
 
-    $buffer && $self->isEncrypted and $buffer = $self->_decode ($buffer);
+    $buffer && $self->isEncrypted and $buffer = $self->_decode($buffer);
     $self->{'readDataRemaining'} -= $bytesRead;
     $self->{'readOffset'} += $bytesRead;
 
@@ -1198,8 +1198,7 @@ my @crct = do {
 
     # generate crc for each value followed by one, two, and three zeros */
     foreach my $n (0 .. 255) {
-        my $c = 
-    ($crc[($crc[$n] >> 24) ^ 0] ^ ($crc[$n] << 8)) & 0xffffffff;
+        my $c = ($crc[($crc[$n] >> 24) ^ 0] ^ ($crc[$n] << 8)) & 0xffffffff;
         $crc[$_ * 256 + $n] = $c for 1 .. 3;
         }
     map { _revbe ($crc[$_]) } 0 .. 1023;
@@ -1220,6 +1219,7 @@ sub _revbe
 
 sub _update_keys
 {
+    use integer;
     my $c = shift; # signed int
     $keys[0] = _crc32 ($keys[0], $c);
     $keys[1] = (($keys[1] + ($keys[0] & 0xff)) * 0x08088405 + 1) & 0xffffffff;
@@ -1247,6 +1247,7 @@ sub _decode
 
     @keys = (0x12345678, 0x23456789, 0x34567890);
     _update_keys ($_) for unpack "C*", $pass;
+    # DDumper { uk => [ @keys ] };
 
     my $head = substr $buff, 0, 12, "";
     my @head = map { _zdecode ($_) } unpack "C*", $head;
