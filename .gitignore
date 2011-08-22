@@ -4,7 +4,9 @@ cover_db
 extracted
 Makefile
 META.yml
+META.json
 MYMETA.yml
+MYMETA.json
 nytprof*
 pm_to_blib
 pod2htm*
