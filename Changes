@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive-Zip
 
+1.31_04 Fri 14 Oct 2011 - Alan Haggai Alavi
+    - Fixes: #68446: Set compressed size and uncompressed size of an entry to 0
+      if either of them is 0.
+
 1.31_03 Thu 30 Jun 2011 - H.Merijn Brand
 	- Add decryption support
 

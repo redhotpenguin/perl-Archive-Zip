@@ -1067,6 +1067,12 @@ sub _writeToFileHandle {
             or $self->desiredCompressionMethod() == COMPRESSION_DEFLATED )
     );
 
+    # Set both compressedSize and uncompressedSize to 0 if either of them is 0
+    if ( $self->uncompressedSize == 0 || $self->uncompressedSize == 0 ) {
+        $self->{'compressedSize'}   = 0;
+        $self->{'uncompressedSize'} = 0;
+    }
+
     my $shouldWriteDataDescriptor =
       ( $headerFieldsUnknown and not $fhIsSeekable );
 
