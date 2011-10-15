@@ -10,7 +10,7 @@ use strict;
 use vars qw{$VERSION};
 
 BEGIN {
-    $VERSION = '1.31_02';
+    $VERSION = '1.31_04';
     $VERSION = eval $VERSION;
 }
 

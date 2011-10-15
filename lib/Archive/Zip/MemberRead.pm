@@ -40,7 +40,7 @@ use vars qw{$VERSION};
 my $nl;
 
 BEGIN {
-    $VERSION = '1.31_02';
+    $VERSION = '1.31_04';
     $VERSION = eval $VERSION;
      # Requirement for newline conversion. Should check for e.g., DOS and OS/2 as well, but am too lazy.
      $nl = $^O eq 'MSWin32' ? "\r\n" : "\n";
