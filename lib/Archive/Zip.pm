@@ -2112,7 +2112,7 @@ Originally by Ned Konz E<lt>nedkonz@cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-Some parts copyright 2006 - 2011 Adam Kennedy.
+Some parts copyright 2006 - 2012 Adam Kennedy.
 
 Some parts copyright 2005 Steve Peters.
 
