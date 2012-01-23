@@ -55,7 +55,7 @@ WriteMakefile1(
 		ZIPFLAGS => '-r'
 	},
 	LICENSE => 'perl',
-	MIN_PERL_VERSION => 5.004,
+	MIN_PERL_VERSION => 5.006,
 	BINARY_LOCATION => $Config{'archname'} . "/\$(DISTVNAME)-PPD.tar\$(SUFFIX)",
 	AUTHOR          => 'Ned Konz <perl@bike-nomad.com>',
 	ABSTRACT_FROM   => 'lib/Archive/Zip.pm',

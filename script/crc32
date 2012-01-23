@@ -2,10 +2,16 @@
 
 # Computes and prints to stdout the CRC-32 values of the given files
 
+use 5.006;
 use strict;
 use lib qw( blib/lib lib );
 use Archive::Zip;
 use FileHandle;
+
+use vars qw( $VERSION );
+BEGIN {
+    $VERSION = '1.31_04';
+}
 
 my $totalFiles = scalar(@ARGV);
 foreach my $file (@ARGV) {

@@ -1,10 +1,7 @@
 package Archive::Zip;
 
+use 5.006;
 use strict;
-BEGIN {
-    require 5.004;
-}
-use UNIVERSAL           ();
 use Carp                ();
 use Cwd                 ();
 use IO::File            ();
@@ -275,6 +272,10 @@ sub _CAN ($$) {
     !! eval { ref $_[0] and $_[0]->can($_[1]) };
 }
 
+
+
+
+
 #####################################################################
 # Methods
 
@@ -320,6 +321,10 @@ sub setErrorHandler {
     $Archive::Zip::ErrorHandler = $errorHandler;
     return $oldErrorHandler;
 }
+
+
+
+
 
 ######################################################################
 # Private utility functions (not methods).
