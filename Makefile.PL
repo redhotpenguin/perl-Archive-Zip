@@ -36,7 +36,7 @@ WriteMakefile1(
 		'Test::More'          => '0.42',
 	},
 	clean => {
-		FILES => join( '', qw{
+		FILES => join( ' ', qw{
 			test.log
 			testdir/*
 			testdir/

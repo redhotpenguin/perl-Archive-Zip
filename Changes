@@ -1,5 +1,7 @@
 Revision history for Perl extension Archive-Zip
 
+        - RT#75197
+
 1.31_04 Fri 14 Oct 2011 - Alan Haggai Alavi
 	- Updated Perl dependency to 5.006 to reflect implicit dependencies
 	  in the code exposed by Perl::MinimumVersion xt test (ADAMK)
