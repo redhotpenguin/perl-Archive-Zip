@@ -2049,7 +2049,7 @@ easier to use and factors out archive-specific functionality.
 =head2 Try to avoid IO::Scalar
 
 One of the most common ways to use Archive::Zip is to generate Zip files
-in-memory. Most people have use L<IO::Scalar> for this purpose.
+in-memory. Most people use L<IO::Scalar> for this purpose.
 
 Unfortunately, as of 1.11 this module no longer works with L<IO::Scalar>
 as it incorrectly implements seeking.
