@@ -1,6 +1,7 @@
 Revision history for Perl extension Archive-Zip
 
-        - RT#75197
+    - RT#75197
+    - Fixes: #76780: Cannot create member called "0" with addString (HAGGAI)
 
 1.31_04 Fri 14 Oct 2011 - Alan Haggai Alavi
 	- Updated Perl dependency to 5.006 to reflect implicit dependencies

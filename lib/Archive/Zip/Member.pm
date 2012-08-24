@@ -229,7 +229,7 @@ sub desiredCompressionLevel {
 sub fileName {
     my $self    = shift;
     my $newName = shift;
-    if ($newName) {
+    if ( defined $newName ) {
         $newName =~ s{[\\/]+}{/}g;    # deal with dos/windoze problems
         $self->{'fileName'} = $newName;
     }
