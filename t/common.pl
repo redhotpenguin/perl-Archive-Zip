@@ -7,7 +7,7 @@ use constant OUTPUTZIP => 'testout.zip';
 
 # Do we have the 'zip' and 'unzip' programs?
 # Embed a copy of the module, rather than adding a dependency
-SCOPE: {
+BEGIN {
 	package File::Which;
 
 	use File::Spec;
