@@ -64,6 +64,7 @@ is( $output, ZFILENAME . ":100\n" );
 # removed because requires IO::Scalar
 # ok( runPerlCommand('examples/readScalar.pl'), 0 );
 
+unlink(OUTPUTZIP);
 is( runPerlCommand( 'examples/selfex.pl', OUTPUTZIP, FILENAME ), 0 );
 unlink(FILENAME);
 is( runPerlCommand(OUTPUTZIP), 0 );
@@ -78,6 +79,7 @@ is( -f $fn, 1, "$fn exists" );
 # zipcheck.pl
 # ziprecent.pl
 
+unlink(OUTPUTZIP);
 is( runPerlCommand( 'examples/updateTree.pl', OUTPUTZIP, TESTDIR ), 0, "updateTree.pl create" );
 is( -f OUTPUTZIP, 1, "zip created" );
 is( runPerlCommand( 'examples/updateTree.pl', OUTPUTZIP, TESTDIR ), 0, "updateTree.pl update" );

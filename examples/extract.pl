@@ -27,7 +27,6 @@ EOF
 
 my $zip = Archive::Zip->new();
 my $zipName = shift(@ARGV);
-warn $zipName;
 my $status = $zip->read( $zipName );
 die "Read of $zipName failed\n" if $status != AZ_OK;
 
