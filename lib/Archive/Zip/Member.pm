@@ -1,6 +1,6 @@
 package Archive::Zip::Member;
 
-# A generic membet of an archive
+# A generic member of an archive
 
 use strict;
 use vars qw( $VERSION @ISA );

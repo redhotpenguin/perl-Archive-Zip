@@ -40,8 +40,8 @@ sub new {
         {
             'diskNumber'                            => 0,
             'diskNumberWithStartOfCentralDirectory' => 0,
-            'numberOfCentralDirectoriesOnThisDisk'  => 0, # shld be # of members
-            'numberOfCentralDirectories'            => 0, # shld be # of members
+            'numberOfCentralDirectoriesOnThisDisk'  => 0, # should be # of members
+            'numberOfCentralDirectories'            => 0, # should be # of members
             'centralDirectorySize' => 0,    # must re-compute on write
             'centralDirectoryOffsetWRTStartingDiskNumber' =>
               0,                            # must re-compute

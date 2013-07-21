@@ -268,7 +268,7 @@ sub _readLocalFileHeader {
 }
 
 # This will read the data descriptor, which is after the end of compressed file
-# data in members that that have GPBF_HAS_DATA_DESCRIPTOR_MASK set in their
+# data in members that have GPBF_HAS_DATA_DESCRIPTOR_MASK set in their
 # bitFlag.
 # The only reliable way to find these is to rely on the EOCD compressedSize.
 # Assumes that file is positioned immediately after the compressed data.
