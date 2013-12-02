@@ -2,7 +2,7 @@ Revision history for Perl extension Archive-Zip
 
 
 1.34 Mon 2 Dec 2013
-    - Restore svn history from svn.ali.as (thanks H. Merijn Brand
+    - Restore svn history from svn.ali.as (thanks H. Merijn Brand)
     - #90854 Test 17 in t/03_ex.t is failing
     - Allow reading ZIP from seekable streams (like PerlIO::Scalar)
     - RT#75197
