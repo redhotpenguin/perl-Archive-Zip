@@ -9,8 +9,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile1(
 	META_MERGE => {
 		resources => {
-			repository => 'http://svn.ali.as/cpan/trunk/Archive-Zip',
-			bugtracker => 'http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Archive-Zip',
+			repository => 'https://github.com/redhotpenguin/perl-Archive-Zip-svn',
 		},
 	},
 	NAME          => 'Archive::Zip',

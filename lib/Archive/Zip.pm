@@ -13,7 +13,7 @@ use FileHandle          ();
 
 use vars qw( $VERSION @ISA );
 BEGIN {
-    $VERSION = '1.31_04';
+    $VERSION = '1.34';
 
     require Exporter;
     @ISA = qw( Exporter );
@@ -489,7 +489,7 @@ sub tempFile {
     my $dir = ( ref( $_[0] ) eq 'HASH' ) ? shift->{tempDir} : shift;
     my ( $fh, $filename ) = File::Temp::tempfile(
         SUFFIX => '.zip',
-        UNLINK => 0,        # we will delete it!
+        UNLINK => 1,
         $dir ? ( DIR => $dir ) : ()
     );
     return ( undef, undef ) unless $fh;

@@ -4,7 +4,7 @@ use strict;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.31_04';
+    $VERSION = '1.34';
     @ISA     = qw ( Archive::Zip::FileMember );
 }
 
@@ -268,8 +268,7 @@ sub _readLocalFileHeader {
 }
 
 # This will read the data descriptor, which is after the end of compressed file
-# data in members that have GPBF_HAS_DATA_DESCRIPTOR_MASK set in their
-# bitFlag.
+# data in members that have GPBF_HAS_DATA_DESCRIPTOR_MASK set in their bitFlag.
 # The only reliable way to find these is to rely on the EOCD compressedSize.
 # Assumes that file is positioned immediately after the compressed data.
 # Returns status; sets crc32, compressedSize, and uncompressedSize.
