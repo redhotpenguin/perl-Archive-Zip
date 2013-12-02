@@ -376,28 +376,22 @@ sub _binmode {
 sub _isSeekable {
     my $fh = shift;
     return 0 unless ref $fh;
-    if ( _ISA($fh, 'IO::Scalar') ) {
-        # IO::Scalar objects are brokenly-seekable
-        return 0;
-    }
-    if ( _ISA($fh, 'IO::String') ) {
-        return 1;
-    }
-    if ( _ISA($fh, 'IO::Seekable') ) {
+    _ISA ($fh, "IO::Scalar") # IO::Scalar objects are brokenly-seekable
+        and return 0;
+    _ISA ($fh, "IO::String")
+        and return 1;
+    if (_ISA ($fh, "IO::Seekable")) {
         # Unfortunately, some things like FileHandle objects
         # return true for Seekable, but AREN'T!!!!!
-        if ( _ISA($fh, 'FileHandle') ) {
-            return 0;
-        } else {
-            return 1;
-        }
+        _ISA ($fh, "FileHandle")
+            and return 0;
+       return 1;
     }
-    if ( _CAN($fh, 'stat') ) {
-        return -f $fh;
-    }
-    return (
-        _CAN($fh, 'seek') and _CAN($fh, 'tell')
-        ) ? 1 : 0;
+    # open my $fh, "+<", \$data;
+    ref $fh eq "GLOB" && eval { seek $fh, 0, 1 } and return 1;
+    _CAN ($fh, "stat")
+        and return -f $fh;
+    return (_CAN ($fh, "seek") and _CAN ($fh, "tell")) ? 1 : 0;
 }
 
 # Print to the filehandle, while making sure the pesky Perl special global
@@ -1376,13 +1370,21 @@ Read zipfile headers from an already-opened file handle,
 appending new members. Does not close the file handle.
 Returns C<AZ_OK> or error code. Note that this requires a
 seekable file handle; reading from a stream is not yet
-supported.
+supported, but using in-memory data is.
 
     my $fh = IO::File->new( '/some/FileName.zip', 'r' );
     my $zip1 = Archive::Zip->new();
     my $status = $zip1->readFromFileHandle( $fh );
     my $zip2 = Archive::Zip->new();
     $status = $zip2->readFromFileHandle( $fh );
+
+Read zip using in-memory data (recursable):
+
+    open my $fh, "<", "archive.zip" or die $!;
+    my $zip_data = do { local $.; <$fh> };
+    my $zip = Archive::Zip->new;
+    open my $dh, "+<", \$zip_data;
+    $zip->readFromFileHandle ($dh);
 
 =back
 
@@ -2102,7 +2104,9 @@ For other issues contact the maintainer
 
 =head1 AUTHOR
 
-Adam Kennedy E<lt>adamk@cpan.orgE<gt>
+Currently maintained by Fred Moyer <fred@redhotpenguin.com>
+
+Previously maintained by Adam Kennedy <adamk@cpan.org>
 
 Previously maintained by Steve Peters E<lt>steve@fisharerojo.orgE<gt>.
 
