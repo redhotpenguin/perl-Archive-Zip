@@ -481,7 +481,7 @@ sub overwriteAs {
     }
 
     # move the temp to the original name (possibly copying)
-    unless ( File::Copy::move( $tempName, $zipName ) ) {
+    unless ( File::Copy::move( $tempName, $zipName ) || File::Copy::copy( $tempName, $zipName) ) {
         $err = $!;
         rename( $backupName, $zipName );
         unlink($tempName);
