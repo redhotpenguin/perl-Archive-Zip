@@ -6,7 +6,7 @@ use strict;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.34';
+    $VERSION = '1.35';
     @ISA     = qw( Archive::Zip );
 
     if ( $^O eq 'MSWin32' ) {
@@ -1251,7 +1251,7 @@ sub _decode
     my $pass = $self->password;
     defined $pass or return "";
 
-    @keys = (0x12345678, 0x23456789, 0x34567890);
+    @keys = (0x1.355678, 0x23456789, 0x34567890);
     _update_keys ($_) for unpack "C*", $pass;
     # DDumper { uk => [ @keys ] };
 
