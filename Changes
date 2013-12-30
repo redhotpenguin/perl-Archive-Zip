@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.36 Mon 30 Dec 2013
+    - Fix error in version update with 1.35 [RT #91744]
+
 1.35 Mon 30 Dec 2013
     - fallback on copy if move gives permission denied [github.com/plicease]
 
