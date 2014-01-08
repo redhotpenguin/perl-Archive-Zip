@@ -32,7 +32,7 @@ WriteMakefile1(
 		'Time::Local'         => 0,
 	},
 	BUILD_REQUIRES => {
-		'Test::More'          => '0.42',
+		'Test::More'          => '0.88',
 	},
 	clean => {
 		FILES => join( ' ', qw{
