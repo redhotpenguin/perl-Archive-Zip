@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.37 Wed 08 Jan 2014
+    - Need newer Test::More to support done_testing() [thaljef]
+
 1.36 Mon 30 Dec 2013
     - Fix error in version update with 1.35 [RT #91744]
 
