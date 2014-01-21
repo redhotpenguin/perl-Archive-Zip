@@ -2,9 +2,12 @@ use strict;
 # Shared defs for test programs
 
 # Paths. Must make case-insensitive.
-use constant TESTDIR   => 'testdir';
-use constant INPUTZIP  => 'testin.zip';
-use constant OUTPUTZIP => 'testout.zip';
+use File::Temp qw(tempfile tempdir);
+use File::Spec;
+BEGIN { mkdir 'testdir' }
+use constant TESTDIR   => File::Spec->abs2rel(tempdir(DIR => 'testdir', CLEANUP => 1));
+use constant INPUTZIP  => (tempfile('testin-XXXXX', SUFFIX => '.zip', TMPDIR => 1, UNLINK => 1))[1];
+use constant OUTPUTZIP => (tempfile('testout-XXXXX', SUFFIX => '.zip', TMPDIR => 1, UNLINK => 1))[1];
 
 # Do we have the 'zip' and 'unzip' programs?
 # Embed a copy of the module, rather than adding a dependency
