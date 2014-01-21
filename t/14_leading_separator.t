@@ -23,10 +23,9 @@ use File::Spec ();
 use t::common;
 
 my $file_relative_path = File::Spec->catfile( TESTDIR, 'file.txt' );
-my $file_absolute_path = File::Spec->catfile(
-    Cwd::getcwd(),
-    $file_relative_path
-);
+open FH, ">$file_relative_path";
+close FH;
+my $file_absolute_path = File::Spec->rel2abs($file_relative_path);
 
 my $az = Archive::Zip->new();
 $az->addFile($file_absolute_path);
