@@ -21,9 +21,9 @@ sub get_perm
 
 sub test_if_chmod_is_working
 {
-    my $test_dir = File::Spec->catdir(
-        File::Spec->curdir(), "testdir", "chtest"
-    );
+    my $test_dir = File::Spec->rel2abs(File::Spec->catdir(
+        TESTDIR, "chtest"
+    ));
 
     my $test_file = File::Spec->catfile($test_dir, "test.file");
 

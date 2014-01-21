@@ -22,7 +22,7 @@ use File::Spec ();
 
 use t::common;
 
-my $file_relative_path = File::Spec->catfile( 'testdir', 'file.txt' );
+my $file_relative_path = File::Spec->catfile( TESTDIR, 'file.txt' );
 my $file_absolute_path = File::Spec->catfile(
     Cwd::getcwd(),
     $file_relative_path

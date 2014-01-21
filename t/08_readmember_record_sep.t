@@ -20,7 +20,7 @@ BEGIN {
 use t::common;
 
 SCOPE: {
-    my $filename = File::Spec->catfile('testdir', "member_read_xml_like1.zip");
+    my $filename = File::Spec->catfile(TESTDIR, "member_read_xml_like1.zip");
     my $zip  = new Archive::Zip;
     # TEST
     isa_ok( $zip, "Archive::Zip", 

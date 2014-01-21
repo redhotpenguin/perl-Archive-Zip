@@ -20,21 +20,21 @@ use File::Spec;
 
 use t::common;
 
-mkpath( [ File::Spec->catdir( 'testdir', 'folder' ) ] );
+mkpath( [ File::Spec->catdir( TESTDIR, 'folder' ) ] );
 
-my $zero_file = File::Spec->catfile( 'testdir', 'folder', "0" );
+my $zero_file = File::Spec->catfile( TESTDIR, 'folder', "0" );
 open( O, ">$zero_file" );
 print O "File 0\n";
 close(O);
 
-my $one_file = File::Spec->catfile( 'testdir', 'folder', '1' );
+my $one_file = File::Spec->catfile( TESTDIR, 'folder', '1' );
 open( O, ">$one_file" );
 print O "File 1\n";
 close(O);
 
 my $archive = Archive::Zip->new;
 
-$archive->addTree( File::Spec->catfile( 'testdir', 'folder' ), 'folder', );
+$archive->addTree( File::Spec->catfile( TESTDIR, 'folder' ), 'folder', );
 
 # TEST
 ok(
@@ -42,7 +42,7 @@ ok(
     "Checking that a file called '0' was added properly"
 );
 
-rmtree( [ File::Spec->catdir( 'testdir', 'folder' ) ] );
+rmtree( [ File::Spec->catdir( TESTDIR, 'folder' ) ] );
 
 # Cannot create member called "0" with addString
 {
