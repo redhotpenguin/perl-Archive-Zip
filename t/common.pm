@@ -113,6 +113,7 @@ use constant ZIPTEST => 'unzip -t ';
 use constant TESTSTRING       => join ( "\n", 1 .. 102 ) . "\n";
 use constant TESTSTRINGLENGTH => length(TESTSTRING);
 
+use Archive::Zip ();
 # CRC-32 should be ac373f32
 use constant TESTSTRINGCRC => Archive::Zip::computeCRC32(TESTSTRING);
 

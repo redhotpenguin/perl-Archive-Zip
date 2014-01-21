@@ -10,6 +10,8 @@ use File::Spec;
 use File::Path;
 use Archive::Zip;
 
+use t::common;
+
 sub get_perm
 {
     my $filename = shift;

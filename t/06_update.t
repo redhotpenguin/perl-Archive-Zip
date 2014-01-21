@@ -13,11 +13,7 @@ use File::Find ();
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 use Test::More tests => 12;
-BEGIN {
-    unshift @INC, "t/"; 
-    require( File::Spec->catfile('t', 'common.pl') )
-		or die "Can't load t/common.pl";
-}
+use t::common;
 
 my ($testFileVolume, $testFileDirs, $testFileName) = File::Spec->splitpath($0);
 

@@ -10,11 +10,7 @@ use File::Spec;
 use IO::File;
 
 use Test::More tests => 17;
-BEGIN {
-    unshift @INC, "t/"; 
-    require( File::Spec->catfile('t', 'common.pl') )
-		or die "Can't load t/common.pl";
-}
+use t::common;
 
 sub runPerlCommand
 {

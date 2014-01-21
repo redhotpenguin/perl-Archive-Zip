@@ -18,11 +18,7 @@ use Archive::Zip;
 use File::Path;
 use File::Spec;
 
-BEGIN {
-    unshift @INC, "t/"; 
-    require( File::Spec->catfile('t', 'common.pl') )
-        or die "Can't load t/common.pl";
-}
+use t::common;
 
 mkpath( [ File::Spec->catdir( 'testdir', 'folder' ) ] );
 

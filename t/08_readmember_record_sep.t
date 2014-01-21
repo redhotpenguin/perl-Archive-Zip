@@ -16,11 +16,8 @@ BEGIN {
 	} else {
 		plan( tests => 13 );
 	}
-
-	unshift @INC, "t/"; 
-	require( File::Spec->catfile('t', 'common.pl') )
-		or die "Can't load t/common.pl";
 }
+use t::common;
 
 SCOPE: {
     my $filename = File::Spec->catfile('testdir', "member_read_xml_like1.zip");

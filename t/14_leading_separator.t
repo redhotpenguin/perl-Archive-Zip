@@ -20,6 +20,8 @@ use Archive::Zip;
 use Cwd        ();
 use File::Spec ();
 
+use t::common;
+
 my $file_relative_path = File::Spec->catfile( 'testdir', 'file.txt' );
 my $file_absolute_path = File::Spec->catfile(
     Cwd::getcwd(),

@@ -12,11 +12,7 @@ use FileHandle;
 use File::Spec;
 
 use Test::More tests =>6;
-BEGIN {
-    unshift @INC, "t/"; 
-    require( File::Spec->catfile('t', 'common.pl') )
-		or die "Can't load t/common.pl";
-}
+use t::common;
 
 use constant FILENAME => File::Spec->catfile(TESTDIR, 'testing.txt');
 
