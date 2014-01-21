@@ -1,3 +1,4 @@
+use strict;
 # Shared defs for test programs
 
 # Paths. Must make case-insensitive.
@@ -178,7 +179,7 @@ BEGIN {
 	# Do we have zip installed?
 	if ( HAVEZIP ) {
 		my $cmd    = ZIP . INPUTZIP . ' *' . ( $^O eq 'MSWin32' ? '' : ' 2>&1' );
-		$zipout = `$cmd`;
+		my $zipout = `$cmd`;
 		$zipWorks  = not $?;
 		unless ( $zipWorks ) {
 			warn( 'warning: ', ZIP, " doesn't seem to work, may skip some tests" );
