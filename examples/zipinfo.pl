@@ -76,7 +76,7 @@ foreach my $n (0 .. $numberOfMembers - 1) {
         print "Found central directory for member #$index at $cdPos\n";
         $fh->seek($cdPos + SIGNATURE_LENGTH, 0);    # SEEK_SET
         my $newMember =
-          $zip->ZIPMEMBERCLASS->_newFromZipFile($fh, "($zipFileName)");
+          Archive::Zip::Member->_newFromZipFile($fh, "($zipFileName)");
         $status = $newMember->_readCentralDirectoryFileHeader();
         if ($status != AZ_OK and $status != AZ_STREAM_END) {
             printf "read CD header status=%d\n", $status;

@@ -29,11 +29,6 @@ use Compress::Raw::Zlib qw( Z_OK Z_STREAM_END MAX_WBITS );
 use File::Path;
 use File::Basename;
 
-use constant ZIPFILEMEMBERCLASS   => 'Archive::Zip::ZipFileMember';
-use constant NEWFILEMEMBERCLASS   => 'Archive::Zip::NewFileMember';
-use constant STRINGMEMBERCLASS    => 'Archive::Zip::StringMember';
-use constant DIRECTORYMEMBERCLASS => 'Archive::Zip::DirectoryMember';
-
 # Unix perms for default creation of files/dirs.
 use constant DEFAULT_DIRECTORY_PERMISSIONS => 040755;
 use constant DEFAULT_FILE_PERMISSIONS      => 0100666;
@@ -45,7 +40,7 @@ use constant FILE_ATTRIB                   => 0100000;
 # Leaves fh positioned immediately after file header or EOCD signature.
 sub _newFromZipFile {
     my $class = shift;
-    my $self  = $class->ZIPFILEMEMBERCLASS->_newFromZipFile(@_);
+    my $self  = Archive::Zip::ZipFileMember->_newFromZipFile(@_);
     return $self;
 }
 
@@ -61,7 +56,7 @@ sub newFromString {
     }
 
     my $self =
-      $class->STRINGMEMBERCLASS->_newFromString($stringOrStringRef, $fileName);
+      Archive::Zip::StringMember->_newFromString($stringOrStringRef, $fileName);
     return $self;
 }
 
@@ -77,7 +72,7 @@ sub newFromFile {
     }
 
     my $self =
-      $class->NEWFILEMEMBERCLASS->_newFromFileNamed($fileName, $zipName);
+      Archive::Zip::NewFileMember->_newFromFileNamed($fileName, $zipName);
     return $self;
 }
 
@@ -93,7 +88,7 @@ sub newDirectoryNamed {
     }
 
     my $self =
-      $class->DIRECTORYMEMBERCLASS->_newNamed($directoryName, $newName);
+      Archive::Zip::DirectoryMember->_newNamed($directoryName, $newName);
     return $self;
 }
 
@@ -129,7 +124,7 @@ sub new {
 
 sub _becomeDirectoryIfNecessary {
     my $self = shift;
-    $self->_become(DIRECTORYMEMBERCLASS)
+    $self->_become('Archive::Zip::DirectoryMember')
       if $self->isDirectory();
     return $self;
 }
@@ -988,7 +983,7 @@ sub contents {
     if (defined($newContents)) {
 
         # change our type and call the subclass contents method.
-        $self->_become(STRINGMEMBERCLASS);
+        $self->_become('Archive::Zip::StringMember');
         return $self->contents(pack('C0a*', $newContents)); # in case of Unicode
     } else {
         my $oldCompression =

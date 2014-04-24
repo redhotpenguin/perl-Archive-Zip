@@ -270,9 +270,6 @@ require Archive::Zip::ZipFileMember;
 require Archive::Zip::NewFileMember;
 require Archive::Zip::StringMember;
 
-use constant ZIPARCHIVECLASS => 'Archive::Zip::Archive';
-use constant ZIPMEMBERCLASS  => 'Archive::Zip::Member';
-
 # Convenience functions
 
 sub _ISA ($$) {
@@ -292,7 +289,7 @@ sub _CAN ($$) {
 
 sub new {
     my $class = shift;
-    return $class->ZIPARCHIVECLASS->new(@_);
+    return Archive::Zip::Archive->new(@_);
 }
 
 sub computeCRC32 {

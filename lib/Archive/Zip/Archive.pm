@@ -253,11 +253,11 @@ sub addFile {
         $fileName = Win32::GetANSIPathName($fileName);
     }
 
-    my $newMember = $self->ZIPMEMBERCLASS->newFromFile($fileName, $newName);
+    my $newMember = Archive::Zip::Member->newFromFile($fileName, $newName);
     $newMember->desiredCompressionLevel($compressionLevel);
     if ($self->{'storeSymbolicLink'} && -l $fileName) {
         my $newMember =
-          $self->ZIPMEMBERCLASS->newFromString(readlink $fileName, $newName);
+          Archive::Zip::Member->newFromString(readlink $fileName, $newName);
 
   # For symbolic links, External File Attribute is set to 0xA1FF0000 by Info-ZIP
         $newMember->{'externalFileAttributes'} = 0xA1FF0000;
@@ -285,7 +285,7 @@ sub addString {
     }
 
     my $newMember =
-      $self->ZIPMEMBERCLASS->newFromString($stringOrStringRef, $name);
+      Archive::Zip::Member->newFromString($stringOrStringRef, $name);
     $newMember->desiredCompressionLevel($compressionLevel);
     return $self->addMember($newMember);
 }
@@ -305,11 +305,11 @@ sub addDirectory {
         $name = Win32::GetANSIPathName($name);
     }
 
-    my $newMember = $self->ZIPMEMBERCLASS->newDirectoryNamed($name, $newName);
+    my $newMember = Archive::Zip::Member->newDirectoryNamed($name, $newName);
     if ($self->{'storeSymbolicLink'} && -l $name) {
         my $link = readlink $name;
         ($newName =~ s{/$}{}) if $newName;    # Strip trailing /
-        my $newMember = $self->ZIPMEMBERCLASS->newFromString($link, $newName);
+        my $newMember = Archive::Zip::Member->newFromString($link, $newName);
 
   # For symbolic links, External File Attribute is set to 0xA1FF0000 by Info-ZIP
         $newMember->{'externalFileAttributes'} = 0xA1FF0000;
@@ -613,7 +613,7 @@ sub readFromFileHandle {
 
     for (; ;) {
         my $newMember =
-          $self->ZIPMEMBERCLASS->_newFromZipFile($fh, $fileName,
+          Archive::Zip::Member->_newFromZipFile($fh, $fileName,
             $self->eocdOffset());
         my $signature;
         ($status, $signature) = _readSignature($fh, $fileName);
@@ -904,8 +904,8 @@ sub updateMember {
         # create the new member
         my $newMember =
             $isDir
-          ? $self->ZIPMEMBERCLASS->newDirectoryNamed($fileName, $memberName)
-          : $self->ZIPMEMBERCLASS->newFromFile($fileName, $memberName);
+          ? Archive::Zip::Member->newDirectoryNamed($fileName, $memberName)
+          : Archive::Zip::Member->newFromFile($fileName, $memberName);
 
         unless (defined($newMember)) {
             _error("creation of member $fileName failed in updateMember()");
