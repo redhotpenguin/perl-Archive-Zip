@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive-Zip
 
+
+    - store test data in temp dirs to fix parallelism and shuffling
+      [Graham Knop]
+
 1.38 Tue 02 Sep 2014
     - Setting unicode flag for each member when using $Archive::Zip::UNICODE [github.com/lackas]
       https://rt.cpan.org/Ticket/Display.html?id=83367
