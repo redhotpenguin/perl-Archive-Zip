@@ -10,18 +10,17 @@ package NedsFileHandle;
 use vars qw(@ISA);
 @ISA = qw( Archive::Zip::MockFileHandle );
 
-sub writeHook
-{
-	my $self = shift;
-	my $bytes = shift;
-	my $length = length($bytes);
-	printf "write %d bytes (position now %d)\n", $length, $self->tell();
-	return $length;
+sub writeHook {
+    my $self   = shift;
+    my $bytes  = shift;
+    my $length = length($bytes);
+    printf "write %d bytes (position now %d)\n", $length, $self->tell();
+    return $length;
 }
 
 package main;
 
-my $zip = Archive::Zip->new();
+my $zip    = Archive::Zip->new();
 my $status = $zip->read($ARGV[0]);
 exit $status if $status != AZ_OK;
 
