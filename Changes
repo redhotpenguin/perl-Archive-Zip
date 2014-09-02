@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive-Zip
 
+1.38 Tue 02 Sep 2014
+    - Setting unicode flag for each member when using $Archive::Zip::UNICODE [github.com/lackas]
+      https://rt.cpan.org/Ticket/Display.html?id=83367
+
 1.37 Wed 08 Jan 2014
     - Need newer Test::More to support done_testing() [thaljef]
 
