@@ -10,17 +10,28 @@ perl:
    - "5.8"
 
 matrix:
+   include:
+      - perl: 5.18
+        env: COVERAGE=1      
    allow_failures:
-      - perl: 'blead'
+      - perl: "blead"
+
+   - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+   - source ~/travis-perl-helpers/init
+   - build-perl
+   - perl -V
+   - build-dist
+   - cd $BUILD_DIR             
 
 install:
-   - export RELEASE_TESTING=1 AUTOMATED_TESTING=1 AUTHOR_TESTING=1 HARNESS_OPTIONS=j10:c HARNESS_TIMER=1
-   - cpanm --quiet --notest Devel::Cover::Report::Coveralls
-   - cpanm --quiet --notest --installdeps .
+   - cpan-install --deps
+   - cpan-install --coverage
+
+before_script:
+   - coverage-setup
 
 script:
-   - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv t
-   - cover
+   - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv -j$((SYSTEM_CORES + 1)) $(test-dirs) t
 
 after_success:
-  - cover -report coveralls
+   - coverage-report
