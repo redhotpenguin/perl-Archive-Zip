@@ -32,7 +32,7 @@ before_script:
    - coverage-setup
 
 script:
-   - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv -j$((SYSTEM_CORES + 1)) $(test-dirs) t
+   - prove -lrsv -j$((SYSTEM_CORES + 1)) $(test-dirs) t
 
 after_success:
    - coverage-report
