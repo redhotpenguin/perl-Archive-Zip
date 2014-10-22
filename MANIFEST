@@ -1,5 +1,3 @@
-.aspell.local.pws
-.exrc
 Changes
 examples/calcSizes.pl
 examples/copy.pl
@@ -53,7 +51,7 @@ t/15_decrypt.t
 t/16_decrypt.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
-t/common.pl
+t/common.pm
 t/data/chmod.zip
 t/data/crypcomp.zip
 t/data/crypt.zip
