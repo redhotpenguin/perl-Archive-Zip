@@ -17,24 +17,23 @@ use Getopt::Std;
 $opt_j = 0;
 getopts('j');
 
-if (@ARGV < 2)
-{
-	die <<EOF
+if (@ARGV < 2) {
+    die <<EOF
 	usage: perl extract.pl [-j] zipfile.zip filename [...]
 	if -j option given, discards paths.
 EOF
 }
 
-my $zip = Archive::Zip->new();
+my $zip     = Archive::Zip->new();
 my $zipName = shift(@ARGV);
-my $status = $zip->read( $zipName );
+my $status  = $zip->read($zipName);
 die "Read of $zipName failed\n" if $status != AZ_OK;
 
-foreach my $memberName (@ARGV)
-{
-	print "Extracting $memberName\n";
-	$status = $opt_j 
-		? $zip->extractMemberWithoutPaths($memberName)
-		: $zip->extractMember($memberName);
-	die "Extracting $memberName from $zipName failed\n" if $status != AZ_OK;
+foreach my $memberName (@ARGV) {
+    print "Extracting $memberName\n";
+    $status =
+        $opt_j
+      ? $zip->extractMemberWithoutPaths($memberName)
+      : $zip->extractMember($memberName);
+    die "Extracting $memberName from $zipName failed\n" if $status != AZ_OK;
 }

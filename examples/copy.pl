@@ -6,7 +6,7 @@
 use Archive::Zip qw(:ERROR_CODES);
 
 die "usage: perl copy.pl input.zip output.zip\n"
-	if scalar(@ARGV) != 2;
+  if scalar(@ARGV) != 2;
 
 my $zip = Archive::Zip->new();
 

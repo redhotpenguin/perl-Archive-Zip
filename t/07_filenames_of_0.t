@@ -18,41 +18,37 @@ use Archive::Zip;
 use File::Path;
 use File::Spec;
 
-BEGIN {
-    unshift @INC, "t/"; 
-    require( File::Spec->catfile('t', 'common.pl') )
-        or die "Can't load t/common.pl";
-}
+use t::common;
 
-mkpath( [ File::Spec->catdir( 'testdir', 'folder' ) ] );
+mkpath([File::Spec->catdir(TESTDIR, 'folder')]);
 
-my $zero_file = File::Spec->catfile( 'testdir', 'folder', "0" );
-open( O, ">$zero_file" );
+my $zero_file = File::Spec->catfile(TESTDIR, 'folder', "0");
+open(O, ">$zero_file");
 print O "File 0\n";
 close(O);
 
-my $one_file = File::Spec->catfile( 'testdir', 'folder', '1' );
-open( O, ">$one_file" );
+my $one_file = File::Spec->catfile(TESTDIR, 'folder', '1');
+open(O, ">$one_file");
 print O "File 1\n";
 close(O);
 
 my $archive = Archive::Zip->new;
 
-$archive->addTree( File::Spec->catfile( 'testdir', 'folder' ), 'folder', );
+$archive->addTree(File::Spec->catfile(TESTDIR, 'folder'), 'folder',);
 
 # TEST
 ok(
-    scalar( grep { $_ eq "folder/0" } $archive->memberNames() ),
+    scalar(grep { $_ eq "folder/0" } $archive->memberNames()),
     "Checking that a file called '0' was added properly"
 );
 
-rmtree( [ File::Spec->catdir( 'testdir', 'folder' ) ] );
+rmtree([File::Spec->catdir(TESTDIR, 'folder')]);
 
 # Cannot create member called "0" with addString
 {
     # Create member "0" with addString
     my $archive = Archive::Zip->new;
-    my $string_member = $archive->addString( TESTSTRING => 0 );
+    my $string_member = $archive->addString(TESTSTRING => 0);
     $archive->writeToFileNamed(OUTPUTZIP);
 }
 
@@ -60,9 +56,8 @@ rmtree( [ File::Spec->catdir( 'testdir', 'folder' ) ] );
 
     # Read member "0"
     my $archive = Archive::Zip->new;
-    is( $archive->read(OUTPUTZIP), Archive::Zip::AZ_OK );
-    ok( scalar( grep { $_ eq "0" } $archive->memberNames() ),
-        "Checking that a file called '0' was added properly by addString"
-    );
+    is($archive->read(OUTPUTZIP), Archive::Zip::AZ_OK);
+    ok(scalar(grep { $_ eq "0" } $archive->memberNames()),
+        "Checking that a file called '0' was added properly by addString");
 }
 unlink(OUTPUTZIP);

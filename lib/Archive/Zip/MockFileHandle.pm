@@ -35,9 +35,9 @@ sub eof {
 # Copy given buffer to me
 sub print {
     my $self         = shift;
-    my $bytes        = join( '', @_ );
+    my $bytes        = join('', @_);
     my $bytesWritten = $self->writeHook($bytes);
-    if ( $self->{'position'} + $bytesWritten > $self->{'size'} ) {
+    if ($self->{'position'} + $bytesWritten > $self->{'size'}) {
         $self->{'size'} = $self->{'position'} + $bytesWritten;
     }
     $self->{'position'} += $bytesWritten;

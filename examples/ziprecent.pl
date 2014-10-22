@@ -1,15 +1,15 @@
 #!/usr/bin/perl -w
 # Makes a zip file of the most recent files in a specified directory.
 # By Rudi Farkas, rudif@bluemail.ch, 9 December 2000
-# Usage: 
+# Usage:
 # ziprecent <dir> -d <ageDays> [-e <ext> ...]> [-h] [-msvc] [-q] [<zippath>]
 # Zips files in source directory and its subdirectories
 # whose file extension is in specified extensions (default: any extension).
 #     -d <days>       max age (days) for files to be zipped (default: 1 day)
 #     <dir>           source directory
-#     -e <ext>        one or more space-separated extensions  
+#     -e <ext>        one or more space-separated extensions
 #     -h              print help text and exit
-#     -msvc           may be given instead of -e and will zip all msvc source files  
+#     -msvc           may be given instead of -e and will zip all msvc source files
 #     -q              query only (list files but don't zip)
 #     <zippath>.zip   path to zipfile to be created (or updated if it exists)
 #
@@ -18,23 +18,22 @@
 use strict;
 
 use Archive::Zip qw(:ERROR_CODES :CONSTANTS);
-use Cwd; 
+use Cwd;
 use File::Basename;
 use File::Copy;
 use File::Find;
-use File::Path; 
+use File::Path;
 
 # argument and variable defaults
 #
 my $maxFileAgeDays = 1;
-my $defaultzipdir = 'h:/zip/_homework'; 
+my $defaultzipdir  = 'h:/zip/_homework';
 my ($sourcedir, $zipdir, $zippath, @extensions, $query);
-
 
 # usage
 #
 my $scriptname = basename $0;
-my $usage = <<ENDUSAGE;
+my $usage      = <<ENDUSAGE;
 $scriptname <dir> -d <ageDays> [-e <ext> ...]> [-h] [-msvc] [-q] [<zippath>]
 Zips files in source directory and its subdirectories
 whose file extension is in specified extensions (default: any extension).
@@ -47,7 +46,6 @@ whose file extension is in specified extensions (default: any extension).
     <zippath>.zip   path to zipfile to be created (or updated if it exists)
 ENDUSAGE
 
-
 # parse arguments
 #
 while (@ARGV) {
@@ -56,47 +54,40 @@ while (@ARGV) {
     if ($arg eq '-d') {
         $maxFileAgeDays = shift;
         $maxFileAgeDays = 0.0 if $maxFileAgeDays < 0.0;
-    }
-    elsif ($arg eq '-e') {
+    } elsif ($arg eq '-e') {
         while ($ARGV[0] && $ARGV[0] !~ /^-/) {
-            push @extensions, shift;    
+            push @extensions, shift;
         }
-    }
-    elsif ($arg eq '-msvc') {
-        push @extensions, qw / bmp c cpp def dlg dsp dsw h ico idl mak odl rc rc2 rgs /;
-    }
-    elsif ($arg eq '-q') {
+    } elsif ($arg eq '-msvc') {
+        push @extensions,
+          qw / bmp c cpp def dlg dsp dsw h ico idl mak odl rc rc2 rgs /;
+    } elsif ($arg eq '-q') {
         $query = 1;
-    }
-    elsif ($arg eq '-h') {
+    } elsif ($arg eq '-h') {
         print STDERR $usage;
         exit;
-    }
-    elsif (-d $arg) {
+    } elsif (-d $arg) {
         $sourcedir = $arg;
-    }
-    elsif ($arg eq '-z') {
+    } elsif ($arg eq '-z') {
         if ($ARGV[0]) {
-            $zipdir = shift;    
+            $zipdir = shift;
         }
-    }
-    elsif ($arg =~ /\.zip$/) {
+    } elsif ($arg =~ /\.zip$/) {
         $zippath = $arg;
-    }
-    else {
+    } else {
         errorExit("Unknown option or argument: $arg");
     }
 }
 
 # process arguments
 #
-errorExit("Please specify an existing source directory") unless defined($sourcedir) && -d $sourcedir;
+errorExit("Please specify an existing source directory")
+  unless defined($sourcedir) && -d $sourcedir;
 
 my $extensions;
 if (@extensions) {
     $extensions = join "|", @extensions;
-}
-else {
+} else {
     $extensions = ".*";
 }
 
@@ -105,7 +96,6 @@ else {
 $sourcedir =~ s|\\|/|g;
 $zippath =~ s|\\|/|g if defined($zippath);
 
-
 # find files
 #
 my @files;
@@ -113,22 +103,20 @@ cwd $sourcedir;
 find(\&listFiles, $sourcedir);
 printf STDERR "Found %d file(s)\n", scalar @files;
 
-
 # exit ?
 #
 exit if $query;
 exit if @files <= 0;
 
-
 # prepare zip directory
 #
 if (defined($zippath)) {
+
     # deduce directory from zip path
     $zipdir = dirname($zippath);
     $zipdir = '.' unless length $zipdir;
-}
-else {
-    $zipdir= $defaultzipdir;
+} else {
+    $zipdir = $defaultzipdir;
 }
 
 # make sure that zip directory exists
@@ -136,12 +124,9 @@ else {
 mkpath $zipdir unless -d $zipdir;
 -d $zipdir or die "Can't find/make directory $zipdir\n";
 
-
-
 # create the zip object
 #
 my $zip = Archive::Zip->new();
-
 
 # read-in the existing zip file if any
 #
@@ -152,51 +137,42 @@ if (defined $zippath && -f $zippath) {
 
 # add files
 #
-foreach my $memberName (@files)
-{
-    if (-d $memberName )
-    {
+foreach my $memberName (@files) {
+    if (-d $memberName) {
         warn "Can't add tree $memberName\n"
-            if $zip->addTree( $memberName, $memberName ) != AZ_OK;
-    }
-    else
-    {
-        $zip->addFile( $memberName )
-            or warn "Can't add file $memberName\n";
+          if $zip->addTree($memberName, $memberName) != AZ_OK;
+    } else {
+        $zip->addFile($memberName)
+          or warn "Can't add file $memberName\n";
     }
 }
 
-
-# prepare the new zip path 
+# prepare the new zip path
 #
 my $newzipfile = genfilename();
 my $newzippath = "$zipdir/$newzipfile";
-
 
 # write the new zip file
 #
 my $status = $zip->writeToFileNamed($newzippath);
 if ($status == AZ_OK) {
+
     # rename (and overwrite the old zip file if any)?
     #
     if (defined $zippath) {
         my $res = rename $newzippath, $zippath;
         if ($res) {
             print STDERR "Updated file $zippath\n";
+        } else {
+            print STDERR
+              "Created file $newzippath, failed to rename to $zippath\n";
         }
-        else {
-            print STDERR "Created file $newzippath, failed to rename to $zippath\n";
-        }
-    } 
-    else {
+    } else {
         print STDERR "Created file $newzippath\n";
     }
+} else {
+    print STDERR "Failed to create file $newzippath\n";
 }
-else {
-    print STDERR "Failed to create file $newzippath\n"; 
-}
-
-
 
 # subroutines
 #
@@ -204,11 +180,12 @@ else {
 sub listFiles {
     if (/\.($extensions)$/) {
         cwd $File::Find::dir;
-        return if -d $File::Find::name; # skip directories
+        return if -d $File::Find::name;    # skip directories
         my $fileagedays = fileAgeDays($_);
         if ($fileagedays < $maxFileAgeDays) {
             printf STDERR "$File::Find::name    (%.3g)\n", $fileagedays;
-            (my $filename = $File::Find::name) =~ s/^[a-zA-Z]://;  # remove the leading drive letter:
+            (my $filename = $File::Find::name) =~
+              s/^[a-zA-Z]://;              # remove the leading drive letter:
             push @files, $filename;
         }
     }
@@ -228,8 +205,10 @@ sub fileAgeDays {
 }
 
 sub genfilename {
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-    sprintf "%04d%02d%02d-%02d%02d%02d.zip", $year+1900, $mon+1, $mday, $hour, $min, $sec;
+    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) =
+      localtime(time);
+    sprintf "%04d%02d%02d-%02d%02d%02d.zip", $year + 1900, $mon + 1, $mday,
+      $hour, $min, $sec;
 }
 
 __END__

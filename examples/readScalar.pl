@@ -17,7 +17,7 @@ printf "Read %d bytes\n", length($zipContents);
 my $SH = IO::Scalar->new(\$zipContents);
 
 my $zip = Archive::Zip->new();
-$zip->readFromFileHandle( $SH );
+$zip->readFromFileHandle($SH);
 my $member = $zip->addString('c' x 300, 'bunchOfCs.txt');
 $member->desiredCompressionMethod(COMPRESSION_DEFLATED);
 $member = $zip->addString('d' x 300, 'bunchOfDs.txt');

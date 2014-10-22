@@ -24,20 +24,18 @@ my $outputName = shift();
 
 my $zip = Archive::Zip->new();
 
-foreach my $file (@ARGV)
-{
-	$zip->addFileOrDirectory($file);
+foreach my $file (@ARGV) {
+    $zip->addFileOrDirectory($file);
 }
 
-my $fh = IO::File->new( $outputName, O_CREAT | O_WRONLY | O_TRUNC, 0777 )
+my $fh = IO::File->new($outputName, O_CREAT | O_WRONLY | O_TRUNC, 0777)
   or die "Can't open $outputName\: $!\n";
 binmode($fh);
 
 # add self-extracting Perl code
 
-while (<DATA>)
-{
-	$fh->print($_)
+while (<DATA>) {
+    $fh->print($_)
 }
 
 $zip->writeToFileHandle($fh);
