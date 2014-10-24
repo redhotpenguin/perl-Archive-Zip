@@ -92,7 +92,7 @@ my $dirName    = TESTDIR;
 # new	# Archive::Zip::Member
 my $member = $zip->addDirectory($memberName);
 ok(defined($member));
-is($member->fileName(), $memberName);
+is( File::Spec->catfile($member->fileName()), File::Spec->catfile($memberName) );
 
 # On some (Windows systems) the modification time is
 # corrupted. Save this to check late.
@@ -136,14 +136,14 @@ is($status, AZ_OK);
 ok(-d $dirName);
 
 #--------- add a string member, uncompressed
-$memberName = TESTDIR . '/string.txt';
+$memberName = File::Spec->catfile(TESTDIR, 'string.txt');
 
 # addString	# Archive::Zip::Archive
 # newFromString	# Archive::Zip::Member
 $member = $zip->addString(TESTSTRING, $memberName);
 ok(defined($member));
 
-is($member->fileName(), $memberName);
+is(File::Spec->catfile($member->fileName()), File::Spec->catfile($memberName));
 
 # members	# Archive::Zip::Archive
 @members = $zip->members();
@@ -281,7 +281,7 @@ is($members[2],      $member);
 # memberNames	# Archive::Zip::Archive
 my @memberNames = $zip->memberNames();
 is(scalar(@memberNames), 3);
-is($memberNames[2],      $memberName);
+is(File::Spec->catfile($memberNames[2]), File::Spec->catfile($memberName));
 
 # memberNamed	# Archive::Zip::Archive
 is($zip->memberNamed($memberName), $member);
@@ -323,7 +323,7 @@ is($members[2],      $member);
 # memberNames	# Archive::Zip::Archive
 @memberNames = $zip->memberNames();
 is(scalar(@memberNames), 3);
-is($memberNames[1],      $memberName);
+is(File::Spec->catfile($memberNames[1]), File::Spec->catfile($memberName));
 
 $status = $zip->writeToFileNamed(OUTPUTZIP);
 is($status, AZ_OK);
@@ -429,7 +429,7 @@ is($zip->numberOfMembers(), 10);
 #--------- clean up duplicate names
 @members = $zip->members();
 $member  = $zip->removeMember($members[5]);
-is($member->fileName(), TESTDIR . '/');
+is(File::Spec->catfile($member->fileName()), File::Spec->catfile(TESTDIR));
 
 SCOPE: {
     for my $i (6 .. 9) {

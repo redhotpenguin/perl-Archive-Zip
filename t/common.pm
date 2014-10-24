@@ -5,6 +5,7 @@ use strict;
 # Paths. Must make case-insensitive.
 use File::Temp qw(tempfile tempdir);
 use File::Spec;
+
 BEGIN { mkdir 'testdir' }
 use constant TESTDIR =>
   File::Spec->abs2rel(tempdir(DIR => 'testdir', CLEANUP => 1));

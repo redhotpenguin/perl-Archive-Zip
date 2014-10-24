@@ -21,38 +21,38 @@ sub runPerlCommand {
 }
 
 use constant FILENAME => File::Spec->catpath('', TESTDIR, 'testing.txt');
-use constant ZFILENAME => TESTDIR . "/testing.txt";    # name in zip
+use constant ZFILENAME => File::Spec->catfile(TESTDIR, "testing.txt");    # name in zip
 
 my $zip = Archive::Zip->new();
 isa_ok($zip, 'Archive::Zip');
-$zip->addString(TESTSTRING, FILENAME);
-$zip->writeToFileNamed(INPUTZIP);
+$zip->addString(File::Spec->catfile(TESTSTRING), File::Spec->catfile(FILENAME));
+$zip->writeToFileNamed(File::Spec->catfile(INPUTZIP));
 
 my ($status, $output);
 my $fh = IO::File->new("test.log", "w");
 isa_ok($fh, 'IO::File');
 
-is(runPerlCommand('examples/copy.pl', INPUTZIP, OUTPUTZIP), 0);
+is(runPerlCommand(File::Spec->catfile('examples', 'copy.pl'), File::Spec->catfile(INPUTZIP), File::Spec->catfile(OUTPUTZIP)), 0);
 
-is(runPerlCommand('examples/extract.pl', OUTPUTZIP, ZFILENAME), 0);
+is(runPerlCommand(File::Spec->catfile('examples','extract.pl'), File::Spec->catfile(OUTPUTZIP), ZFILENAME), 0);
 
-is(runPerlCommand('examples/mfh.pl', INPUTZIP), 0);
+is(runPerlCommand(File::Spec->catfile('examples','mfh.pl'), File::Spec->catfile(INPUTZIP)), 0);
 
-is(runPerlCommand('examples/zip.pl', OUTPUTZIP, INPUTZIP, FILENAME), 0);
+is(runPerlCommand(File::Spec->catfile('examples','zip.pl'), File::Spec->catfile(OUTPUTZIP), File::Spec->catfile(INPUTZIP), File::Spec->catfile(FILENAME)), 0);
 
-($status, $output) = runPerlCommand('examples/zipinfo.pl', INPUTZIP);
+($status, $output) = runPerlCommand(File::Spec->catfile('examples','zipinfo.pl'), File::Spec->catfile(INPUTZIP));
 is($status, 0);
 $fh->print("zipinfo output:\n");
 $fh->print($output);
 
-($status, $output) = runPerlCommand('examples/ziptest.pl', INPUTZIP);
+($status, $output) = runPerlCommand(File::Spec->catfile('examples','ziptest.pl'), File::Spec->catfile(INPUTZIP));
 is($status, 0);
 $fh->print("ziptest output:\n");
 $fh->print($output);
 
-($status, $output) = runPerlCommand('examples/zipGrep.pl', '100', INPUTZIP);
+($status, $output) = runPerlCommand(File::Spec->catfile('examples','zipGrep.pl'), '100', File::Spec->catfile(INPUTZIP));
 is($status, 0);
-is($output, ZFILENAME . ":100\n");
+is(File::Spec->catfile($output), ZFILENAME . ":100\n");
 
 # calcSizes.pl
 # creates test.zip, may be sensitive to /dev/null
@@ -60,10 +60,10 @@ is($output, ZFILENAME . ":100\n");
 # removed because requires IO::Scalar
 # ok( runPerlCommand('examples/readScalar.pl'), 0 );
 
-unlink(OUTPUTZIP);
-is(runPerlCommand('examples/selfex.pl', OUTPUTZIP, FILENAME), 0);
-unlink(FILENAME);
-is(runPerlCommand(OUTPUTZIP), 0);
+unlink(File::Spec->catfile(OUTPUTZIP));
+is(runPerlCommand(File::Spec->catfile('examples','selfex.pl'), File::Spec->catfile(OUTPUTZIP), File::Spec->catfile(FILENAME)), 0);
+unlink(File::Spec->catfile(FILENAME));
+is(runPerlCommand(File::Spec->catfile(OUTPUTZIP)), 0);
 my $fn = File::Spec->catpath('', File::Spec->catdir('extracted', TESTDIR),
     'testing.txt');
 is(-f $fn, 1, "$fn exists");
@@ -74,11 +74,11 @@ is(-f $fn, 1, "$fn exists");
 # zipcheck.pl
 # ziprecent.pl
 
-unlink(OUTPUTZIP);
-is(runPerlCommand('examples/updateTree.pl', OUTPUTZIP, TESTDIR),
+unlink(File::Spec->catfile(OUTPUTZIP));
+is(runPerlCommand(File::Spec->catfile('examples','updateTree.pl'), File::Spec->catfile(OUTPUTZIP), File::Spec->catfile(TESTDIR)),
     0, "updateTree.pl create");
-is(-f OUTPUTZIP, 1, "zip created");
-is(runPerlCommand('examples/updateTree.pl', OUTPUTZIP, TESTDIR),
+is(-f File::Spec->catfile(OUTPUTZIP), 1, "zip created");
+is(runPerlCommand(File::Spec->catfile('examples','updateTree.pl'), File::Spec->catfile(OUTPUTZIP), File::Spec->catfile(TESTDIR)),
     0, "updateTree.pl update");
-is(-f OUTPUTZIP, 1, "zip updated");
-unlink(OUTPUTZIP);
+is(-f File::Spec->catfile(OUTPUTZIP), 1, "zip updated");
+unlink(File::Spec->catfile(OUTPUTZIP));

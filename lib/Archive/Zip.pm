@@ -487,7 +487,7 @@ sub tempFile {
     my ($fh, $filename) = File::Temp::tempfile(
         SUFFIX => '.zip',
         UNLINK => 1,
-        $dir ? (DIR => $dir) : ());
+        $dir ? (DIR => File::Spec->catdir($dir)) : ());
     return (undef, undef) unless $fh;
     my ($status, $newfh) = _newFileHandle($fh, 'w+');
     return ($newfh, $filename);

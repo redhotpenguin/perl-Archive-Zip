@@ -86,7 +86,7 @@ sub memberNamed {
     my $self = shift;
     my $fileName = (ref($_[0]) eq 'HASH') ? shift->{zipName} : shift;
     foreach my $member ($self->members()) {
-        return $member if $member->fileName() eq $fileName;
+        return $member if File::Spec->catfile($member->fileName()) eq File::Spec->catfile($fileName);
     }
     return undef;
 }
@@ -452,7 +452,6 @@ sub overwriteAs {
     return _error("Can't open temp file", $!) unless $fh;
 
     (my $backupName = $zipName) =~ s{(\.[^.]*)?$}{.zbk};
-
     my $status = $self->writeToFileHandle($fh);
     $fh->close();
     $fh = undef;
@@ -466,7 +465,7 @@ sub overwriteAs {
     my $err;
 
     # rename the zip
-    if (-f $zipName && !rename($zipName, $backupName)) {
+    if (-f File::Spec->catfile($zipName) && !File::Copy::move(File::Spec->catfile($zipName), File::Spec->catfile($backupName))) {
         $err = $!;
         unlink($tempName);
         return _error("Can't rename $zipName as $backupName", $err);
@@ -985,7 +984,8 @@ sub updateTree {
 
         # normalize, remove leading ./
         my $memberName = _asZipDirName($fileName, $isDir);
-        if ($memberName eq $rootZipName) { $memberName = $dest }
+
+        if (File::Spec->catfile($memberName) eq File::Spec->catfile($rootZipName)) { $memberName = $dest }
         else                             { $memberName =~ s{$pattern}{$dest} }
         next if $memberName =~ m{^\.?/?$};    # skip current dir
 
