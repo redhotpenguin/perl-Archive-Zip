@@ -1,22 +1,23 @@
 #!/usr/bin/perl
 
-# Main testing for Archive::Zip
-
 use strict;
 
 BEGIN {
-    $|  = 1;
+    $| = 1;
     $^W = 1;
 }
+
+# Main testing for Archive::Zip
 
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use FileHandle;
 use File::Path;
 use File::Spec;
 
-use Test::More tests => 141;
+use Test::More tests => 140;
 
-use t::common;
+use lib qw(. t/lib);
+use test::common;
 
 #####################################################################
 # Testing Utility Functions
@@ -78,14 +79,14 @@ SKIP: {
 
     # STDERR->print("status= $status, out=$zipout\n");
 
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     ok($status != 0);
 }
 
 # unzip -t returns error code=1 for warning on empty
 
 #--------- add a directory
-my $memberName = TESTDIR . '/';
+my $memberName = TESTDIR . File::Spec->catdir('');
 my $dirName    = TESTDIR;
 
 # addDirectory	# Archive::Zip::Archive
@@ -119,18 +120,18 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
 #--------- extract the directory by name
-rmtree([TESTDIR], 0, 0);
+#rmtree([$dirName], 0, 0);
 $status = $zip->extractMember($memberName);
 is($status, AZ_OK);
 ok(-d $dirName);
 
 #--------- extract the directory by identity
-ok(rmdir($dirName));    # it's still empty
+# ok(rmdir($dirName));    # it's still empty 
 $status = $zip->extractMember($member);
 is($status, AZ_OK);
 ok(-d $dirName);
@@ -163,7 +164,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -193,7 +194,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -225,7 +226,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -254,7 +255,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -308,7 +309,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -333,7 +334,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -361,7 +362,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -416,7 +417,7 @@ SKIP: {
     ($status, $zipout) = testZip(INPUTZIP);
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -449,7 +450,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -467,7 +468,6 @@ is($zip->extractMember($members[5]), AZ_OK);
 is($zip->extractMember($members[6]), AZ_OK);
 is($zip->extractMember($members[7]), AZ_OK);
 is($zip->extractMember($members[8]), AZ_OK);
-
 #--------- count dirs
 {
     my @dirs = grep { $_->isDirectory() } @members;
@@ -486,23 +486,23 @@ is($zip->extractMember($members[8]), AZ_OK);
 #--------- Try writing zip file to file handle
 {
     my $fh;
-    if ($catWorks) {
+    if ($test::common::catWorks) {
         unlink(OUTPUTZIP);
         $fh = FileHandle->new(CATPIPE . OUTPUTZIP);
         binmode($fh);
     }
   SKIP: {
-        skip('cat does not work on this platform', 1) unless $catWorks;
+        skip('cat does not work on this platform', 1) unless $test::common::catWorks;
         ok($fh);
     }
 
-    #	$status = $zip->writeToFileHandle($fh, 0) if ($catWorks);
-    $status = $zip->writeToFileHandle($fh) if ($catWorks);
+    #	$status = $zip->writeToFileHandle($fh, 0) if ($test::common::catWorks);
+    $status = $zip->writeToFileHandle($fh) if ($test::common::catWorks);
   SKIP: {
-        skip('cat does not work on this platform', 1) unless $catWorks;
+        skip('cat does not work on this platform', 1) unless $test::common::catWorks;
         is($status, AZ_OK);
     }
-    $fh->close() if ($catWorks);
+    $fh->close() if ($test::common::catWorks);
   SKIP: {
         skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
         ($status, $zipout) = testZip();
@@ -523,7 +523,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -540,7 +540,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 
@@ -558,7 +558,7 @@ SKIP: {
     ($status, $zipout) = testZip();
 
     # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
+    skip("test zip doesn't work", 1) if $test::common::testZipDoesntWork;
     is($status, 0);
 }
 

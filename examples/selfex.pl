@@ -52,7 +52,7 @@ use Archive::Zip qw(:ERROR_CODES);
 use IO::File;
 use File::Spec;
 
-my $dir = 'extracted';
+my $dir = TESTDIR;
 my $zip = Archive::Zip->new();
 my $fh = IO::File->new($0) or die "Can't open $0\: $!\n";
 die "Zip read error\n" unless $zip->readFromFileHandle($fh) == AZ_OK;

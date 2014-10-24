@@ -16,3 +16,4 @@ test.log
 *.old
 *.tar.gz
 *.tgz
+Thumbs.db

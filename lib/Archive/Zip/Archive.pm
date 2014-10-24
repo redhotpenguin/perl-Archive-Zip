@@ -465,10 +465,16 @@ sub overwriteAs {
     my $err;
 
     # rename the zip
-    if (-f File::Spec->catfile($zipName) && !File::Copy::move(File::Spec->catfile($zipName), File::Spec->catfile($backupName))) {
-        $err = $!;
-        unlink($tempName);
-        return _error("Can't rename $zipName as $backupName", $err);
+    if (-f File::Spec->catfile($zipName) && !File::Copy::move($zipName, $backupName)) {
+        my $mverr = $!;
+        if(!File::Copy::copy($zipName, $backupName)) {
+            $err = $!;
+            unlink($tempName);
+            return _error("Can't rename $zipName as $backupName", $err, $mverr);
+        }
+        else {
+            unlink($zipName); # Test suite's temp files prevent File::Copy::move from working on windows
+        }                     # so just copy the file and delete the old one 
     }
 
     # move the temp to the original name (possibly copying)

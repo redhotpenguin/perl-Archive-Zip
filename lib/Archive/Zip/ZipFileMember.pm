@@ -39,6 +39,7 @@ sub _newFromZipFile {
 
 sub isDirectory {
     my $self = shift;
+    # uses normalized, internal, path separator (not OS specific)
     return (substr($self->fileName, -1, 1) eq '/'
           and $self->uncompressedSize == 0);
 }

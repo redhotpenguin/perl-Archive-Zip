@@ -1,12 +1,14 @@
 #!/usr/bin/perl
 
 use strict;
-use warnings;
 
-BEGIN { $| = 1; }
+BEGIN {
+    $|  = 1;
+    $^W = 1;
+}
 
 use Archive::Zip qw( :ERROR_CODES );
-use Test::More;
+use Test::More tests => 18;
 
 foreach my $pass (qw( wrong test )) {
     my $zip = Archive::Zip->new();
@@ -30,5 +32,3 @@ foreach my $pass (qw( wrong test )) {
         "Decoded buffer"
     );
 }
-
-done_testing;

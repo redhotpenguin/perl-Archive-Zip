@@ -6,11 +6,15 @@ BEGIN {
     $|  = 1;
     $^W = 1;
 }
+
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Archive::Zip::MemberRead;
 use File::Spec;
 
 use Test::More;
+
+use lib qw(. t/lib);
+use test::common;
 
 BEGIN {
     if ($^O eq 'MSWin32') {
@@ -19,7 +23,6 @@ BEGIN {
         plan(tests => 13);
     }
 }
-use t::common;
 
 SCOPE: {
     my $filename = File::Spec->catfile(TESTDIR, "member_read_xml_like1.zip");

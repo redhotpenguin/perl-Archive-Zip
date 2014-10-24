@@ -15,8 +15,7 @@ use Archive::Zip qw( :ERROR_CODES );
 my $expected_fn =
   File::Spec->catfile(File::Spec->curdir, "t", "badjpeg", "expected.jpg");
 my $expected_zip =
-  File::Spec::Unix->catfile(File::Spec::Unix->curdir, "t", "badjpeg",
-    "expected.jpg",);
+  File::Spec::Unix->catfile(File::Spec::Unix->curdir, "t", "badjpeg", "expected.jpg",);
 
 my $got_fn     = "got.jpg";
 my $archive_fn = "out.zip";

@@ -1,24 +1,26 @@
 #!/usr/bin/perl
 
-# These are regression tests for:
-# http://rt.cpan.org/Public/Bug/Display.html?id=27463
-# http://rt.cpan.org/Public/Bug/Display.html?id=76780
-#
-# It tests that one can add files to the archive whose filenames are "0".
-
 use strict;
 
 BEGIN {
     $|  = 1;
     $^W = 1;
 }
+
+# These are regression tests for:
+# http://rt.cpan.org/Public/Bug/Display.html?id=27463
+# http://rt.cpan.org/Public/Bug/Display.html?id=76780
+#
+# It tests that one can add files to the archive whose filenames are "0".
+
 use Test::More tests => 3;
 use Archive::Zip;
 
 use File::Path;
 use File::Spec;
 
-use t::common;
+use lib qw(. t/lib);
+use test::common;
 
 mkpath([File::Spec->catdir(TESTDIR, 'folder')]);
 

@@ -1,6 +1,9 @@
 Revision history for Perl extension Archive-Zip
 
 
+    - Some work on making tests pass with -T
+    - Fix problem with Strawberry Perl file permissions with last updates temp dirs
+
 1.39 Tue 21 Oct 2014
     - store test data in temp dirs to fix parallelism and shuffling
       [Graham Knop]

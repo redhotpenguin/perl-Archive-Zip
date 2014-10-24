@@ -6,25 +6,34 @@ BEGIN {
     $|  = 1;
     $^W = 1;
 }
+
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use File::Spec;
 use IO::File;
-
+use File::Temp qw(tempfile tempdir);
 use Test::More tests => 17;
-use t::common;
+
+use lib qw(. t/lib);
+use test::common;
+
 
 sub runPerlCommand {
-    my $libs = join(' -I', @INC);
-    my $cmd = "\"$^X\" \"-I$libs\" -w \"" . join('" "', @_) . '"';
-    my $output = `$cmd`;
+    my $path = $ENV{"PATH"};
+    $ENV{"PATH"} = '';
+    (my $perl)   = $^X =~ m/^(.*)$/g;
+    my @lib      = map { "-Mlib=$_" } @INC;
+    my $output   = system($perl, @lib, '-w', @_);
+    $ENV{"PATH"} = $path;
     return wantarray ? ($?, $output) : $?;
 }
 
-use constant FILENAME => File::Spec->catpath('', TESTDIR, 'testing.txt');
-use constant ZFILENAME => File::Spec->catfile(TESTDIR, "testing.txt");    # name in zip
+use constant FILENAME => 
+    (tempfile('test03-XXXXX', SUFFIX => '.txt', DIR => TESTDIR, UNLINK => 1))[1];
+use constant ZFILENAME => File::Spec->catfile(FILENAME);    # name in zip
 
 my $zip = Archive::Zip->new();
 isa_ok($zip, 'Archive::Zip');
+
 $zip->addString(File::Spec->catfile(TESTSTRING), File::Spec->catfile(FILENAME));
 $zip->writeToFileNamed(File::Spec->catfile(INPUTZIP));
 
@@ -63,9 +72,9 @@ is(File::Spec->catfile($output), ZFILENAME . ":100\n");
 unlink(File::Spec->catfile(OUTPUTZIP));
 is(runPerlCommand(File::Spec->catfile('examples','selfex.pl'), File::Spec->catfile(OUTPUTZIP), File::Spec->catfile(FILENAME)), 0);
 unlink(File::Spec->catfile(FILENAME));
-is(runPerlCommand(File::Spec->catfile(OUTPUTZIP)), 0);
-my $fn = File::Spec->catpath('', File::Spec->catdir('extracted', TESTDIR),
-    'testing.txt');
+
+is(runPerlCommand(OUTPUTZIP), 0);
+my $fn = File::Spec->catfile(FILENAME);
 is(-f $fn, 1, "$fn exists");
 
 # unzipAll.pl
@@ -78,6 +87,7 @@ unlink(File::Spec->catfile(OUTPUTZIP));
 is(runPerlCommand(File::Spec->catfile('examples','updateTree.pl'), File::Spec->catfile(OUTPUTZIP), File::Spec->catfile(TESTDIR)),
     0, "updateTree.pl create");
 is(-f File::Spec->catfile(OUTPUTZIP), 1, "zip created");
+
 is(runPerlCommand(File::Spec->catfile('examples','updateTree.pl'), File::Spec->catfile(OUTPUTZIP), File::Spec->catfile(TESTDIR)),
     0, "updateTree.pl update");
 is(-f File::Spec->catfile(OUTPUTZIP), 1, "zip updated");

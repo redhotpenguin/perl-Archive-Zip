@@ -1,4 +1,13 @@
+package test::common;
+
 use strict;
+
+BEGIN {
+    $|  = 1;
+    $^W = 1;
+}
+
+use base 'Exporter';
 
 # Shared defs for test programs
 
@@ -8,11 +17,11 @@ use File::Spec;
 
 BEGIN { mkdir 'testdir' }
 use constant TESTDIR =>
-  File::Spec->abs2rel(tempdir(DIR => 'testdir', CLEANUP => 1));
+  (tempdir(DIR => 'testdir', CLEANUP => 1));
 use constant INPUTZIP =>
-  (tempfile('testin-XXXXX', SUFFIX => '.zip', TMPDIR => 1, UNLINK => 1))[1];
+  (tempfile('testin-XXXXX', SUFFIX => '.zip', DIR => TESTDIR, UNLINK => 1))[1];
 use constant OUTPUTZIP =>
-  (tempfile('testout-XXXXX', SUFFIX => '.zip', TMPDIR => 1, UNLINK => 1))[1];
+  (tempfile('testout-XXXXX', SUFFIX => '.zip', DIR => TESTDIR, UNLINK => 1))[1];
 
 # Do we have the 'zip' and 'unzip' programs?
 # Embed a copy of the module, rather than adding a dependency
@@ -143,7 +152,13 @@ use constant CAT     => $^X . ' -pe "BEGIN{binmode(STDIN);binmode(STDOUT)}"';
 use constant CATPIPE => '| ' . CAT . ' >';
 
 use vars qw($zipWorks $testZipDoesntWork $catWorks);
-local ($zipWorks, $testZipDoesntWork, $catWorks);
+my ($zipWorks, $testZipDoesntWork, $catWorks);
+
+our @EXPORT = ('TESTDIR', 'INPUTZIP', 'OUTPUTZIP', 
+    'HAVEZIP', 'HAVEUNZIP', 'ZIP', 'CAT', 'CATPIPE',
+    'TEST', 'TESTSTRING', 'TESTSTRINGLENGTH', 'TESTSTRINGCRC',
+    'testZip', 'fileCRC', 'testCat', 
+);
 
 # Run ZIPTEST to test a zip file.
 sub testZip {
@@ -185,7 +200,7 @@ sub testCat {
 }
 
 BEGIN {
-    $catWorks = testCat();
+    $catWorks = testCat() unless($^O eq 'MSWin32'); # process access warnings for IO::File->new(CATPIPE . OUTPUTZIP);
     unless ($catWorks) {
         warn('warning: ', CAT, " doesn't seem to work, may skip some tests");
     }
@@ -223,5 +238,6 @@ BEGIN {
         }
     }
 }
+
 
 1;

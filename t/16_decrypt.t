@@ -1,12 +1,14 @@
 #!/usr/bin/perl
 
 use strict;
-use warnings;
 
-BEGIN { $| = 1; }
+BEGIN {
+    $|  = 1;
+    $^W = 1;
+}
 
 use Archive::Zip qw( :ERROR_CODES );
-use Test::More;
+use Test::More tests => 8;
 
 my $zip = Archive::Zip->new();
 isa_ok($zip, "Archive::Zip");
@@ -19,5 +21,3 @@ isa_ok($m, "Archive::Zip::Member");
 
 is($m->password("test"), "test", "correct password");
 is($m->contents, "encryption test\n" x 100, "Decoded buffer");
-
-done_testing;
