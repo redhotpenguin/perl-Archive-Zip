@@ -52,15 +52,12 @@ use Archive::Zip qw(:ERROR_CODES);
 use IO::File;
 use File::Spec;
 
-my $dir = TESTDIR;
 my $zip = Archive::Zip->new();
 my $fh = IO::File->new($0) or die "Can't open $0\: $!\n";
 die "Zip read error\n" unless $zip->readFromFileHandle($fh) == AZ_OK;
 
-(mkdir($dir, 0777) or die "Can't create directory $dir\: $!\n") unless -d $dir;
-
 for my $member ( $zip->members )
 {
-	$member->extractToFileNamed( File::Spec->catfile($dir,$member->fileName) );
+	$member->extractToFileNamed( File::Spec->catfile($member->fileName) );
 }
 __DATA__

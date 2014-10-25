@@ -16,10 +16,9 @@ use Test::More tests => 17;
 use lib qw(. t/lib);
 use test::common;
 
-
 sub runPerlCommand {
     my $path = $ENV{"PATH"};
-    $ENV{"PATH"} = '';
+    $ENV{"PATH"} = ''; # -T
     my $libs   = join(' -I', @INC);
     my $cmd    = "\"$^X\" \"-I$libs\" -w \"" . join('" "', @_) . '"';
     my $output = `$cmd`;
@@ -72,9 +71,8 @@ is(File::Spec->catfile($output), ZFILENAME . ":100\n");
 unlink(File::Spec->catfile(OUTPUTZIP));
 is(runPerlCommand(File::Spec->catfile('examples','selfex.pl'), File::Spec->catfile(OUTPUTZIP), File::Spec->catfile(FILENAME)), 0);
 unlink(File::Spec->catfile(FILENAME));
-
 is(runPerlCommand(OUTPUTZIP), 0);
-my $fn = File::Spec->catfile(TESTDIR,FILENAME);
+my $fn = File::Spec->catfile(FILENAME);
 is(-f $fn, 1, "$fn exists");
 
 # unzipAll.pl
