@@ -295,7 +295,6 @@ sub _mapPermissionsToUnix {
     if ($format == FA_AMIGA) {
         $attribs = $attribs >> 17 & 7;                         # Amiga RWE bits
         $mode    = $attribs << 6 | $attribs << 3 | $attribs;
-        $mode    = sprintf("%d", $mode);
         return sprintf("%d", $mode);
     }
 
@@ -320,7 +319,6 @@ sub _mapPermissionsToUnix {
         # https://rt.cpan.org/Ticket/Display.html?id=61930
         #return $mode if $mode != 0 or not $self->localExtraField;
         if( $mode != 0 or not $self->localExtraField ) {
-            $mode = sprintf("%d", $mode);
             return sprintf("%d", $mode);
         }
 
@@ -366,7 +364,6 @@ sub _mapPermissionsToUnix {
     }
 
     $mode = 0444 | $attribs << 6 | $attribs << 3 | $attribs;
-    $mode = sprintf("%d", $mode);
     return sprintf("%d", $mode);
 }
 
@@ -525,10 +522,10 @@ sub extractToFileNamed {
         return _ioError("Can't open file $name for write") unless $status;
         my $retval = $self->extractToFileHandle($fh);
         $fh->close();
-        $Devel::Trace::TRACE = 1;
+
         chmod($self->unixFileAttributes(), $name)
           or return _error("Can't chmod() ${name}: $!");
-        $Devel::Trace::TRACE = 0;
+
         utime($self->lastModTime(), $self->lastModTime(), $name);
         return $retval;
     }

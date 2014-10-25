@@ -20,9 +20,9 @@ use test::common;
 sub runPerlCommand {
     my $path = $ENV{"PATH"};
     $ENV{"PATH"} = '';
-    (my $perl)   = $^X =~ m/^(.*)$/g;
-    my @lib      = map { "-Mlib=$_" } @INC;
-    my $output   = system($perl, @lib, '-w', @_);
+    my $libs   = join(' -I', @INC);
+    my $cmd    = "\"$^X\" \"-I$libs\" -w \"" . join('" "', @_) . '"';
+    my $output = `$cmd`;
     $ENV{"PATH"} = $path;
     return wantarray ? ($?, $output) : $?;
 }
@@ -74,7 +74,7 @@ is(runPerlCommand(File::Spec->catfile('examples','selfex.pl'), File::Spec->catfi
 unlink(File::Spec->catfile(FILENAME));
 
 is(runPerlCommand(OUTPUTZIP), 0);
-my $fn = File::Spec->catfile(FILENAME);
+my $fn = File::Spec->catfile(TESTDIR,FILENAME);
 is(-f $fn, 1, "$fn exists");
 
 # unzipAll.pl
