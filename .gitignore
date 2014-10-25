@@ -18,3 +18,4 @@ test.log
 *.tgz
 Thumbs.db
 TESTDIR
+.sublimetext
