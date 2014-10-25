@@ -1,6 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
-
+    
+    - Remove extracted/ directory in favor of using the temp directory testdir/
+    - Changed 2 arg open back to 3 arg open as min perl version was raised to 5.6 at one time
     - Some work on making tests pass with -T
     - Fix problem with Strawberry Perl file permissions with last updates temp dirs
 
