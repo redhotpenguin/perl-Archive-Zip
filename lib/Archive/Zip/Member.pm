@@ -289,7 +289,7 @@ sub _mapPermissionsToUnix {
 
     my $format  = $self->{'fileAttributeFormat'};
     my $attribs = $self->{'externalFileAttributes'};
-
+   
     my $mode = 0;
 
     if ($format == FA_AMIGA) {
@@ -315,7 +315,12 @@ sub _mapPermissionsToUnix {
         || $format == FA_QDOS
         || $format == FA_TANDEM) {
         $mode = $attribs >> 16;
-        return $mode if $mode != 0 or not $self->localExtraField;
+
+        # https://rt.cpan.org/Ticket/Display.html?id=61930
+        #return $mode if $mode != 0 or not $self->localExtraField;
+        if( $mode != 0 or not $self->localExtraField ) {
+            return $mode;
+        }
 
         # warn("local extra field is: ", $self->localExtraField, "\n");
 
@@ -351,7 +356,12 @@ sub _mapPermissionsToUnix {
 
     # keep previous $mode setting when its "owner"
     # part appears to be consistent with DOS attribute flags!
-    return $mode if ($mode & 0700) == (0400 | $attribs << 6);
+
+    #return $mode if ($mode & 0700) == (0400 | $attribs << 6);
+    if( ( $mode & 0700 ) == ( 0400 | $attribs << 6 ) ) {
+        return $mode;
+    }
+
     $mode = 0444 | $attribs << 6 | $attribs << 3 | $attribs;
     return $mode;
 }
@@ -371,11 +381,13 @@ sub unixFileAttributes {
             $perms &= ~DIRECTORY_ATTRIB;
             $perms |= FILE_ATTRIB;
         }
+
         $self->{externalFileAttributes} =
           $self->_mapPermissionsFromUnix($perms);
     }
 
-    return $oldPerms;
+    $oldPerms =~ m/(\d+)/; # untaint
+    return $1;
 }
 
 sub localExtraField {
@@ -509,8 +521,10 @@ sub extractToFileNamed {
         return _ioError("Can't open file $name for write") unless $status;
         my $retval = $self->extractToFileHandle($fh);
         $fh->close();
+
         chmod($self->unixFileAttributes(), $name)
           or return _error("Can't chmod() ${name}: $!");
+
         utime($self->lastModTime(), $self->lastModTime(), $name);
         return $retval;
     }

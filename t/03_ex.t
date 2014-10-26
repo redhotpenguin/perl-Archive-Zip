@@ -1,30 +1,50 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
-    $|  = 1;
-    $^W = 1;
+    $| = 1;
 }
+
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use File::Spec;
 use IO::File;
-
+use File::Temp qw(tempfile tempdir);
 use Test::More tests => 17;
-use t::common;
+
+use lib 't/lib';
+use test::common;
 
 sub runPerlCommand {
-    my $libs = join(' -I', @INC);
-    my $cmd = "\"$^X\" \"-I$libs\" -w \"" . join('" "', @_) . '"';
+    # Sanity checks that satisfy taint.
+    # May be best to hardcode the example/scripts.pl here
+    # in a whitelist instead.
+    my $blacklist = qr/([^$%;|]+)/;
+    my $argClean  = sub{ (my $x = $_[0]) =~ s/"/\"/g; $x };
+    my @libs = map { '"-Mlib=' . $argClean->($_) . '"' } grep(/$blacklist/, @INC);
+    my @args = map { '"'       . $argClean->($_) . '"' } grep(/$blacklist/, @_  );
+
+    my $path      = $ENV{"PATH"};
+    $ENV{"PATH"}  = ''; # -T %ENV not needed for backtick/system call
+
+    # It would be better if we could use: system(PERLPATH,@libs,@args)
+    # but test: is($output, ZFILENAME . ":100\n"); relies on both the 
+    # exit code and the output. All other tests pass with system $cmd LIST
+    my $libString = join(' ', @libs);
+    my $argString = join(' ', @args);
+    my $cmd = '"'.PERLPATH.'"' . ' ' . $libString . ' -w ' . $argString;
     my $output = `$cmd`;
+
+    $ENV{"PATH"} = $path;
     return wantarray ? ($?, $output) : $?;
 }
 
-use constant FILENAME => File::Spec->catpath('', TESTDIR, 'testing.txt');
-use constant ZFILENAME => TESTDIR . "/testing.txt";    # name in zip
+use constant FILENAME =>
+    File::Spec->catfile((tempfile('test03-XXXXX', SUFFIX => '.txt', DIR => TESTDIR, UNLINK => 1))[1]);
 
 my $zip = Archive::Zip->new();
 isa_ok($zip, 'Archive::Zip');
+
 $zip->addString(TESTSTRING, FILENAME);
 $zip->writeToFileNamed(INPUTZIP);
 
@@ -34,7 +54,7 @@ isa_ok($fh, 'IO::File');
 
 is(runPerlCommand('examples/copy.pl', INPUTZIP, OUTPUTZIP), 0);
 
-is(runPerlCommand('examples/extract.pl', OUTPUTZIP, ZFILENAME), 0);
+is(runPerlCommand('examples/extract.pl', OUTPUTZIP, FILENAME), 0);
 
 is(runPerlCommand('examples/mfh.pl', INPUTZIP), 0);
 
@@ -52,7 +72,7 @@ $fh->print($output);
 
 ($status, $output) = runPerlCommand('examples/zipGrep.pl', '100', INPUTZIP);
 is($status, 0);
-is($output, ZFILENAME . ":100\n");
+is(File::Spec->catfile($output), FILENAME . ":100\n"); # or should File::Spec be used on zipGrep.pl return value?
 
 # calcSizes.pl
 # creates test.zip, may be sensitive to /dev/null
@@ -64,8 +84,7 @@ unlink(OUTPUTZIP);
 is(runPerlCommand('examples/selfex.pl', OUTPUTZIP, FILENAME), 0);
 unlink(FILENAME);
 is(runPerlCommand(OUTPUTZIP), 0);
-my $fn = File::Spec->catpath('', File::Spec->catdir('extracted', TESTDIR),
-    'testing.txt');
+my $fn = FILENAME;
 is(-f $fn, 1, "$fn exists");
 
 # unzipAll.pl
@@ -78,6 +97,7 @@ unlink(OUTPUTZIP);
 is(runPerlCommand('examples/updateTree.pl', OUTPUTZIP, TESTDIR),
     0, "updateTree.pl create");
 is(-f OUTPUTZIP, 1, "zip created");
+
 is(runPerlCommand('examples/updateTree.pl', OUTPUTZIP, TESTDIR),
     0, "updateTree.pl update");
 is(-f OUTPUTZIP, 1, "zip updated");

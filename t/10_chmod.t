@@ -1,17 +1,18 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
+
 use Test::More;
 use File::Spec;
 use File::Path;
 use Archive::Zip;
 
-use t::common;
+use lib 't/lib';
+use test::common;
 
 sub get_perm {
     my $filename = shift;
@@ -26,7 +27,7 @@ sub test_if_chmod_is_working {
 
     mkdir($test_dir, 0755);
 
-    open my $out, ">$test_file";
+    open my $out, '>', $test_file;
     print {$out} "Foobar.";
     close($out);
 
@@ -56,7 +57,7 @@ my $zip = Archive::Zip->new();
 
 $zip->read(File::Spec->catfile(File::Spec->curdir(), "t", "data", "chmod.zip"));
 
-my $test_dir = File::Spec->catdir(File::Spec->curdir(), "testdir", "chtest");
+my $test_dir = File::Spec->catdir(File::Spec->curdir(), TESTDIR, "chtest");
 
 mkdir($test_dir, 0777);
 

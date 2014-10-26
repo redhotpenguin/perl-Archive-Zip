@@ -433,6 +433,7 @@ sub _newFileHandle {
         $status = $handle->open($fd, @_);
     }
 
+    $handle->untaint;
     return ($status, $handle);
 }
 
@@ -487,7 +488,8 @@ sub tempFile {
     my ($fh, $filename) = File::Temp::tempfile(
         SUFFIX => '.zip',
         UNLINK => 1,
-        $dir ? (DIR => $dir) : ());
+        DIR => ($dir ? $dir : File::Spec->tmpdir()),
+    );
     return (undef, undef) unless $fh;
     my ($status, $newfh) = _newFileHandle($fh, 'w+');
     return ($newfh, $filename);
@@ -523,7 +525,7 @@ sub _asZipDirName {
     push(@dirs, defined($file) ? $file : '');
 
     #return wantarray ? @dirs : join ( '/', @dirs );
-
+    my $sep = File::Spec->catdir('');
     my $normalised_path = join '/', @dirs;
 
     # Leading directory separators should not be stored in zip archives.
@@ -532,7 +534,7 @@ sub _asZipDirName {
     #   C:\a\b\c.txt   a/b/c.txt
     #   /a/b/c/        a/b/c
     #   /a/b/c.txt     a/b/c.txt
-    $normalised_path =~ s{^/}{};    # remove leading separator
+    $normalised_path =~ s{^\Q$sep\E}{};    # remove leading separator
 
     return $normalised_path;
 }

@@ -1,13 +1,12 @@
-#!/use/bin/perl
-
-# Check Windows Explorer compatible directories
+#!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
+
+# Check Windows Explorer compatible directories
 
 use Test::More;
 use Archive::Zip;

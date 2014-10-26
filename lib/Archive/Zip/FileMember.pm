@@ -22,7 +22,7 @@ sub _usesFileNamed {
     my $fileName = shift;
     my $xfn      = $self->externalFileName();
     return undef if ref($xfn);
-    return $xfn eq $fileName;
+    return File::Spec->catfile($xfn) eq File::Spec->catfile($fileName);
 }
 
 sub fh {

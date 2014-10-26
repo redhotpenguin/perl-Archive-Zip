@@ -32,19 +32,14 @@ WriteMakefile1(
 		'Time::Local'         => 0,
 	},
 	BUILD_REQUIRES => {
-		'Test::More'          => '0.88',
+		'Test::More'          => '0.42', # converted 2 done_testing()s to tests => \d+
+										 # so we can lower this back to 0.42
 	},
 	clean => {
 		FILES => join( ' ', qw{
 			test.log
 			testdir/*
 			testdir/
-			extracted/testdir/*
-			extracted/testdir
-			extracted/
-			testin.zip
-			testout.zip
-			test2.zip
 		} ),
 	},
 	dist => {

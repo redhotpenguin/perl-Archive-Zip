@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
 
 use Test::More tests => 6;
@@ -15,8 +14,7 @@ use Archive::Zip qw( :ERROR_CODES );
 my $expected_fn =
   File::Spec->catfile(File::Spec->curdir, "t", "badjpeg", "expected.jpg");
 my $expected_zip =
-  File::Spec::Unix->catfile(File::Spec::Unix->curdir, "t", "badjpeg",
-    "expected.jpg",);
+  File::Spec::Unix->catfile(File::Spec::Unix->curdir, "t", "badjpeg", "expected.jpg",);
 
 my $got_fn     = "got.jpg";
 my $archive_fn = "out.zip";
@@ -24,7 +22,7 @@ my ($before, $after);
 
 sub slurp_file {
     my $filename = shift;
-    open my $fh, "<$filename"
+    open my $fh, '<', $filename
       or die 'Can not open file';
     my $contents;
     binmode($fh);

@@ -1,17 +1,23 @@
+package test::common;
+
 use strict;
+use warnings; # 'use warnings' as min perl was bumped to 5.6
+use warnings::register;
+use base 'Exporter';
 
 # Shared defs for test programs
 
 # Paths. Must make case-insensitive.
 use File::Temp qw(tempfile tempdir);
 use File::Spec;
+
 BEGIN { mkdir 'testdir' }
 use constant TESTDIR =>
-  File::Spec->abs2rel(tempdir(DIR => 'testdir', CLEANUP => 1));
+  File::Spec->catfile(tempdir(DIR => 'testdir', CLEANUP => 1));
 use constant INPUTZIP =>
-  (tempfile('testin-XXXXX', SUFFIX => '.zip', TMPDIR => 1, UNLINK => 1))[1];
+  File::Spec->catfile((tempfile('testin-XXXXX', SUFFIX => '.zip', DIR => TESTDIR, UNLINK => 1))[1]);
 use constant OUTPUTZIP =>
-  (tempfile('testout-XXXXX', SUFFIX => '.zip', TMPDIR => 1, UNLINK => 1))[1];
+  File::Spec->catfile((tempfile('testout-XXXXX', SUFFIX => '.zip', DIR => TESTDIR, UNLINK => 1))[1]);
 
 # Do we have the 'zip' and 'unzip' programs?
 # Embed a copy of the module, rather than adding a dependency
@@ -137,12 +143,21 @@ use Archive::Zip ();
 # CRC-32 should be ac373f32
 use constant TESTSTRINGCRC => Archive::Zip::computeCRC32(TESTSTRING);
 
+use constant PERLPATH => ($^X =~ /[^$%;|]+/) ? $^X : 'perl';
+
 # This is so that it will work on other systems.
-use constant CAT     => $^X . ' -pe "BEGIN{binmode(STDIN);binmode(STDOUT)}"';
+use constant CAT     => PERLPATH . ' -pe "BEGIN{binmode(STDIN);binmode(STDOUT)}"';
 use constant CATPIPE => '| ' . CAT . ' >';
 
 use vars qw($zipWorks $testZipDoesntWork $catWorks);
-local ($zipWorks, $testZipDoesntWork, $catWorks);
+my ($zipWorks, $testZipDoesntWork, $catWorks);
+
+
+our @EXPORT = ('TESTDIR', 'INPUTZIP', 'OUTPUTZIP', 
+    'PERLPATH', 'HAVEZIP', 'HAVEUNZIP', 'ZIP', 'CAT', 'CATPIPE',
+    'TEST', 'TESTSTRING', 'TESTSTRINGLENGTH', 'TESTSTRINGCRC',
+    'testZip', 'fileCRC', 'testCat', 
+);
 
 # Run ZIPTEST to test a zip file.
 sub testZip {
@@ -184,7 +199,7 @@ sub testCat {
 }
 
 BEGIN {
-    $catWorks = testCat();
+    $catWorks = testCat() unless($^O eq 'MSWin32'); # process access warnings for IO::File->new(CATPIPE . OUTPUTZIP);
     unless ($catWorks) {
         warn('warning: ', CAT, " doesn't seem to work, may skip some tests");
     }
@@ -201,8 +216,7 @@ BEGIN {
         my $zipout = `$cmd`;
         $zipWorks = not $?;
         unless ($zipWorks) {
-            warn('warning: ', ZIP,
-                " doesn't seem to work, may skip some tests");
+            warn('warning: ', ZIP, " doesn't seem to work, may skip some tests");
         }
     }
 }
@@ -217,10 +231,10 @@ BEGIN {
 
         # Again, on Win32 no big surprise if this doesn't work
         if ($testZipDoesntWork) {
-            warn('warning: ', ZIPTEST,
-                " doesn't seem to work, may skip some tests");
+            warn('warning: ', ZIPTEST, " doesn't seem to work, may skip some tests");
         }
     }
 }
+
 
 1;

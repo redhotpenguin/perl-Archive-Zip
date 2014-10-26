@@ -1,20 +1,23 @@
 #!/usr/bin/perl
 
-# Test Archive::Zip updating
-
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
+
+# Test Archive::Zip updating
+
 use File::Spec ();
 use IO::File   ();
 use File::Find ();
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 use Test::More tests => 12;
-use t::common;
+
+use lib 't/lib';
+use test::common;
+
 
 my ($testFileVolume, $testFileDirs, $testFileName) = File::Spec->splitpath($0);
 

@@ -86,7 +86,7 @@ sub memberNamed {
     my $self = shift;
     my $fileName = (ref($_[0]) eq 'HASH') ? shift->{zipName} : shift;
     foreach my $member ($self->members()) {
-        return $member if $member->fileName() eq $fileName;
+        return $member if File::Spec->catfile($member->fileName()) eq File::Spec->catfile($fileName);
     }
     return undef;
 }
@@ -452,7 +452,6 @@ sub overwriteAs {
     return _error("Can't open temp file", $!) unless $fh;
 
     (my $backupName = $zipName) =~ s{(\.[^.]*)?$}{.zbk};
-
     my $status = $self->writeToFileHandle($fh);
     $fh->close();
     $fh = undef;
@@ -466,10 +465,16 @@ sub overwriteAs {
     my $err;
 
     # rename the zip
-    if (-f $zipName && !rename($zipName, $backupName)) {
-        $err = $!;
-        unlink($tempName);
-        return _error("Can't rename $zipName as $backupName", $err);
+    if (-f File::Spec->catfile($zipName) && !File::Copy::move($zipName, $backupName)) {
+        my $mverr = $!;
+        if(!File::Copy::copy($zipName, $backupName)) {
+            $err = $!;
+            unlink($tempName);
+            return _error("Can't rename $zipName as $backupName", $err, $mverr);
+        }
+        else {
+            unlink($zipName); # Test suite's temp files prevent File::Copy::move from working on windows
+        }                     # so just copy the file and delete the old one 
     }
 
     # move the temp to the original name (possibly copying)
@@ -564,9 +569,8 @@ sub read {
 
     $status = $self->readFromFileHandle($fh, $fileName);
     return $status if $status != AZ_OK;
-
     $fh->close();
-    $self->{'fileName'} = $fileName;
+    $self->{'fileName'} = File::Spec->catfile($fileName);
     return AZ_OK;
 }
 
@@ -741,7 +745,7 @@ sub addTree {
       unless defined($pred);
 
     my @files;
-    my $startDir = _untaintDir(cwd());
+    my $startDir = cwd();
 
     return _error('undef returned by _untaintDir on cwd ', cwd())
       unless $startDir;
@@ -750,20 +754,21 @@ sub addTree {
     # versions of File::Find.
     my $wanted = sub {
         local $main::_ = $File::Find::name;
-        my $dir = _untaintDir($File::Find::dir);
-        chdir($startDir);
+        my $dir = $File::Find::dir;
+        chdir(_untaintDir($startDir));
         if ($^O eq 'MSWin32' && $Archive::Zip::UNICODE) {
-            push(@files, Win32::GetANSIPathName($File::Find::name)) if (&$pred);
+            push(@files, Win32::GetANSIPathName(_untaintDir($File::Find::name))) if (&$pred);
             $dir = Win32::GetANSIPathName($dir);
         } else {
-            push(@files, $File::Find::name) if (&$pred);
+            push(@files, _untaintDir($File::Find::name)) if (&$pred);
         }
-        chdir($dir);
+        chdir(_untaintDir($dir));
     };
 
     if ($^O eq 'MSWin32' && $Archive::Zip::UNICODE) {
         $root = Win32::GetANSIPathName($root);
     }
+
     File::Find::find($wanted, $root);
 
     my $rootZipName = _asZipDirName($root, 1);    # with trailing slash
@@ -958,7 +963,7 @@ sub updateTree {
     my $pattern = $rootZipName eq './' ? '^' : "^\Q$rootZipName\E";
 
     my @files;
-    my $startDir = _untaintDir(cwd());
+    my $startDir = cwd();
 
     return _error('undef returned by _untaintDir on cwd ', cwd())
       unless $startDir;
@@ -967,10 +972,10 @@ sub updateTree {
     # versions of File::Find.
     my $wanted = sub {
         local $main::_ = $File::Find::name;
-        my $dir = _untaintDir($File::Find::dir);
-        chdir($startDir);
+        my $dir = $File::Find::dir;
+        chdir(_untaintDir($startDir));
         push(@files, $File::Find::name) if (&$pred);
-        chdir($dir);
+        chdir(_untaintDir($dir));
     };
 
     File::Find::find($wanted, $root);
@@ -985,7 +990,8 @@ sub updateTree {
 
         # normalize, remove leading ./
         my $memberName = _asZipDirName($fileName, $isDir);
-        if ($memberName eq $rootZipName) { $memberName = $dest }
+
+        if (File::Spec->catfile($memberName) eq File::Spec->catfile($rootZipName)) { $memberName = $dest }
         else                             { $memberName =~ s{$pattern}{$dest} }
         next if $memberName =~ m{^\.?/?$};    # skip current dir
 
