@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
 
 use Test::More tests => 6;
@@ -23,7 +22,7 @@ my ($before, $after);
 
 sub slurp_file {
     my $filename = shift;
-    open my $fh, "<$filename"
+    open my $fh, '<', $filename
       or die 'Can not open file';
     my $contents;
     binmode($fh);

@@ -32,6 +32,7 @@ foreach my $member ($zip->members()) {
     my $memberName = $member->fileName();
     my $lineNumber = 1;
     $lastChunk = '';
+
     $member->desiredCompressionMethod(COMPRESSION_STORED);
     $status = $member->rewindData();
     die "rewind error $status" if $status != AZ_OK;

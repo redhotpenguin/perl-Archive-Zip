@@ -295,7 +295,7 @@ sub _mapPermissionsToUnix {
     if ($format == FA_AMIGA) {
         $attribs = $attribs >> 17 & 7;                         # Amiga RWE bits
         $mode    = $attribs << 6 | $attribs << 3 | $attribs;
-        return sprintf("%d", $mode);
+        return $mode;
     }
 
     if ($format == FA_THEOS) {
@@ -319,7 +319,7 @@ sub _mapPermissionsToUnix {
         # https://rt.cpan.org/Ticket/Display.html?id=61930
         #return $mode if $mode != 0 or not $self->localExtraField;
         if( $mode != 0 or not $self->localExtraField ) {
-            return sprintf("%d", $mode);
+            return $mode;
         }
 
         # warn("local extra field is: ", $self->localExtraField, "\n");
@@ -359,12 +359,11 @@ sub _mapPermissionsToUnix {
 
     #return $mode if ($mode & 0700) == (0400 | $attribs << 6);
     if( ( $mode & 0700 ) == ( 0400 | $attribs << 6 ) ) {
-        $mode = sprintf("%d", $mode);
-        return sprintf("%d", $mode);
+        return $mode;
     }
 
     $mode = 0444 | $attribs << 6 | $attribs << 3 | $attribs;
-    return sprintf("%d", $mode);
+    return $mode;
 }
 
 sub unixFileAttributes {
@@ -387,8 +386,8 @@ sub unixFileAttributes {
           $self->_mapPermissionsFromUnix($perms);
     }
 
-    $oldPerms = sprintf("%d",$oldPerms);
-    return sprintf("%d", $oldPerms);
+    $oldPerms =~ m/(\d+)/; # untaint
+    return $1;
 }
 
 sub localExtraField {

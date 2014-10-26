@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
 
 # Test Archive::Zip updating
@@ -16,7 +15,7 @@ use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 use Test::More tests => 12;
 
-use lib qw(. t/lib);
+use lib 't/lib';
 use test::common;
 
 

@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
 
 # These are regression tests for:
@@ -19,20 +18,20 @@ use Archive::Zip;
 use File::Path;
 use File::Spec;
 
-use lib qw(. t/lib);
+use lib 't/lib';
 use test::common;
 
 mkpath([File::Spec->catdir(TESTDIR, 'folder')]);
 
 my $zero_file = File::Spec->catfile(TESTDIR, 'folder', "0");
-open(O, ">$zero_file");
-print O "File 0\n";
-close(O);
+open(my $fh0, '>', $zero_file);
+print {$fh0} "File 0\n";
+close($fh0);
 
 my $one_file = File::Spec->catfile(TESTDIR, 'folder', '1');
-open(O, ">$one_file");
-print O "File 1\n";
-close(O);
+open(my $fh1, '>', $one_file);
+print {$fh1} "File 1\n";
+close($fh1);
 
 my $archive = Archive::Zip->new;
 

@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
 
 # Test the bug-fix for the following bug:
@@ -21,12 +20,12 @@ use Archive::Zip;
 use Cwd        ();
 use File::Spec ();
 
-use lib qw(. t/lib);
+use lib 't/lib';
 use test::common;
 
 my $file_relative_path = File::Spec->catfile(TESTDIR, 'file.txt');
-open FH, ">", $file_relative_path;
-close FH;
+open my $fh, '>', $file_relative_path;
+close $fh;
 my $file_absolute_path = File::Spec->rel2abs($file_relative_path);
 my $sep = File::Spec->catdir('');
 my $az = Archive::Zip->new();

@@ -1,18 +1,18 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
 
 use Archive::Zip qw( :ERROR_CODES );
+use File::Spec;
 use Test::More tests => 8;
 
 my $zip = Archive::Zip->new();
 isa_ok($zip, "Archive::Zip");
-is($zip->read("t/data/crypcomp.zip"), AZ_OK, "Read file");
+is($zip->read(File::Spec->catfile("t/data/crypcomp.zip")), AZ_OK, "Read file");
 
 ok(my @mn = $zip->memberNames, "get memberNames");
 is_deeply(\@mn, ["test"], "memberNames");

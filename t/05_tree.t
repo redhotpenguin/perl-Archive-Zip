@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
 
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
@@ -13,7 +12,7 @@ use File::Spec;
 
 use Test::More tests => 6;
 
-use lib qw(. t/lib);
+use lib 't/lib';
 use test::common;
 
 use constant FILENAME => File::Spec->catfile(TESTDIR, 'testing.txt');

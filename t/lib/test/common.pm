@@ -1,12 +1,7 @@
 package test::common;
 
 use strict;
-
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
-
+use warnings::register; # 'use warnings' as min perl was bumped to 5.6
 use base 'Exporter';
 
 # Shared defs for test programs
@@ -17,11 +12,11 @@ use File::Spec;
 
 BEGIN { mkdir 'testdir' }
 use constant TESTDIR =>
-  (tempdir(DIR => 'testdir', CLEANUP => 1));
+  File::Spec->catfile(tempdir(DIR => 'testdir', CLEANUP => 1));
 use constant INPUTZIP =>
-  (tempfile('testin-XXXXX', SUFFIX => '.zip', DIR => TESTDIR, UNLINK => 1))[1];
+  File::Spec->catfile((tempfile('testin-XXXXX', SUFFIX => '.zip', DIR => TESTDIR, UNLINK => 1))[1]);
 use constant OUTPUTZIP =>
-  (tempfile('testout-XXXXX', SUFFIX => '.zip', DIR => TESTDIR, UNLINK => 1))[1];
+  File::Spec->catfile((tempfile('testout-XXXXX', SUFFIX => '.zip', DIR => TESTDIR, UNLINK => 1))[1]);
 
 # Do we have the 'zip' and 'unzip' programs?
 # Embed a copy of the module, rather than adding a dependency
@@ -147,15 +142,18 @@ use Archive::Zip ();
 # CRC-32 should be ac373f32
 use constant TESTSTRINGCRC => Archive::Zip::computeCRC32(TESTSTRING);
 
+use constant PERLPATH => ($^X =~ /[^$%;|]+/) ? $^X : 'perl';
+
 # This is so that it will work on other systems.
-use constant CAT     => $^X . ' -pe "BEGIN{binmode(STDIN);binmode(STDOUT)}"';
+use constant CAT     => PERLPATH . ' -pe "BEGIN{binmode(STDIN);binmode(STDOUT)}"';
 use constant CATPIPE => '| ' . CAT . ' >';
 
 use vars qw($zipWorks $testZipDoesntWork $catWorks);
 my ($zipWorks, $testZipDoesntWork, $catWorks);
 
+
 our @EXPORT = ('TESTDIR', 'INPUTZIP', 'OUTPUTZIP', 
-    'HAVEZIP', 'HAVEUNZIP', 'ZIP', 'CAT', 'CATPIPE',
+    'PERLPATH', 'HAVEZIP', 'HAVEUNZIP', 'ZIP', 'CAT', 'CATPIPE',
     'TEST', 'TESTSTRING', 'TESTSTRINGLENGTH', 'TESTSTRINGCRC',
     'testZip', 'fileCRC', 'testCat', 
 );
@@ -201,7 +199,7 @@ sub testCat {
 
 BEGIN {
     $catWorks = testCat() unless($^O eq 'MSWin32'); # process access warnings for IO::File->new(CATPIPE . OUTPUTZIP);
-    unless ($catWorks) {
+    unless ($catWorks || warnings::fatal_enabled()) {
         warn('warning: ', CAT, " doesn't seem to work, may skip some tests");
     }
 }
@@ -216,9 +214,8 @@ BEGIN {
         my $cmd = ZIP . INPUTZIP . ' *' . ($^O eq 'MSWin32' ? '' : ' 2>&1');
         my $zipout = `$cmd`;
         $zipWorks = not $?;
-        unless ($zipWorks) {
-            warn('warning: ', ZIP,
-                " doesn't seem to work, may skip some tests");
+        unless ($zipWorks || warnings::fatal_enabled()) {
+            warn('warning: ', ZIP, " doesn't seem to work, may skip some tests");
         }
     }
 }
@@ -232,9 +229,8 @@ BEGIN {
         $testZipDoesntWork = $status;
 
         # Again, on Win32 no big surprise if this doesn't work
-        if ($testZipDoesntWork) {
-            warn('warning: ', ZIPTEST,
-                " doesn't seem to work, may skip some tests");
+        if ($testZipDoesntWork || warnings::fatal_enabled()) {
+            warn('warning: ', ZIPTEST, " doesn't seem to work, may skip some tests");
         }
     }
 }

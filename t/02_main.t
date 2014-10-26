@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $| = 1;
-    $^W = 1;
 }
 
 # Main testing for Archive::Zip
@@ -16,7 +15,7 @@ use File::Spec;
 
 use Test::More tests => 140;
 
-use lib qw(. t/lib);
+use lib 't/lib';
 use test::common;
 
 #####################################################################

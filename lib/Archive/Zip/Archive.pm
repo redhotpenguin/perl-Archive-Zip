@@ -569,9 +569,8 @@ sub read {
 
     $status = $self->readFromFileHandle($fh, $fileName);
     return $status if $status != AZ_OK;
-
     $fh->close();
-    $self->{'fileName'} = $fileName;
+    $self->{'fileName'} = File::Spec->catfile($fileName);
     return AZ_OK;
 }
 
@@ -746,7 +745,7 @@ sub addTree {
       unless defined($pred);
 
     my @files;
-    my $startDir = _untaintDir(cwd());
+    my $startDir = cwd();
 
     return _error('undef returned by _untaintDir on cwd ', cwd())
       unless $startDir;
@@ -755,20 +754,21 @@ sub addTree {
     # versions of File::Find.
     my $wanted = sub {
         local $main::_ = $File::Find::name;
-        my $dir = _untaintDir($File::Find::dir);
-        chdir($startDir);
+        my $dir = $File::Find::dir;
+        chdir(_untaintDir($startDir));
         if ($^O eq 'MSWin32' && $Archive::Zip::UNICODE) {
-            push(@files, Win32::GetANSIPathName($File::Find::name)) if (&$pred);
+            push(@files, Win32::GetANSIPathName(_untaintDir($File::Find::name))) if (&$pred);
             $dir = Win32::GetANSIPathName($dir);
         } else {
-            push(@files, $File::Find::name) if (&$pred);
+            push(@files, _untaintDir($File::Find::name)) if (&$pred);
         }
-        chdir($dir);
+        chdir(_untaintDir($dir));
     };
 
     if ($^O eq 'MSWin32' && $Archive::Zip::UNICODE) {
         $root = Win32::GetANSIPathName($root);
     }
+
     File::Find::find($wanted, $root);
 
     my $rootZipName = _asZipDirName($root, 1);    # with trailing slash
@@ -963,7 +963,7 @@ sub updateTree {
     my $pattern = $rootZipName eq './' ? '^' : "^\Q$rootZipName\E";
 
     my @files;
-    my $startDir = _untaintDir(cwd());
+    my $startDir = cwd();
 
     return _error('undef returned by _untaintDir on cwd ', cwd())
       unless $startDir;
@@ -972,10 +972,10 @@ sub updateTree {
     # versions of File::Find.
     my $wanted = sub {
         local $main::_ = $File::Find::name;
-        my $dir = _untaintDir($File::Find::dir);
-        chdir($startDir);
+        my $dir = $File::Find::dir;
+        chdir(_untaintDir($startDir));
         push(@files, $File::Find::name) if (&$pred);
-        chdir($dir);
+        chdir(_untaintDir($dir));
     };
 
     File::Find::find($wanted, $root);

@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 BEGIN {
     $|  = 1;
-    $^W = 1;
 }
 
 use Test::More;
@@ -12,7 +11,7 @@ use File::Spec;
 use File::Path;
 use Archive::Zip;
 
-use lib qw(. t/lib);
+use lib 't/lib';
 use test::common;
 
 sub get_perm {
@@ -28,7 +27,7 @@ sub test_if_chmod_is_working {
 
     mkdir($test_dir, 0755);
 
-    open my $out, ">", $test_file;
+    open my $out, '>', $test_file;
     print {$out} "Foobar.";
     close($out);
 

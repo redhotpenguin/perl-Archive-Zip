@@ -42,6 +42,7 @@ sub readFromFile {
         return undef;
     }
     local $/ = undef;
+    $fh->untaint;
     $self->{content} = <$fh>;
     $self->{size}    = length($self->{content});
     return $self;

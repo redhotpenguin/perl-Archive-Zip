@@ -433,6 +433,7 @@ sub _newFileHandle {
         $status = $handle->open($fd, @_);
     }
 
+    $handle->untaint;
     return ($status, $handle);
 }
 
