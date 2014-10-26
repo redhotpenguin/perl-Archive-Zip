@@ -34,7 +34,7 @@ before_script:
    - coverage-setup
 
 script:
-   - prove -lrsv -j$((SYSTEM_CORES + 1)) $(test-dirs) t
+   - prove -lrsv -j$((SYSTEM_CORES + 1)) $(test-dirs)
 
 after_success:
    - coverage-report

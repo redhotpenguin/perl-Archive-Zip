@@ -200,7 +200,7 @@ sub testCat {
 
 BEGIN {
     $catWorks = testCat() unless($^O eq 'MSWin32'); # process access warnings for IO::File->new(CATPIPE . OUTPUTZIP);
-    unless ($catWorks || warnings::fatal_enabled()) {
+    unless ($catWorks) {
         warn('warning: ', CAT, " doesn't seem to work, may skip some tests");
     }
 }
@@ -215,7 +215,7 @@ BEGIN {
         my $cmd = ZIP . INPUTZIP . ' *' . ($^O eq 'MSWin32' ? '' : ' 2>&1');
         my $zipout = `$cmd`;
         $zipWorks = not $?;
-        unless ($zipWorks || warnings::fatal_enabled()) {
+        unless ($zipWorks) {
             warn('warning: ', ZIP, " doesn't seem to work, may skip some tests");
         }
     }
@@ -230,7 +230,7 @@ BEGIN {
         $testZipDoesntWork = $status;
 
         # Again, on Win32 no big surprise if this doesn't work
-        if ($testZipDoesntWork || warnings::fatal_enabled()) {
+        if ($testZipDoesntWork) {
             warn('warning: ', ZIPTEST, " doesn't seem to work, may skip some tests");
         }
     }

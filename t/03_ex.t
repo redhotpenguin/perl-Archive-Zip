@@ -10,7 +10,6 @@ use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use File::Spec;
 use IO::File;
 use File::Temp qw(tempfile tempdir);
-use Capture::Tiny ':all';
 use Test::More tests => 17;
 
 use lib 't/lib';
