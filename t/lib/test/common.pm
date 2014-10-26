@@ -1,7 +1,8 @@
 package test::common;
 
 use strict;
-use warnings::register; # 'use warnings' as min perl was bumped to 5.6
+use warnings; # 'use warnings' as min perl was bumped to 5.6
+use warnings::register;
 use base 'Exporter';
 
 # Shared defs for test programs
