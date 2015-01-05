@@ -227,15 +227,15 @@ sub passthrough
 {
     my $fromFile = shift ;
     my $toFile = shift ;
-    my $keepTime = shift ;
+    my $action = shift ;
 
     my $z = Archive::Zip->new; 
     $z->read($fromFile);
-    if ($keepTime)
+    if ($action)
     {
         for my $member($z->members())
         {
-            $member->setLastModFileDateTimeFromUnix($member->lastModTime());
+            &$action($member) ; 
         }
     }
     $z->writeToFileNamed($toFile);

@@ -196,8 +196,8 @@ sub desiredCompressionMethod {
         $self->{'desiredCompressionMethod'} = $newDesiredCompressionMethod;
         if ($newDesiredCompressionMethod == COMPRESSION_STORED) {
             $self->{'desiredCompressionLevel'} = 0;
-            $self->{'bitFlag'} &= ~GPBF_HAS_DATA_DESCRIPTOR_MASK;
-
+            $self->{'bitFlag'} &= ~GPBF_HAS_DATA_DESCRIPTOR_MASK
+                if $self->uncompressedSize() == 0;
         } elsif ($oldDesiredCompressionMethod == COMPRESSION_STORED) {
             $self->{'desiredCompressionLevel'} = COMPRESSION_LEVEL_DEFAULT;
         }
@@ -704,7 +704,7 @@ sub _writeLocalFileHeader {
     $self->_print($fh, $signatureData)
       or return _ioError("writing local header signature");
 
-    my $header = $self->head(0);
+    my $header = $self->head(1);
 
     $self->_print($fh, $header) or return _ioError("writing local header");
 
@@ -1052,12 +1052,6 @@ sub _writeToFileHandle {
           and ($self->compressionMethod() == COMPRESSION_STORED
             or $self->desiredCompressionMethod() == COMPRESSION_DEFLATED));
 
-    # Set both compressedSize and uncompressedSize to 0 if either of them is 0
-    if ($self->uncompressedSize == 0 || $self->uncompressedSize == 0) {
-        $self->{'compressedSize'}   = 0;
-        $self->{'uncompressedSize'} = 0;
-    }
-
     my $shouldWriteDataDescriptor =
       ($headerFieldsUnknown and not $fhIsSeekable);
 
@@ -1096,7 +1090,6 @@ sub _writeData {
         my ($outRef, $status) = $self->readChunk($chunkSize);
         symlink $$outRef, $self->{'newName'};
     } else {
-        return AZ_OK if ($self->uncompressedSize() == 0);
         my $status;
         my $chunkSize = $Archive::Zip::ChunkSize;
         while ($self->_readDataRemaining() > 0) {
