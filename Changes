@@ -1,5 +1,7 @@
 Revision history for Perl extension Archive-Zip
 
+1.40
+    - https://rt.cpan.org/Public/Bug/Display.html?id=101092 [PMQS]
 
 1.39 Tue 21 Oct 2014
     - store test data in temp dirs to fix parallelism and shuffling

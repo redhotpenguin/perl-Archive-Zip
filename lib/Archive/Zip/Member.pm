@@ -678,10 +678,16 @@ sub head {
       $self->versionNeededToExtract(),
       $self->{'bitFlag'},
       $self->desiredCompressionMethod(),
-      $self->lastModFileDateTime(), $self->crc32(), $mode
-      ? $self->_writeOffset()       # compressed size
-      : $self->compressedSize(),    # may need to be re-written later
-      $self->uncompressedSize(),
+      $self->lastModFileDateTime(), 
+      $self->hasDataDescriptor() 
+        ? (0,0,0) # crc, compr & uncompr all zero if data descriptor present
+        : (
+            $self->crc32(), 
+            $mode
+              ? $self->_writeOffset()       # compressed size
+              : $self->compressedSize(),    # may need to be re-written later
+            $self->uncompressedSize(),
+          ),
       length($self->fileName()),
       length($self->localExtraField());
 }

@@ -49,6 +49,7 @@ t/13_bug_46303.t
 t/14_leading_separator.t
 t/15_decrypt.t
 t/16_decrypt.t
+t/17_101092.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
 t/common.pm
@@ -57,4 +58,5 @@ t/data/crypcomp.zip
 t/data/crypt.zip
 t/data/linux.zip
 t/data/perl.zip
+t/data/streamed.zip
 t/data/winzip.zip
