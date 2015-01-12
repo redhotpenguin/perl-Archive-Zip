@@ -6,7 +6,7 @@ use strict;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.40';
+    $VERSION = '1.42';
     @ISA     = qw( Archive::Zip );
 
     if ($^O eq 'MSWin32') {
@@ -496,11 +496,7 @@ sub extractToFileNamed {
         if ($^O eq 'MSWin32' && $Archive::Zip::UNICODE) {
             $name = decode_utf8(Win32::GetFullPathName($name));
             mkpath_win32($name);
-            if ($self->{'compressedSize'} == 0) {
-                return;
-            } else {
-                Win32::CreateFile($name);
-            }
+            Win32::CreateFile($name);
             ($status, $fh) = _newFileHandle(Win32::GetANSIPathName($name), 'w');
         } else {
             mkpath(dirname($name));    # croaks on error

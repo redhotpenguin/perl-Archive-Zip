@@ -1,5 +1,12 @@
 Revision history for Perl extension Archive-Zip
 
+1.42 Sun 11 Jan 2015
+    - Revert 101374, caused tester regression
+    - https://rt.cpan.org/Public/Bug/Display.html?id=101240 [cpan/PMQS]
+
+1.41 Fri 09 Jan 2015
+    - https://rt.cpan.org/Public/Bug/Display.html?id=101374 [zefram]
+
 1.40 Sun 04 Jan 2015
     - https://rt.cpan.org/Public/Bug/Display.html?id=92205 [cpan/PMQS]
     - https://rt.cpan.org/Public/Bug/Display.html?id=101092 [cpan/PMQS]

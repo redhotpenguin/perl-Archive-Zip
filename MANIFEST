@@ -51,6 +51,7 @@ t/15_decrypt.t
 t/16_decrypt.t
 t/17_101092.t
 t/18_bug_92205.t
+t/19_bug_101240.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
 t/common.pm
