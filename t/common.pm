@@ -142,7 +142,6 @@ use constant CAT     => $^X . ' -pe "BEGIN{binmode(STDIN);binmode(STDOUT)}"';
 use constant CATPIPE => '| ' . CAT . ' >';
 
 use vars qw($zipWorks $testZipDoesntWork $catWorks);
-local ($zipWorks, $testZipDoesntWork, $catWorks);
 
 # Run ZIPTEST to test a zip file.
 sub testZip {
@@ -210,9 +209,9 @@ BEGIN {
 #--------- check to see if unzip -t works
 
 BEGIN {
-    $testZipDoesntWork = 0;
+    $testZipDoesntWork = 1;
     if (HAVEUNZIP) {
-        my ($status, $zipout) = testZip(INPUTZIP);
+        my ($status, $zipout) = do { local $testZipDoesntWork = 0; testZip(INPUTZIP) };
         $testZipDoesntWork = $status;
 
         # Again, on Win32 no big surprise if this doesn't work
