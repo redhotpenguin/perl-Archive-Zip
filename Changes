@@ -1,6 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.43 Wed 14 Jan 2015
     - Restore 101374 - failing tests were not regressions.
+
 1.42 Sun 11 Jan 2015
     - Revert 101374, caused tester regression
     - https://rt.cpan.org/Public/Bug/Display.html?id=101240 [cpan/PMQS]
