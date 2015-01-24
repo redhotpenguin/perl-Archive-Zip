@@ -6,8 +6,11 @@ use strict;
 use File::Temp qw(tempfile tempdir);
 use File::Spec;
 BEGIN { mkdir 'testdir' }
-use constant TESTDIR =>
-  File::Spec->abs2rel(tempdir(DIR => 'testdir', CLEANUP => 1));
+use constant TESTDIR => do {
+    my $tmpdir = File::Spec->abs2rel(tempdir(DIR => 'testdir', CLEANUP => 1));
+    $tmpdir =~ s!\\!/!g if $^O eq 'MSWin32';
+    $tmpdir
+};
 use constant INPUTZIP =>
   (tempfile('testin-XXXXX', SUFFIX => '.zip', TMPDIR => 1, $^O eq 'MSWin32' ? () : (UNLINK => 1)))[1];
 use constant OUTPUTZIP =>
