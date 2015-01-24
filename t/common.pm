@@ -6,12 +6,15 @@ use strict;
 use File::Temp qw(tempfile tempdir);
 use File::Spec;
 BEGIN { mkdir 'testdir' }
-use constant TESTDIR =>
-  File::Spec->abs2rel(tempdir(DIR => 'testdir', CLEANUP => 1));
+use constant TESTDIR => do {
+    my $tmpdir = File::Spec->abs2rel(tempdir(DIR => 'testdir', CLEANUP => 1));
+    $tmpdir =~ s!\\!/!g if $^O eq 'MSWin32';
+    $tmpdir
+};
 use constant INPUTZIP =>
-  (tempfile('testin-XXXXX', SUFFIX => '.zip', TMPDIR => 1, UNLINK => 1))[1];
+  (tempfile('testin-XXXXX', SUFFIX => '.zip', TMPDIR => 1, $^O eq 'MSWin32' ? () : (UNLINK => 1)))[1];
 use constant OUTPUTZIP =>
-  (tempfile('testout-XXXXX', SUFFIX => '.zip', TMPDIR => 1, UNLINK => 1))[1];
+  (tempfile('testout-XXXXX', SUFFIX => '.zip', TMPDIR => 1, $^O eq 'MSWin32' ? () : (UNLINK => 1)))[1];
 
 # Do we have the 'zip' and 'unzip' programs?
 # Embed a copy of the module, rather than adding a dependency
