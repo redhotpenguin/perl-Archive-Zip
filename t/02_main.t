@@ -79,6 +79,10 @@ SKIP: {
     # STDERR->print("status= $status, out=$zipout\n");
 
     skip("test zip doesn't work", 1) if $testZipDoesntWork;
+
+    skip("freebsd's unzip doesn't care about empty zips", 1)
+        if $^O eq 'freebsd';
+
     ok($status != 0);
 }
 
