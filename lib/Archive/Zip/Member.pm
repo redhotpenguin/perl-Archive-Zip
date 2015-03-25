@@ -1100,7 +1100,6 @@ sub _writeData {
 
             last if $status == AZ_STREAM_END;
         }
-        $self->{'compressedSize'} = $self->_writeOffset();
     }
     return AZ_OK;
 }
