@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.46 Tue 24 Mar 2015
+    - "CRC or size mismatch" when extracting member second time [github/AGWA github/pwr22]
+
 1.45 Mon 26 Jan 2015
     - FreeBSD unzip sets $? to 0 for empty zip file [github.com/revhippie]
 
