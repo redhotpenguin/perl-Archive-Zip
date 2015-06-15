@@ -1086,6 +1086,7 @@ sub _writeData {
         my ($outRef, $status) = $self->readChunk($chunkSize);
         symlink $$outRef, $self->{'newName'};
     } else {
+        return AZ_OK if ($self->uncompressedSize() == 0);
         my $status;
         my $chunkSize = $Archive::Zip::ChunkSize;
         while ($self->_readDataRemaining() > 0) {
