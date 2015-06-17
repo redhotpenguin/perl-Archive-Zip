@@ -52,14 +52,20 @@ t/16_decrypt.t
 t/17_101092.t
 t/18_bug_92205.t
 t/19_bug_101240.t
+t/20_bug_github11.t
+t/21_zip64.t
+t/22_deflated_dir.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
 t/common.pm
+t/data/bad_github11.zip
 t/data/chmod.zip
 t/data/crypcomp.zip
 t/data/crypt.zip
 t/data/def.zip
 t/data/defstr.zip
+t/data/good_github11.zip
+t/data/jar.zip
 t/data/store.zip
 t/data/storestr.zip
 t/data/emptydef.zip
@@ -71,3 +77,4 @@ t/data/mkzip.pl
 t/data/perl.zip
 t/data/streamed.zip
 t/data/winzip.zip
+t/data/zip64.zip

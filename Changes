@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive-Zip
 
+1.47 Wed 17 Jun 2015
+    - zip file with a deflated directory cannot be written out again [github/ntyni]
+    - add missing test data to MANIFEST
+
 1.46 Tue 24 Mar 2015
     - "CRC or size mismatch" when extracting member second time [github/AGWA github/pwr22]
 
