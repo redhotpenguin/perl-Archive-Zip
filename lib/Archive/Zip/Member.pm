@@ -6,7 +6,7 @@ use strict;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.47';
+    $VERSION = '1.49';
     @ISA     = qw( Archive::Zip );
 
     if ($^O eq 'MSWin32') {
@@ -159,16 +159,16 @@ sub bitFlag {
 # Set General Purpose Bit Flags according to the desiredCompressionLevel setting
     if (   $self->desiredCompressionLevel == 1
         || $self->desiredCompressionLevel == 2) {
-        $self->{'bitFlag'} = DEFLATING_COMPRESSION_FAST;
+        $self->{'bitFlag'} |= DEFLATING_COMPRESSION_FAST;
     } elsif ($self->desiredCompressionLevel == 3
         || $self->desiredCompressionLevel == 4
         || $self->desiredCompressionLevel == 5
         || $self->desiredCompressionLevel == 6
         || $self->desiredCompressionLevel == 7) {
-        $self->{'bitFlag'} = DEFLATING_COMPRESSION_NORMAL;
+        $self->{'bitFlag'} |= DEFLATING_COMPRESSION_NORMAL;
     } elsif ($self->desiredCompressionLevel == 8
         || $self->desiredCompressionLevel == 9) {
-        $self->{'bitFlag'} = DEFLATING_COMPRESSION_MAXIMUM;
+        $self->{'bitFlag'} |= DEFLATING_COMPRESSION_MAXIMUM;
     }
 
     if ($Archive::Zip::UNICODE) {
