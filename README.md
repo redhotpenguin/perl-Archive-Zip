@@ -28,7 +28,7 @@ perldoc command.
 
 Bugs should be reported via the CPAN bug tracker
 
-	http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Archive-Zip
+http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Archive-Zip
 
 For other issues contact the maintainer
 
