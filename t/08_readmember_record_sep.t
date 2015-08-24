@@ -12,14 +12,15 @@ use File::Spec;
 
 use Test::More;
 
+my $nl;
 BEGIN {
-    if ($^O eq 'MSWin32') {
-        plan(skip_all => 'Ignoring failing tests on Win32');
-    } else {
-        plan(tests => 13);
-    }
+	plan(tests => 13);
+	$nl = $^O eq 'MSWin32' ? "\r\n" : "\n";
 }
 use t::common;
+
+# normalize newlines for the platform we are running on
+sub norm_nl($) { local $_ = shift; s/\r?\n/$nl/g; return $_; }
 
 SCOPE: {
     my $filename = File::Spec->catfile(TESTDIR, "member_read_xml_like1.zip");
@@ -28,7 +29,7 @@ SCOPE: {
     # TEST
     isa_ok($zip, "Archive::Zip", "Testing that \$zip is an Archive::Zip");
 
-    my $data = <<"EOF";
+    my $data = norm_nl(<<"EOF");
 One Line
 Two Lines
 </tag>
@@ -77,14 +78,14 @@ EOF
         # TEST
         is(
             $fh->getline(),
-            "One Line\nTwo Lines\n",
+            norm_nl("One Line\nTwo Lines\n"),
             "Testing the first \"line\" when \$/ is set."
         );
 
         # TEST
         is(
             $fh->getline(),
-            "Three Lines\nFour Lines\nFive Lines\n",
+            norm_nl("Three Lines\nFour Lines\nFive Lines\n"),
             "Testing the second \"line\" when \$/ is set."
         );
     }
@@ -103,14 +104,14 @@ EOF
         # TEST
         is(
             $fh->getline(),
-            "One Line\nTwo Lines\n",
+            norm_nl("One Line\nTwo Lines\n"),
             "Testing the first line when input_record_separator is set."
         );
 
         # TEST
         is(
             $fh->getline(),
-            "Three Lines\nFour Lines\nFive Lines\n",
+            norm_nl("Three Lines\nFour Lines\nFive Lines\n"),
             "Testing the second line when input_record_separator is set."
         );
     }
@@ -133,7 +134,7 @@ EOF
             "Testing the first \"line\" in a both set read");
 
         # TEST
-        is($fh->getline(), "Line\nTwo",
+        is($fh->getline(), norm_nl("Line\nTwo"),
             "Testing the second \"line\" in a both set read.");
     }
 }
