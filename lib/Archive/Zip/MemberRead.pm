@@ -40,7 +40,7 @@ use vars qw{$VERSION};
 my $nl;
 
 BEGIN {
-    $VERSION = '1.49';
+    $VERSION = '1.50';
     $VERSION = eval $VERSION;
 
 # Requirement for newline conversion. Should check for e.g., DOS and OS/2 as well, but am too lazy.

@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.50 Tue 25 Aug 2015
+    - Fix t/08_readmember_record_sep.t for Win32 [github/pauloscustodio]
+
 1.49 Fri 31 Jul 2015
     - Fails on unseekable file handle after desiredCompressionLevel(), RT #54827
     - Upgrade build tools to avoid tar warnings, RT #105547
