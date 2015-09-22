@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.52 Tue 22 Sep 2015
+    - rt.cpan.org #105902, thanks HMBRAND
+
 1.51 Tue 22 Sep 2015
     - Compare vs filename checksum in crc32 script [github/talisein]
 

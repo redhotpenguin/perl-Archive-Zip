@@ -4,7 +4,7 @@ use strict;
 use vars qw{$VERSION};
 
 BEGIN {
-	$VERSION = '1.51';
+	$VERSION = '1.52';
 }
 
 use Archive::Zip;
