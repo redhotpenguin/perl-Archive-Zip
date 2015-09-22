@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.51 Tue 22 Sep 2015
+    - Compare vs filename checksum in crc32 script [github/talisein]
+
 1.50 Tue 25 Aug 2015
     - Fix t/08_readmember_record_sep.t for Win32 [github/pauloscustodio]
 
