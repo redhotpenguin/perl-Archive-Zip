@@ -13,7 +13,7 @@ use Cwd;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.52';
+    $VERSION = '1.53';
     @ISA     = qw( Archive::Zip );
 
     if ($^O eq 'MSWin32') {

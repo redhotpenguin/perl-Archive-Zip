@@ -1,5 +1,10 @@
 Revision history for Perl extension Archive-Zip
 
+1.53 Wed 22 Sep 2015
+    - rt.cpan.org #107268 - Archive-Zip-1.52.tar.gz is (nearly) empty
+      Thanks to SREZIC for the spot on my dad brain sleep schedule error
+      Creating the dist on OS X caused 'Numeric user ID too largeNumeric group ID too large'
+
 1.52 Tue 22 Sep 2015
     - rt.cpan.org #105902, thanks HMBRAND
 
