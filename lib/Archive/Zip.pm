@@ -1446,7 +1446,16 @@ A usage example:
 
   # now extract the same files into /tmpx
   $zip->extractTree( 'stuff', '/tmpx' );
-
+  
+  #but, if you want extract all files in specified directory then
+  sub unzip_file {
+  my ( $zipName, $dirName ) = @_;
+  my $zip    = Archive::Zip->new();
+  my $status = $zip->read($zipName);
+  die "Read of $zipName failed\n" if $status != AZ_OK;
+  $zip->extractTree('',$dirName);
+  }
+  
 =over 4
 
 =item $zip->addTree( $root, $dest [, $pred, $compressionLevel ] ) -- Add tree of files to a zip
