@@ -1449,12 +1449,24 @@ A usage example:
   
   #but, if you want extract all files in specified directory then
   sub unzip_file {
-  my ( $zipName, $dirName ) = @_;
-  my $zip    = Archive::Zip->new();
-  my $status = $zip->read($zipName);
-  die "Read of $zipName failed\n" if $status != AZ_OK;
-  $zip->extractTree('',$dirName);
+    my ( $zipName, $dirName ) = @_;
+    use Archive::Zip qw(:ERROR_CODES);
+    if ( !-d $dirName ) {
+        mkdir $dirName;
+    }
+
+    my $zip    = Archive::Zip->new();
+    my $status = $zip->read($zipName);
+    die "Read of $zipName failed\n" if $status != AZ_OK;
+    my $extract_status = $zip->extractTree( '', $dirName );
+    if ( $extract_status != AZ_OK ) {
+        die "Extract of $zipName failed\n";
+    }
+    else {
+        say "Extract $zipName done!";
+    }
   }
+
   
 =over 4
 
