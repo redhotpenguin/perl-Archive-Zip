@@ -517,6 +517,7 @@ sub tempFile {
         $dir ? (DIR => $dir) : ());
     return (undef, undef) unless $fh;
     my ($status, $newfh) = _newFileHandle($fh, 'w+');
+    $fh->close();
     return ($newfh, $filename);
 }
 
