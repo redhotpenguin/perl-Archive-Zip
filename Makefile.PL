@@ -9,8 +9,18 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile1(
     META_MERGE => {
+        'meta-spec' => { version => 2 },
+        dynamic_config => 0,
         resources => {
-            repository => 'https://github.com/redhotpenguin/perl-Archive-Zip-svn',
+            repository => {
+                url => 'https://github.com/redhotpenguin/perl-Archive-Zip.git',
+                web => 'https://github.com/redhotpenguin/perl-Archive-Zip',
+                type => 'git',
+            },
+            bugtracker => {
+                mailto => 'bug-Archive-Zip@rt.cpan.org',
+                web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Archive-Zip',
+            },
         },
     },
     NAME         => 'Archive::Zip',
@@ -35,7 +45,7 @@ WriteMakefile1(
         'IO::Seekable' => 0,
         'Time::Local'  => 0,
     },
-    BUILD_REQUIRES => {
+    TEST_REQUIRES => {
         'Test::More' => '0.88',
         'Test::MockModule' => 0,
     },
