@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.54 Wed 25 Sep 2015
+    - add exampler when you want extract all files in specified directory, mishin
+
 1.53 Wed 22 Sep 2015
     - rt.cpan.org #107268 - Archive-Zip-1.52.tar.gz is (nearly) empty
       Thanks to SREZIC for the spot on my dad brain sleep schedule error

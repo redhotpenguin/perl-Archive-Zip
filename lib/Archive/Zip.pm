@@ -1447,6 +1447,23 @@ A usage example:
 
   # now extract the same files into /tmpx
   $zip->extractTree( 'stuff', '/tmpx' );
+  
+  #but, if you want extract all files in specified directory then
+  use v5.10;
+  use Archive::Zip qw(:ERROR_CODES);
+
+  sub unzip_file {
+      my ( $zipName, $dirName ) = @_;
+      if ( !-d $dirName ) {
+          mkdir $dirName;
+      }
+      my $zip    = Archive::Zip->new();
+      my $status = $zip->read($zipName);
+      die "Read of $zipName failed\n" if $status != AZ_OK;
+      my $extract_status = $zip->extractTree( '', $dirName );
+      die "Extract of $zipName failed\n" if $extract_status != AZ_OK;
+      say "Extract $zipName done!";
+  }
 
 =over 4
 
