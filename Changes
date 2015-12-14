@@ -1,5 +1,12 @@
 Revision history for Perl extension Archive-Zip
 
+
+    - fix $Archive::Zip::UNICODE issues [github/xlat]
+        - on MSWin32 in methods addFile, addDirectory, addTree: the externalFileName was 
+          used in place of newName
+        - make sure that file names are utf8 in memberNames
+        - use Encode on all platform
+
 1.53 Wed 22 Sep 2015
     - rt.cpan.org #107268 - Archive-Zip-1.52.tar.gz is (nearly) empty
       Thanks to SREZIC for the spot on my dad brain sleep schedule error
