@@ -55,7 +55,7 @@ t/19_bug_101240.t
 t/20_bug_github11.t
 t/21_zip64.t
 t/22_deflated_dir.t
-t/23_closed_handler.t
+t/23_closed_handle.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
 t/common.pm
