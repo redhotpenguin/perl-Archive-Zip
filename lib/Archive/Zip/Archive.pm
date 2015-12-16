@@ -9,18 +9,13 @@ use File::Spec ();
 use File::Copy ();
 use File::Basename;
 use Cwd;
+use Encode qw(encode_utf8 decode_utf8);
 
 use vars qw( $VERSION @ISA );
 
 BEGIN {
     $VERSION = '1.53';
     @ISA     = qw( Archive::Zip );
-
-    if ($^O eq 'MSWin32') {
-        require Win32;
-        require Encode;
-        Encode->import(qw{ encode_utf8 decode_utf8 });
-    }
 }
 
 use Archive::Zip qw(
@@ -234,6 +229,10 @@ sub addMember {
     my $self = shift;
     my $newMember = (ref($_[0]) eq 'HASH') ? shift->{member} : shift;
     push(@{$self->{'members'}}, $newMember) if $newMember;
+    if($newMember && ($newMember->{bitFlag} & 0x800) 
+                  && !utf8::is_utf8($newMember->{fileName})){
+        $newMember->{fileName} = Encode::decode_utf8( $newMember->{fileName} );
+    }
     return $newMember;
 }
 
@@ -265,10 +264,7 @@ sub addFile {
     } else {
         $self->addMember($newMember);
     }
-    if ($^O eq 'MSWin32' && $Archive::Zip::UNICODE) {
-        $newMember->{'fileName'} =
-          encode_utf8(Win32::GetLongPathName($fileName));
-    }
+    
     return $newMember;
 }
 
@@ -317,9 +313,7 @@ sub addDirectory {
     } else {
         $self->addMember($newMember);
     }
-    if ($^O eq 'MSWin32' && $Archive::Zip::UNICODE) {
-        $newMember->{'fileName'} = encode_utf8(Win32::GetLongPathName($name));
-    }
+    
     return $newMember;
 }
 
@@ -624,6 +618,11 @@ sub readFromFileHandle {
         $status = $newMember->endRead();
         return $status if $status != AZ_OK;
         $newMember->_becomeDirectoryIfNecessary();
+
+        if(($newMember->{bitFlag} & 0x800) && !utf8::is_utf8($newMember->{fileName})){
+            $newMember->{fileName} = Encode::decode_utf8($newMember->{fileName});
+        }
+        
         push(@{$self->{'members'}}, $newMember);
     }
 
