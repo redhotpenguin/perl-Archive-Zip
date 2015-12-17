@@ -1,6 +1,6 @@
 Revision history for Perl extension Archive-Zip
 
-1.56 Wed 16 Dec 2015
+1.56 Thu 17 Dec 2015
     - fix $Archive::Zip::UNICODE issues [github/xlat]
         - on MSWin32 in methods addFile, addDirectory, addTree: the externalFileName was 
           used in place of newName
