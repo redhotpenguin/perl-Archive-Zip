@@ -215,7 +215,8 @@ BEGIN {
     $testZipDoesntWork = 1;
     if (HAVEUNZIP) {
         my ($status, $zipout) = do { local $testZipDoesntWork = 0; testZip(INPUTZIP) };
-        $testZipDoesntWork = $status;
+            # 9 * 256 = 2304 - the specified zipfiles were not found
+        $testZipDoesntWork = (($status == 0 || $status == 2304) ? 0 : 1);
 
         # Again, on Win32 no big surprise if this doesn't work
         if ($testZipDoesntWork) {
