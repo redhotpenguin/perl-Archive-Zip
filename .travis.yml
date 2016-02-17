@@ -24,6 +24,9 @@ before_install:
    - unzip -h
    - build-dist
    - cd $BUILD_DIR             
+   - unzip -t t/data/jar.zip
+   - zip -T t/data/jar.zip
+   - zip -F t/data/jar.zip --out testfix.zip
 
 install:
    - cpan-install --deps
