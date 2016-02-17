@@ -21,14 +21,12 @@ before_install:
    - source ~/travis-perl-helpers/init
    - build-perl
    - perl -V
-   - apt-get -qq update
-   - apt-get -qq install unzip
    - unzip -h
    - build-dist
    - cd $BUILD_DIR             
-   - unzip -t t/data/jar.zip
    - zip -T t/data/jar.zip
    - zip -F t/data/jar.zip --out testfix.zip
+   - unzip -t testfix.zip
 
 install:
    - cpan-install --deps
