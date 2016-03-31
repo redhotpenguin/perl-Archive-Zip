@@ -1,3 +1,4 @@
+sudo: required
 language: perl
 perl:
    - "blead"
@@ -21,8 +22,12 @@ before_install:
    - source ~/travis-perl-helpers/init
    - build-perl
    - perl -V
+   - unzip -h
    - build-dist
    - cd $BUILD_DIR             
+   - zip -T t/data/jar.zip
+   - zip -F t/data/jar.zip --out testfix.zip
+   - unzip -t testfix.zip
 
 install:
    - cpan-install --deps
