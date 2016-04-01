@@ -14,7 +14,7 @@ use Encode qw(encode_utf8 decode_utf8);
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.56';
+    $VERSION = '1.57';
     @ISA     = qw( Archive::Zip );
 }
 
