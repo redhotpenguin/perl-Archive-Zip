@@ -32,6 +32,8 @@ lib/Archive/Zip/Tree.pm
 lib/Archive/Zip/ZipFileMember.pm
 Makefile.PL
 MANIFEST			This list of files
+MANIFEST.SKIP
+README.md
 script/crc32
 t/01_compile.t
 t/02_main.t
@@ -64,17 +66,19 @@ t/data/crypcomp.zip
 t/data/crypt.zip
 t/data/def.zip
 t/data/defstr.zip
-t/data/good_github11.zip
-t/data/jar.zip
-t/data/store.zip
-t/data/storestr.zip
+t/data/empty.zip
 t/data/emptydef.zip
 t/data/emptydefstr.zip
 t/data/emptystore.zip
 t/data/emptystorestr.zip
+t/data/good_github11.zip
+t/data/jar.zip
 t/data/linux.zip
 t/data/mkzip.pl
 t/data/perl.zip
+t/data/store.zip
+t/data/storestr.zip
 t/data/streamed.zip
 t/data/winzip.zip
 t/data/zip64.zip
+test.log
