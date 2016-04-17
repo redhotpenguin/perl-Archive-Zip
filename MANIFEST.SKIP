@@ -1,0 +1,6 @@
+^\.travis.yml$
+^\.git.*
+^Makefile$
+\.old$
+\.bak$
+^MYMETA\..*
