@@ -9,7 +9,8 @@ use warnings;
 use Archive::Zip qw( :ERROR_CODES );
 use File::Spec;
 use File::Path;
-use t::common;
+use lib 't';
+use common;
 
 use Test::More tests => 2;
 

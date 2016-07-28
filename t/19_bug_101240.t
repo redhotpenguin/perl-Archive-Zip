@@ -12,7 +12,8 @@ use File::Spec;
 use File::Path;
 use Archive::Zip qw(:CONSTANTS);
 
-use t::common;
+use lib 't';
+use common;
 
 #101240: Possible issue with zero length files on Win32 when UNICODE is enabled
 

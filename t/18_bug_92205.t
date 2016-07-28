@@ -8,7 +8,8 @@ BEGIN {
 }
 
 use Test::More tests => 32;
-use t::common;
+use lib 't';
+use common;
 use Archive::Zip qw( :CONSTANTS );
 
 

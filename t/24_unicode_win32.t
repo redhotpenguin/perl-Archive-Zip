@@ -15,7 +15,8 @@ use File::Temp;
 use File::Path;
 use File::Spec;
 
-use t::common;
+use lib 't';
+use common;
 
 #Initialy written for MSWin32 only, but I found a bug in memberNames() so
 # other systems should be tested too.

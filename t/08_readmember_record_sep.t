@@ -17,7 +17,8 @@ BEGIN {
 	plan(tests => 13);
 	$nl = $^O eq 'MSWin32' ? "\r\n" : "\n";
 }
-use t::common;
+use lib 't';
+use common;
 
 # normalize newlines for the platform we are running on
 sub norm_nl($) { local $_ = shift; s/\r?\n/$nl/g; return $_; }

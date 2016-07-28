@@ -20,7 +20,8 @@ use Archive::Zip;
 use Cwd        ();
 use File::Spec ();
 
-use t::common;
+use lib 't';
+use common;
 
 my $file_relative_path = File::Spec->catfile(TESTDIR, 'file.txt');
 open FH, ">$file_relative_path";

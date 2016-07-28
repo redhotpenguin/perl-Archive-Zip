@@ -13,7 +13,8 @@ use FileHandle;
 use File::Spec;
 
 use Test::More tests => 6;
-use t::common;
+use lib 't';
+use common;
 
 use constant FILENAME => File::Spec->catfile(TESTDIR, 'testing.txt');
 
