@@ -58,6 +58,7 @@ t/20_bug_github11.t
 t/21_zip64.t
 t/22_deflated_dir.t
 t/23_closed_handle.t
+t/24_unicode_win32.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
 t/common.pm
@@ -82,4 +83,3 @@ t/data/storestr.zip
 t/data/streamed.zip
 t/data/winzip.zip
 t/data/zip64.zip
-test.log
