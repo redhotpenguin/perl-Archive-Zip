@@ -16,7 +16,8 @@ use File::Spec;
 
 use Test::More tests => 141;
 
-use t::common;
+use lib 't';
+use common;
 
 #####################################################################
 # Testing Utility Functions

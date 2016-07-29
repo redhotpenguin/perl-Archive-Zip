@@ -11,7 +11,8 @@ use File::Spec;
 use IO::File;
 
 use Test::More tests => 17;
-use t::common;
+use lib 't';
+use common;
 
 sub runPerlCommand {
     my $libs = join(' -I', @INC);

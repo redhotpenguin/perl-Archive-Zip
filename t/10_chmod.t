@@ -11,7 +11,8 @@ use File::Spec;
 use File::Path;
 use Archive::Zip;
 
-use t::common;
+use lib 't';
+use common;
 
 sub get_perm {
     my $filename = shift;

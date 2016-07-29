@@ -18,7 +18,8 @@ use Archive::Zip;
 use File::Path;
 use File::Spec;
 
-use t::common;
+use lib 't';
+use common;
 
 mkpath([File::Spec->catdir(TESTDIR, 'folder')]);
 
