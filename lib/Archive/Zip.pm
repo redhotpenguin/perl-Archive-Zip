@@ -14,7 +14,7 @@ use FileHandle          ();
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.57';
+    $VERSION = '1.58';
 
     require Exporter;
     @ISA = qw( Exporter );

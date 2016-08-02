@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive-Zip
 
+1.58 Tue 2 Aug 2016
+    - avoid relying on . being in @INC [github/karenetheridge]
+    - update MANIFEST.SKIP [github/haarg]
+
 1.57 Fri 1 Apr 2016
     - RT# 106548,106089,105330,111541 [github/ozcoder]
 
