@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive-Zip
 
+    - Replaced references to Test::MockModule in
+      t/23_closed_handle.t with code from PR #32, RT #110087
+    - Unixified line endings in t/23_closed_handle.t
+
 1.67 Sun 06 Oct 2019
     - Fixed compatibility issues with zip64 format (defined-or, pack)
     - Fixed hard-coded version fields introduced in version 1.66

@@ -51,7 +51,6 @@ WriteMakefile1(
     },
     TEST_REQUIRES => {
         'Test::More' => '0.88',
-        'Test::MockModule' => 0,
     },
     clean => {
         FILES => join( ' ', qw{
