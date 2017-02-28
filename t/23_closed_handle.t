@@ -35,4 +35,3 @@ ok( !defined $opened_filehandles[0]
       || fileno( $opened_filehandles[0] ) == -1,
     "Filehandle is closed"
 );
-
