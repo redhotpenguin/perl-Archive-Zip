@@ -1,4 +1,4 @@
-#/usr/bin/perl -w
+#!/usr/bin/perl -w
 #
 # Shows one way to write a self-extracting archive file.
 # This is not intended for production use, and it always extracts to a

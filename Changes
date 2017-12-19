@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.60 Tue 19 Dec 2017
+    - RT 123913 Wrong shell bang in examples/selfex.pl
+
 1.58 Tue 2 Aug 2016
     - avoid relying on . being in @INC [github/karenetheridge]
     - update MANIFEST.SKIP [github/haarg]
