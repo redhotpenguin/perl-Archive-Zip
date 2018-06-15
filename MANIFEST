@@ -59,6 +59,7 @@ t/21_zip64.t
 t/22_deflated_dir.t
 t/23_closed_handle.t
 t/24_unicode_win32.t
+t/25_traversal.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
 t/common.pm
@@ -68,6 +69,7 @@ t/data/crypcomp.zip
 t/data/crypt.zip
 t/data/def.zip
 t/data/defstr.zip
+t/data/dotdot-from-unexistant-path.zip
 t/data/empty.zip
 t/data/emptydef.zip
 t/data/emptydefstr.zip
@@ -75,6 +77,7 @@ t/data/emptystore.zip
 t/data/emptystorestr.zip
 t/data/good_github11.zip
 t/data/jar.zip
+t/data/link-dir.zip
 t/data/linux.zip
 t/data/mkzip.pl
 t/data/perl.zip
