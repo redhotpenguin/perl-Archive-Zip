@@ -1145,6 +1145,9 @@ member is used as the name of the extracted file or
 directory.
 If you pass C<$extractedName>, it should be in the local file
 system's format.
+If you do not pass C<$extractedName> and the internal filename traverses
+a parent directory or a symbolic link, the extraction will be aborted with
+C<AC_ERROR> for security reason.
 All necessary directories will be created. Returns C<AZ_OK>
 on success.
 
@@ -1162,6 +1165,9 @@ extracted member (its paths will be deleted too). Otherwise,
 the internal filename of the member (minus paths) is used as
 the name of the extracted file or directory. Returns C<AZ_OK>
 on success.
+If you do not pass C<$extractedName> and the internal filename is equalled
+to a local symbolic link, the extraction will be aborted with C<AC_ERROR> for
+security reason.
 
 =item addMember( $member )
 
@@ -1609,6 +1615,8 @@ a/x to f:\d\e\x
 
 a/b/c to f:\d\e\b\c and ignore ax/d/e and d/e
 
+If the path to the extracted file traverses a parent directory or a symbolic
+link, the extraction will be aborted with C<AC_ERROR> for security reason.
 Returns an error code or AZ_OK if everything worked OK.
 
 =back
