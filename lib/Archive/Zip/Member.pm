@@ -6,7 +6,7 @@ use strict;
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.60';
+    $VERSION = '1.61';
     @ISA     = qw( Archive::Zip );
 
     if ($^O eq 'MSWin32') {
@@ -650,7 +650,7 @@ sub _dosToUnixTime {
 
 # Note, this is not exactly UTC 1980, it's 1980 + 12 hours and 1
 # minute so that nothing timezoney can muck us up.
-my $safe_epoch = 31.606060;
+my $safe_epoch = 31.616060;
 
 # convert a unix time to DOS date/time
 # NOT AN OBJECT METHOD!

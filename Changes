@@ -1,5 +1,9 @@
 Revision history for Perl extension Archive-Zip
 
+1.61 Sat 18 Aug 2018
+    - File::Find will not untaint [github/ThisUsedToBeAnEmail]
+    - Prevent from traversing symlinks and parent directories when extracting [github/ppisar]
+
 1.60 Tue 19 Dec 2017
     - RT 123913 Wrong shell bang in examples/selfex.pl
 
