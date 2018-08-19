@@ -778,7 +778,7 @@ sub addTree {
         $root = Win32::GetANSIPathName($root);
     }
     # File::Find will not untaint unless you explicitly pass the flag and regex pattern.
-    File::Find::find({ wanted => $wanted, untaint => 1, untaint_pat => $UNTAINT }, $root);
+    File::Find::find({ wanted => $wanted, untaint => 1, untaint_pattern => $UNTAINT }, $root);
 
     my $rootZipName = _asZipDirName($root, 1);    # with trailing slash
     my $pattern = $rootZipName eq './' ? '^' : "^\Q$rootZipName\E";
