@@ -28,16 +28,21 @@ my ($existed, $ret, $zip, $allowed_file, $forbidden_file);
 my @data_path = (File::Spec->splitdir(File::Spec->rel2abs('.')), 't', 'data');
 ok(chdir TESTDIR, "Working directory changed");
 
+# Symlink tests make sense only if a file system supports them.
+my $symlinks_not_supported;
+{
+    my $link = 'trylink';
+    $ret = eval { symlink('.', $link)};
+    $symlinks_not_supported = defined $@;
+    unlink $link;
+}
+
 # Case 1:
 #   link-dir -> /tmp
 #   link-dir/gotcha-linkdir
 # writes into /tmp/gotcha-linkdir file.
 SKIP: {
-    # Symlink tests make sense only if a file system supports them.
-    my $link = 'trylink';
-    $ret = eval { symlink('.', $link)};
-    skip 'Symbolic links are not supported', 12 if $@;
-    unlink $link;
+    skip 'Symbolic links are not supported', 12 unless $symlinks_not_supported;
 
     # Extracting an archive tree must fail
     $zip = Archive::Zip->new();
@@ -56,7 +61,7 @@ SKIP: {
 
     # The same applies to extracting an archive member without an explicit
     # local file name. It must abort.
-    $link = 'link-dir';
+    my $link = 'link-dir';
     ok(symlink('.', $link), 'A symlink to a directory created');
     $forbidden_file = File::Spec->catfile($link, 'gotcha-linkdir');
     $existed = -e $forbidden_file;
@@ -124,66 +129,71 @@ ok(unlink($allowed_file), 'File removed');
 #   link-file
 # writes into /tmp/gotcha-samename. It must abort. (Or replace the symlink in
 # more relaxed mode in the future.)
-$zip = Archive::Zip->new();
-isa_ok($zip, 'Archive::Zip');
-is($zip->read(File::Spec->catfile(@data_path, 'link-samename.zip')), AZ_OK,
-    'Archive read');
-$existed = -e File::Spec->catfile('', 'tmp', 'gotcha-samename');
-$ret = eval { $zip->extractTree() };
-is($ret, AZ_ERROR, 'Tree extraction aborted');
 SKIP: {
-    skip 'A canary file existed before the test', 1 if $existed;
-    ok(! -e File::Spec->catfile('', 'tmp', 'gotcha-samename'),
-        'A file was not created through a symlinked file');
+    skip 'Symbolic links are not supported', 18 unless $symlinks_not_supported;
+
+    $zip = Archive::Zip->new();
+    isa_ok($zip, 'Archive::Zip');
+    is($zip->read(File::Spec->catfile(@data_path, 'link-samename.zip')), AZ_OK,
+        'Archive read');
+    $existed = -e File::Spec->catfile('', 'tmp', 'gotcha-samename');
+    $ret = eval { $zip->extractTree() };
+    is($ret, AZ_ERROR, 'Tree extraction aborted');
+    SKIP: {
+        skip 'A canary file existed before the test', 1 if $existed;
+        ok(! -e File::Spec->catfile('', 'tmp', 'gotcha-samename'),
+            'A file was not created through a symlinked file');
+    }
+    ok(unlink(File::Spec->catfile('link-file')), 'link-file removed');
+
+    # The same applies to extracting an archive member using extractMember()
+    # without an explicit local file name. It must abort.
+    my $link = 'link-file';
+    my $target = 'target';
+    ok(symlink($target, $link), 'A symlink to a file created');
+    $forbidden_file = File::Spec->catfile($target);
+    $existed = -e $forbidden_file;
+    # Select a member by order due to same file names.
+    my $member = ${[$zip->members]}[1];
+    ok($member, 'A member to extract selected');
+    $ret = eval { $zip->extractMember($member) };
+    is($ret, AZ_ERROR,
+        'Member extraction using extractMember() without a local name aborted');
+    SKIP: {
+        skip 'A canary file existed before the test', 1 if $existed;
+        ok(! -e $forbidden_file,
+            'A symlinked target file was not created');
+    }
+
+    # But allow extracting an archive member using extractMember() into
+    # a supplied file name.
+    $allowed_file = $target;
+    $ret = eval { $zip->extractMember($member, $allowed_file) };
+    is($ret, AZ_OK, 'Member extraction using extractMember() passed');
+    ok(-e $allowed_file, 'File created');
+    ok(unlink($allowed_file), 'File removed');
+
+    # The same applies to extracting an archive member using
+    # extractMemberWithoutPaths() without an explicit local file name.
+    # It must abort.
+    $existed = -e $forbidden_file;
+    # Select a member by order due to same file names.
+    $ret = eval { $zip->extractMemberWithoutPaths($member) };
+    is($ret, AZ_ERROR,
+        'Member extraction using extractMemberWithoutPaths() without a local name aborted');
+    SKIP: {
+        skip 'A canary file existed before the test', 1 if $existed;
+        ok(! -e $forbidden_file,
+            'A symlinked target file was not created');
+    }
+
+    # But allow extracting an archive member using extractMemberWithoutPaths()
+    # into a supplied file name.
+    $allowed_file = $target;
+    $ret = eval { $zip->extractMemberWithoutPaths($member, $allowed_file) };
+    is($ret, AZ_OK,
+        'Member extraction using extractMemberWithoutPaths() passed');
+    ok(-e $allowed_file, 'File created');
+    ok(unlink($allowed_file), 'File removed');
+    ok(unlink($link), 'A symlink to a file removed');
 }
-ok(unlink(File::Spec->catfile('link-file')), 'link-file removed');
-
-# The same applies to extracting an archive member using extractMember()
-# without an explicit local file name. It must abort.
-my $link = 'link-file';
-my $target = 'target';
-ok(symlink($target, $link), 'A symlink to a file created');
-$forbidden_file = File::Spec->catfile($target);
-$existed = -e $forbidden_file;
-# Select a member by order due to same file names.
-my $member = ${[$zip->members]}[1];
-ok($member, 'A member to extract selected');
-$ret = eval { $zip->extractMember($member) };
-is($ret, AZ_ERROR,
-    'Member extraction using extractMember() without a local name aborted');
-SKIP: {
-    skip 'A canary file existed before the test', 1 if $existed;
-    ok(! -e $forbidden_file,
-        'A symlinked target file was not created');
-}
-
-# But allow extracting an archive member using extractMember() into a supplied
-# file name.
-$allowed_file = $target;
-$ret = eval { $zip->extractMember($member, $allowed_file) };
-is($ret, AZ_OK, 'Member extraction using extractMember() passed');
-ok(-e $allowed_file, 'File created');
-ok(unlink($allowed_file), 'File removed');
-
-# The same applies to extracting an archive member using
-# extractMemberWithoutPaths() without an explicit local file name.
-# It must abort.
-$existed = -e $forbidden_file;
-# Select a member by order due to same file names.
-$ret = eval { $zip->extractMemberWithoutPaths($member) };
-is($ret, AZ_ERROR,
-    'Member extraction using extractMemberWithoutPaths() without a local name aborted');
-SKIP: {
-    skip 'A canary file existed before the test', 1 if $existed;
-    ok(! -e $forbidden_file,
-        'A symlinked target file was not created');
-}
-
-# But allow extracting an archive member using extractMemberWithoutPaths()
-# into a supplied file name.
-$allowed_file = $target;
-$ret = eval { $zip->extractMemberWithoutPaths($member, $allowed_file) };
-is($ret, AZ_OK, 'Member extraction using extractMemberWithoutPaths() passed');
-ok(-e $allowed_file, 'File created');
-ok(unlink($allowed_file), 'File removed');
-ok(unlink($link), 'A symlink to a file removed');
