@@ -26,6 +26,7 @@ use Archive::Zip qw(
 );
 
 our $UNICODE;
+our $UNTAINT = qr/\A(.+)\z/;
 
 # Note that this returns undef on read errors, else new zip object.
 
@@ -729,7 +730,7 @@ sub _findEndOfCentralDirectory {
 # you have bigger problems than this.
 sub _untaintDir {
     my $dir = shift;
-    $dir =~ m/\A(.+)\z/s;
+    $dir =~ m/$UNTAINT/s;
     return $1;
 }
 
@@ -776,7 +777,8 @@ sub addTree {
     if ($^O eq 'MSWin32' && $Archive::Zip::UNICODE) {
         $root = Win32::GetANSIPathName($root);
     }
-    File::Find::find($wanted, $root);
+    # File::Find will not untaint unless you explicitly pass the flag and regex pattern.
+    File::Find::find({ wanted => $wanted, untaint => 1, untaint_pat => $UNTAINT }, $root);
 
     my $rootZipName = _asZipDirName($root, 1);    # with trailing slash
     my $pattern = $rootZipName eq './' ? '^' : "^\Q$rootZipName\E";
