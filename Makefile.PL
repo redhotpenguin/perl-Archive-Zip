@@ -47,6 +47,7 @@ WriteMakefile1(
         'IO::Handle'   => 0,
         'IO::Seekable' => 0,
         'Time::Local'  => 0,
+        'Encode'       => 0,
     },
     TEST_REQUIRES => {
         'Test::More' => '0.88',
