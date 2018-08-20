@@ -78,6 +78,7 @@ t/data/emptystorestr.zip
 t/data/good_github11.zip
 t/data/jar.zip
 t/data/link-dir.zip
+t/data/link-samename.zip
 t/data/linux.zip
 t/data/mkzip.pl
 t/data/perl.zip
