@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+1.63
+    - Added missing prereq Encode as suggested by CPANTS [github/manwar]
+
 1.62 Sun 19 Aug 2018
     - Add link-samename.zip to MANIFEST
 
