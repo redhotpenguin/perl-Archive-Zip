@@ -32,8 +32,7 @@ ok(chdir TESTDIR, "Working directory changed");
 my $symlinks_not_supported;
 {
     my $link = 'trylink';
-    $ret = eval { symlink('.', $link)};
-    $symlinks_not_supported = defined $@;
+    $symlinks_not_supported = !eval { symlink('.', $link) };
     unlink $link;
 }
 
@@ -42,7 +41,7 @@ my $symlinks_not_supported;
 #   link-dir/gotcha-linkdir
 # writes into /tmp/gotcha-linkdir file.
 SKIP: {
-    skip 'Symbolic links are not supported', 12 unless $symlinks_not_supported;
+    skip 'Symbolic links are not supported', 12 if $symlinks_not_supported;
 
     # Extracting an archive tree must fail
     $zip = Archive::Zip->new();
@@ -130,7 +129,7 @@ ok(unlink($allowed_file), 'File removed');
 # writes into /tmp/gotcha-samename. It must abort. (Or replace the symlink in
 # more relaxed mode in the future.)
 SKIP: {
-    skip 'Symbolic links are not supported', 18 unless $symlinks_not_supported;
+    skip 'Symbolic links are not supported', 18 if $symlinks_not_supported;
 
     $zip = Archive::Zip->new();
     isa_ok($zip, 'Archive::Zip');
