@@ -1,6 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
-1.63
+1.63 Wed 21 Aug 2018
+    - Restore missing META.yml deps (needed updated MB)
+    - Symlink traversal test fix [github/haarg]
     - Added missing prereq Encode as suggested by CPANTS [github/manwar]
 
 1.62 Sun 19 Aug 2018
