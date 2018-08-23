@@ -31,9 +31,9 @@ $Archive::Zip::UNICODE=1;
 mkpath([File::Spec->catdir(TESTDIR, 'folder')]);
 my $euro_filename = "euro-€";
 my $zero_file = File::Spec->catfile(TESTDIR, 'folder', $euro_filename);
-open(EURO, ">$zero_file");
-print EURO "File EURO\n";
-close(EURO);
+open(my $EURO, ">", "$zero_file") or die "ERROR: Unable to open $zero_file: $!";
+print $EURO "File EURO\n";
+close($EURO);
 
 # create member called $euro_filename with addTree
 {
