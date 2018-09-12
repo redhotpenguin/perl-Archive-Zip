@@ -637,7 +637,7 @@ sub _dosToUnixTime {
     my $dt = shift;
     return time() unless defined($dt);
 
-    my $year = (($dt >> 25) & 0x7f) + 80;
+    my $year = (($dt >> 25) & 0x7f) + 1980;
     my $mon  = (($dt >> 21) & 0x0f) - 1;
     my $mday = (($dt >> 16) & 0x1f);
 
