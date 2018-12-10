@@ -890,7 +890,7 @@ to read the contents of an archive:
     my $zip = Archive::Zip->new( 'xyz.zip' );
 
 If a filename argument is passed and the read fails for any
-reason, new will return undef. For this reason, it may be
+reason, new will return C<undef>. For this reason, it may be
 better to call read separately.
 
 =back
@@ -955,7 +955,7 @@ call it like:
 
     Archive::Zip::setErrorHandler( \&myErrorHandler );
 
-If myErrorHandler is undef, resets handler to default.
+If myErrorHandler is C<undef>, resets handler to default.
 Returns old error handler. Note that if you call Carp::carp
 or a similar routine or if you're chaining to the default
 error handler from your error handler, you may want to
@@ -1012,7 +1012,7 @@ Return a list of the (internal) file names of the zip members
 =item memberNamed( { zipName => $string } )
 
 Return ref to member whose filename equals given filename or
-undef. C<$string> must be in Zip (Unix) filename format.
+C<undef>. C<$string> must be in Zip (Unix) filename format.
 
 =item membersMatching( $regex )
 
@@ -1112,7 +1112,7 @@ that names be unique within a zip (this is not enforced).
 =item removeMember( { memberOrZipName => $memberOrName } )
 
 Remove and return the given member, or match its name and
-remove it. Returns undef if member or name does not exist in this
+remove it. Returns C<undef> if member or name does not exist in this
 Zip. No-op if member does not belong to this zip.
 
 =item replaceMember( $memberOrName, $newMember )
@@ -1121,7 +1121,7 @@ Zip. No-op if member does not belong to this zip.
     newMember => $newMember } )
 
 Remove and return the given member, or match its name and
-remove it. Replace with new member. Returns undef if member or
+remove it. Replace with new member. Returns C<undef> if member or
 name does not exist in this Zip, or if C<$newMember> is undefined.
 
 It is an (undiagnosed) error to provide a C<$newMember> that is a
@@ -1138,7 +1138,7 @@ member of the zip being modified.
     [, name => $extractedName ] } )
 
 Extract the given member, or match its name and extract it.
-Returns undef if member does not exist in this Zip. If
+Returns C<undef> if member does not exist in this Zip. If
 optional second arg is given, use it as the name of the
 extracted member. Otherwise, the internal filename of the
 member is used as the name of the extracted file or
@@ -1158,7 +1158,7 @@ on success.
 
 Extract the given member, or match its name and extract it.
 Does not use path information (extracts into the current
-directory). Returns undef if member does not exist in this
+directory). Returns C<undef> if member does not exist in this
 Zip.
 If optional second arg is given, use it as the name of the
 extracted member (its paths will be deleted too). Otherwise,
@@ -1175,8 +1175,8 @@ security reason.
 
 Append a member (possibly from another zip file) to the zip
 file. Returns the new member. Generally, you will use
-addFile(), addDirectory(), addFileOrDirectory(), addString(),
-or read() to add members.
+C<addFile()>, C<addDirectory()>, C<addFileOrDirectory()>, C<addString()>,
+or C<read()> to add members.
 
     # Move member named 'abc' to end of zip:
     my $member = $zip->removeMember( 'abc' );
@@ -1198,7 +1198,7 @@ non-directory) the size of the file.
     [, zipName => $newName, compressionLevel => $compressionLevel } ] )
 
 Append a member whose data comes from an external file,
-returning the member or undef. The member will have its file
+returning the member or C<undef>. The member will have its file
 name set to the name of the external file, and its
 desiredCompressionMethod set to COMPRESSION_DEFLATED. The
 file attributes and last modification time will be set from
@@ -1242,7 +1242,7 @@ Returns the new member.
 
 
 Append a member from the file or directory named $name. If
-$newName is given, use it for the name of the new member.
+C<$newName> is given, use it for the name of the new member.
 Will add or remove trailing slashes from $newName as needed.
 C<$name> must be in local file system format.
 The optional second argument sets the name of the archive
@@ -1269,7 +1269,7 @@ defaults.
 
 
 Returns the uncompressed data for a particular member, or
-undef.
+C<undef>.
 
     print "xyz.txt contains " . $zip->contents( 'xyz.txt' );
 
@@ -1617,7 +1617,7 @@ a/b/c to f:\d\e\b\c and ignore ax/d/e and d/e
 
 If the path to the extracted file traverses a parent directory or a symbolic
 link, the extraction will be aborted with C<AC_ERROR> for security reason.
-Returns an error code or AZ_OK if everything worked OK.
+Returns an error code or C<AZ_OK> if everything worked OK.
 
 =back
 
@@ -1644,8 +1644,8 @@ on Win32)>. Please report problems.
 =head2 Member Class Methods
 
 Several constructors allow you to construct members without adding
-them to a zip archive. These work the same as the addFile(),
-addDirectory(), and addString() zip instance methods described above,
+them to a zip archive. These work the same as the C<addFile()>,
+C<addDirectory()>, and C<addString()> zip instance methods described above,
 but they don't add the new members to a zip.
 
 =over 4
@@ -1655,7 +1655,7 @@ but they don't add the new members to a zip.
 =item Archive::Zip::Member->newFromString( { string => $stringOrStringRef
     [, zipName => $fileName ] )
 
-Construct a new member from the given string. Returns undef
+Construct a new member from the given string. Returns C<undef>
 on error.
 
     my $member = Archive::Zip::Member->newFromString( 'This is a test',
@@ -1664,7 +1664,7 @@ on error.
 
 =item newFromFile( { filename => $fileName [, zipName => $zipName ] } )
 
-Construct a new member from the given file. Returns undef on
+Construct a new member from the given file. Returns C<undef> on
 error.
 
     my $member = Archive::Zip::Member->newFromFile( 'xyz.txt' );
@@ -1682,7 +1682,7 @@ If given, C<$zipname> will be the name of the zip member; it must be a
 valid Zip (Unix) name. If not given, it will be converted from
 C<$directoryName>.
 
-Returns undef on error.
+Returns C<undef> on error.
 
     my $member = Archive::Zip::Member->newDirectoryNamed( 'CVS/' );
 
@@ -1753,7 +1753,7 @@ to COMPRESSION_DEFLATED.
 
 =item externalFileName()
 
-Return the member's external file name, if any, or undef.
+Return the member's external file name, if any, or C<undef>.
 
 =item fileName()
 
@@ -1958,8 +1958,8 @@ This reads the next chunk of given size from the member's
 data stream and compresses or uncompresses it as necessary,
 returning a reference to the bytes read and a status. If size
 argument is not given, defaults to global set by
-Archive::Zip::setChunkSize. Status is AZ_OK on success until
-the last chunk, where it returns AZ_STREAM_END. Returns C<(
+Archive::Zip::setChunkSize. Status is C<AZ_OK> on success until
+the last chunk, where it returns C<AZ_STREAM_END>. Returns C<(
 \$bytes, $status)>.
 
     my ( $outRef, $status ) = $self->readChunk();
@@ -1984,7 +1984,7 @@ Return true if the read has run out of data or encountered an error.
 
 =item contents()
 
-Return the entire uncompressed member data or undef in scalar
+Return the entire uncompressed member data or C<undef> in scalar
 context. When called in array context, returns C<( $string,
 $status )>; status will be AZ_OK on success:
 
