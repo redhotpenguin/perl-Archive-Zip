@@ -1658,7 +1658,9 @@ but they don't add the new members to a zip.
 Construct a new member from the given string. Returns undef
 on error.
 
-    my $member = Archive::Zip::Member->newFromString( 'This is a test',
+    my $member = Archive::Zip::Member->newFromString( 'This is a test' );
+    my $member = Archive::Zip::Member->newFromString( 'This is a test', 'test.txt' );
+    my $member = Archive::Zip::Member->newFromString( { string => 'This is a test', zipName => 'test.txt' } );
 
 =item newFromFile( $fileName [, $zipName ] )
 
