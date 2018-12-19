@@ -12,7 +12,8 @@ use File::Spec;
 use File::Path;
 use Archive::Zip qw(:CONSTANTS);
 
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 #101240: Possible issue with zero length files on Win32 when UNICODE is enabled

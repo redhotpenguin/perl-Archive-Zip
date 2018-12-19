@@ -17,7 +17,8 @@ BEGIN {
 	plan(tests => 13);
 	$nl = $^O eq 'MSWin32' ? "\r\n" : "\n";
 }
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 # normalize newlines for the platform we are running on

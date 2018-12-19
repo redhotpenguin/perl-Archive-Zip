@@ -5,7 +5,8 @@ use warnings;
 
 use Archive::Zip qw( :ERROR_CODES );
 use File::Spec;
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 use Test::More tests => 4;

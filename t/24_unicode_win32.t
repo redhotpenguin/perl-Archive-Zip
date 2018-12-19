@@ -15,7 +15,8 @@ use File::Temp;
 use File::Path;
 use File::Spec;
 
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 #Initialy written for MSWin32 only, but I found a bug in memberNames() so

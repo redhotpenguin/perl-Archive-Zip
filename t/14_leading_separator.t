@@ -20,7 +20,8 @@ use Archive::Zip;
 use Cwd        ();
 use File::Spec ();
 
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 my $file_relative_path = File::Spec->catfile(TESTDIR, 'file.txt');

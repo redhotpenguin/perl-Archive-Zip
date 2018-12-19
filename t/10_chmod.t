@@ -11,7 +11,8 @@ use File::Spec;
 use File::Path;
 use Archive::Zip;
 
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 sub get_perm {
