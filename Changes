@@ -1,5 +1,7 @@
 Revision history for Perl extension Archive-Zip
 
+    - Do not load modules from unsafe directories
+
 1.64 Wed 12 Sep 2018
     - Fix for year 2030
 
