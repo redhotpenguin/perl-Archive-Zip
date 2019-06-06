@@ -10,6 +10,7 @@ use Compress::Raw::Zlib ();
 use File::Spec          ();
 use File::Temp          ();
 use FileHandle          ();
+use overload            ();
 
 use vars qw( $VERSION @ISA );
 
@@ -443,7 +444,7 @@ sub _newFileHandle {
     my $status = 1;
     my $handle;
 
-    if (ref($fd)) {
+    if (ref($fd) && !overload::OverloadedStringify($fd)) {
         if (_ISA($fd, 'IO::Scalar') or _ISA($fd, 'IO::String')) {
             $handle = $fd;
         } elsif (_ISA($fd, 'IO::Handle') or ref($fd) eq 'GLOB') {
