@@ -49,7 +49,7 @@ sub contents {
           length($self->{'contents'});
         $self->{'compressionMethod'} = COMPRESSION_STORED;
     }
-    return $self->{'contents'};
+    return wantarray ? ($self->{'contents'}, AZ_OK) : $self->{'contents'};
 }
 
 # Return bytes read. Note that first parameter is a ref to a buffer.

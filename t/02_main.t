@@ -14,7 +14,7 @@ use FileHandle;
 use File::Path;
 use File::Spec;
 
-use Test::More tests => 141;
+use Test::More tests => 429;
 
 use lib 't';
 use common;
@@ -50,11 +50,16 @@ foreach my $unix_time (
 #####################################################################
 # Testing Archives
 
+# Enjoy the non-indented freedom!
+for my $desiredZip64Mode (ZIP64_AS_NEEDED, ZIP64_EOCD, ZIP64_HEADERS) {
+
 #--------- empty file
 # new	# Archive::Zip
 # new	# Archive::Zip::Archive
 my $zip = Archive::Zip->new();
 isa_ok($zip, 'Archive::Zip');
+
+$zip->desiredZip64Mode($desiredZip64Mode);
 
 # members	# Archive::Zip::Archive
 my @members = $zip->members;
@@ -517,7 +522,8 @@ is($zip->extractMember($members[8]), AZ_OK);
 
 #--------- Change the contents of a string member
 is(ref($members[2]), 'Archive::Zip::StringMember');
-$members[2]->contents("This is my new contents\n");
+(undef, $status) = $members[2]->contents("This is my new contents\n");
+is($status, AZ_OK);
 
 #--------- write zip out and test it.
 $status = $zip->writeToFileNamed(OUTPUTZIP);
@@ -534,7 +540,8 @@ SKIP: {
 
 #--------- Change the contents of a file member
 is(ref($members[1]), 'Archive::Zip::NewFileMember');
-$members[1]->contents("This is my new contents\n");
+(undef, $status) = $members[1]->contents("This is my new contents\n");
+is($status, AZ_OK);
 
 #--------- write zip out and test it.
 $status = $zip->writeToFileNamed(OUTPUTZIP);
@@ -552,7 +559,8 @@ SKIP: {
 #--------- Change the contents of a zip member
 
 is(ref($members[7]), 'Archive::Zip::ZipFileMember');
-$members[7]->contents("This is my new contents\n");
+(undef, $status) = $members[7]->contents("This is my new contents\n");
+is($status, AZ_OK);
 
 #--------- write zip out and test it.
 $status = $zip->writeToFileNamed(OUTPUTZIP);
@@ -567,8 +575,93 @@ SKIP: {
     is($status, 0);
 }
 
-#--------- now clean up
-# END { system("rm -rf " . TESTDIR . " " . OUTPUTZIP . " " . INPUTZIP) }
+}
+
+#####################################################################
+# Testing Member Methods
+
+#--------- Test methods related to extra fields
+
+my $inv0ExtraField  = pack('v',           0x000d);
+my $inv1ExtraField  = pack('v v V V v',   0x000d, 12, 0, 0, 0);
+my $unx0ExtraField  = pack('v v V V v v', 0x000d, 12, 0, 0, 0, 0);
+my $unx1ExtraField  = pack('v v V V v v', 0x000d, 12, 1, 1, 1, 1);
+my $zip64ExtraField = pack('v v',         0x0001,  0);
+
+# cdExtraField                  # Archive::Zip::Member
+# _extractZip64ExtraField       # Archive::Zip::Member
+
+#--------- Non-error cases
+
+my $member = Archive::Zip::Member->newFromString(TESTSTRING);
+ok(defined($member));
+is($member->cdExtraField(), '');
+is($member->cdExtraField($unx0ExtraField), AZ_OK);
+is($member->cdExtraField(), $unx0ExtraField);
+is($member->cdExtraField(''), AZ_OK);
+is($member->cdExtraField(), '');
+
+#--------- Error cases
+
+{
+    my @errors;
+    local $Archive::Zip::ErrorHandler = sub { push @errors, @_ };
+
+    @errors = ();
+    is($member->cdExtraField($inv0ExtraField), AZ_FORMAT_ERROR);
+    ok($errors[0] =~ /\Qinvalid extra field (bad header ID or data size)\E/);
+    is($member->cdExtraField(), '');
+
+    @errors = ();
+    is($member->cdExtraField($inv1ExtraField), AZ_FORMAT_ERROR);
+    ok($errors[0] =~ /\Qinvalid extra field (bad data)\E/);
+    is($member->cdExtraField(), '');
+
+    @errors = ();
+    is($member->cdExtraField($zip64ExtraField), AZ_FORMAT_ERROR);
+    ok($errors[0] =~ /\Qinvalid extra field (contains zip64 information)\E/);
+    is($member->cdExtraField(), '');
+}
+
+# localExtraField               # Archive::Zip::Member
+# _extractZip64ExtraField       # Archive::Zip::Member
+
+#--------- Non-error cases
+
+$member = Archive::Zip::Member->newFromString(TESTSTRING);
+ok(defined($member));
+is($member->localExtraField(), '');
+is($member->localExtraField($unx0ExtraField), AZ_OK);
+is($member->localExtraField(), $unx0ExtraField);
+is($member->localExtraField(''), AZ_OK);
+is($member->localExtraField(), '');
+
+#--------- Error cases
+
+{
+    my @errors;
+    local $Archive::Zip::ErrorHandler = sub { push @errors, @_ };
+
+    @errors = ();
+    is($member->localExtraField($inv0ExtraField), AZ_FORMAT_ERROR);
+    ok($errors[0] =~ /\Qinvalid extra field (bad header ID or data size)\E/);
+    is($member->localExtraField(), '');
+
+    @errors = ();
+    is($member->localExtraField($inv1ExtraField), AZ_FORMAT_ERROR);
+    ok($errors[0] =~ /\Qinvalid extra field (bad data)\E/);
+    is($member->localExtraField(), '');
+
+    @errors = ();
+    is($member->localExtraField($zip64ExtraField), AZ_FORMAT_ERROR);
+    ok($errors[0] =~ /\Qinvalid extra field (contains zip64 information)\E/);
+    is($member->localExtraField(), '');
+}
+
+# extraFields   # Archive::Zip::Member
+is($member->localExtraField($unx0ExtraField), AZ_OK);
+is($member->cdExtraField($unx1ExtraField), AZ_OK);
+is($member->extraFields(), "$unx0ExtraField$unx1ExtraField");
 
 #--------------------- STILL UNTESTED IN THIS SCRIPT ---------------------
 
@@ -581,7 +674,6 @@ SKIP: {
 # sub numberOfCentralDirectoriesOnThisDisk	# Archive::Zip::Archive
 # sub numberOfCentralDirectories	# Archive::Zip::Archive
 # sub centralDirectoryOffsetWRTStartingDiskNumber	# Archive::Zip::Archive
-# sub extraField	# Archive::Zip::Member
 # sub isEncrypted	# Archive::Zip::Member
 # sub isTextFile	# Archive::Zip::Member
 # sub isBinaryFile	# Archive::Zip::Member

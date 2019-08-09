@@ -38,9 +38,9 @@ $fh->readFromFile($zipFileName) or exit($!);
 my $status = $zip->_findEndOfCentralDirectory($fh);
 die("can't find EOCD\n") if $status != AZ_OK;
 
-my $eocdPosition = $fh->tell();
+my $eocdPosition;
 
-$status = $zip->_readEndOfCentralDirectory($fh);
+($status, $eocdPosition) = $zip->_readEndOfCentralDirectory($fh, $zipFileName);
 die("can't read EOCD\n") if $status != AZ_OK;
 
 my $zipDumper = Data::Dumper->new([$zip], ['ZIP']);
@@ -76,7 +76,7 @@ foreach my $n (0 .. $numberOfMembers - 1) {
         print "Found central directory for member #$index at $cdPos\n";
         $fh->seek($cdPos + SIGNATURE_LENGTH, 0);    # SEEK_SET
         my $newMember =
-          Archive::Zip::Member->_newFromZipFile($fh, "($zipFileName)");
+          Archive::Zip::Member->_newFromZipFile($fh, "($zipFileName)", $zip->{'zip64'});
         $status = $newMember->_readCentralDirectoryFileHeader();
         if ($status != AZ_OK and $status != AZ_STREAM_END) {
             printf "read CD header status=%d\n", $status;
@@ -109,7 +109,8 @@ foreach my $n (0 .. $#members) {
     $fh->seek(
         $member->localHeaderRelativeOffset() + $eocdOffset + SIGNATURE_LENGTH,
         0);
-    $status = $member->_readLocalFileHeader();
+    my $localHeaderSize;
+    ($status, $localHeaderSize) = $member->_readLocalFileHeader();
     if ($status != AZ_OK and $status != AZ_STREAM_END) {
         printf "member %d read header status=%d\n", $n + 1, $status;
         last;
@@ -121,7 +122,7 @@ foreach my $n (0 .. $#members) {
 
     my $endOfMember =
       $member->localHeaderRelativeOffset() +
-      $member->_localHeaderSize() +
+      $localHeaderSize +
       $member->compressedSize();
 
     if (
