@@ -93,7 +93,7 @@ is($zip->read(File::Spec->catfile(@data_path,
 $forbidden_file = File::Spec->catfile('..', '..', '..', '..', 'tmp',
     'gotcha-dotdot-unexistingpath');
 SKIP: {
-    skip(2) if $^O eq 'MSWin32';
+    skip "No /tmp on Windows", 2 if $^O eq 'MSWin32';
 
     $existed = -e $forbidden_file;
     $ret = eval { $zip->extractTree() };
