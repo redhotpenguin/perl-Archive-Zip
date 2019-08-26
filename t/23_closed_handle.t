@@ -6,9 +6,16 @@ use strict;
 use warnings;
 
 use Archive::Zip;
-use Test::MockModule;
+use Test::More;
 
-use Test::More tests => 2;
+eval { require Test::MockModule } ;
+
+if ($@) {
+    plan skip_all => "Module Test::MockModule not available"
+}
+else {   
+    plan tests => 2
+}
 
 # array to store open filhandles
 my @opened_filehandles;
