@@ -11,7 +11,8 @@ use File::Spec;
 use IO::File;
 
 use Test::More tests => 17;
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 sub runPerlCommand {

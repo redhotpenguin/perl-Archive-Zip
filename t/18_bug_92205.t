@@ -8,7 +8,8 @@ BEGIN {
 }
 
 use Test::More tests => 32;
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 use Archive::Zip qw( :CONSTANTS );
 

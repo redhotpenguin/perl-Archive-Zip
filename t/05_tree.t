@@ -13,7 +13,8 @@ use FileHandle;
 use File::Spec;
 
 use Test::More tests => 6;
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 use constant FILENAME => File::Spec->catfile(TESTDIR, 'testing.txt');

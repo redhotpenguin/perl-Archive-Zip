@@ -8,7 +8,8 @@ BEGIN {
 }
 
 use Test::More tests => 2;
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 # RT #101092: Creation of non-standard streamed zip file

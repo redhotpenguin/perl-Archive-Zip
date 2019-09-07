@@ -18,7 +18,8 @@ use Archive::Zip;
 use File::Path;
 use File::Spec;
 
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 mkpath([File::Spec->catdir(TESTDIR, 'folder')]);

@@ -10,7 +10,8 @@ use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Archive::Zip::MemberRead;
 
 use Test::More tests => 10;
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 use constant FILENAME => File::Spec->catfile(TESTDIR, 'member_read.zip');

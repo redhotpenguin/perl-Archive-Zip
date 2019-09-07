@@ -4,7 +4,6 @@
 
 use 5.006;
 use strict;
-use lib qw( blib/lib lib );
 use Archive::Zip;
 use FileHandle;
 

@@ -16,7 +16,8 @@ use File::Spec;
 
 use Test::More tests => 141;
 
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 #####################################################################

@@ -14,7 +14,8 @@ use File::Find ();
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 use Test::More tests => 12;
-use lib 't';
+use FindBin;
+use lib $FindBin::Bin;
 use common;
 
 my ($testFileVolume, $testFileDirs, $testFileName) = File::Spec->splitpath($0);
