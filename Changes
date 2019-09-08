@@ -1,5 +1,13 @@
 Revision history for Perl extension Archive-Zip
 
+1.65 Sat 7 Sep 2019
+    - Fix for members using bzip compression [github/pmqs]
+    - NetBSD doesn't mind empty zips [github/pmqs]
+    - Solaris test failure, Add diag to failing test to collect data [github/pmqs]
+    - Test for presence of Test::MockModule [github/pmqs]
+    - Fix skip line for Windows [github/pmqs]
+    - Skip tests that assume /tmp on Windows [github/pmqs]
+
 1.64 Wed 12 Sep 2018
     - Fix for year 2030
 
