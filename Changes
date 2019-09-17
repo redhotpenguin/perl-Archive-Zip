@@ -1,6 +1,6 @@
 Revision history for Perl extension Archive-Zip
 
-1.66 Mon 16 Sep 2019
+1.65 Fri 13 Sep 2019
     - Refactored low-level methods for reading and writing zip files
       in zip64 format.  Added new parameters and return values to
       most of these.  Extended constants in Archive::Zip to cover
