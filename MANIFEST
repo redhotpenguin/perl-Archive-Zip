@@ -60,6 +60,7 @@ t/22_deflated_dir.t
 t/23_closed_handle.t
 t/24_unicode_win32.t
 t/25_traversal.t
+t/26_symlinks.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
 t/common.pm
@@ -86,5 +87,10 @@ t/data/perl.zip
 t/data/store.zip
 t/data/storestr.zip
 t/data/streamed.zip
+t/data/symlink.zip
 t/data/winzip.zip
+t/data/zip64-azeocd.zip
+t/data/zip64-azheaders.zip
+t/data/zip64-infozip.zip
+t/data/zip64-iocz.zip
 t/data/zip64.zip
