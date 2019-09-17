@@ -92,14 +92,17 @@ is($zip->read(File::Spec->catfile(@data_path,
             'dotdot-from-unexistant-path.zip')), AZ_OK, 'Archive read');
 $forbidden_file = File::Spec->catfile('..', '..', '..', '..', 'tmp',
     'gotcha-dotdot-unexistingpath');
-$existed = -e $forbidden_file;
-$ret = eval { $zip->extractTree() };
-is($ret, AZ_ERROR, 'Tree extraction aborted');
 SKIP: {
-    skip 'A canary file existed before the test', 1 if $existed;
-    ok(! -e $forbidden_file, 'A file was not created in a parent directory');
-}
+    skip "No /tmp on Windows", 2 if $^O eq 'MSWin32';
 
+    $existed = -e $forbidden_file;
+    $ret = eval { $zip->extractTree() };
+    is($ret, AZ_ERROR, 'Tree extraction aborted');
+    SKIP: {
+        skip 'A canary file existed before the test', 1 if $existed;
+        ok(! -e $forbidden_file, 'A file was not created in a parent directory');
+    }
+}
 # The same applies to extracting an archive member without an explicit local
 # file name. It must abort.
 $existed = -e $forbidden_file;

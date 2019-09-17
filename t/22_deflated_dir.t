@@ -22,5 +22,6 @@ my ($status, $zipout) = testZip();
 # STDERR->print("status= $status, out=$zipout\n");
 SKIP: {
     skip( "test zip doesn't work", 1 ) if $testZipDoesntWork;
-    is( $status, 0, "output zip isn't corrupted" );
+    is( $status, 0, "output zip isn't corrupted" )
+        or diag "status=$status, out='$zipout'\n";
 }
