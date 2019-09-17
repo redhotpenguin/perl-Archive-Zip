@@ -13,7 +13,7 @@ use Carp;
 use vars qw{$VERSION};
 
 BEGIN {
-    $VERSION = '1.65';
+    $VERSION = '1.66';
     $VERSION = eval $VERSION;
 }
 
