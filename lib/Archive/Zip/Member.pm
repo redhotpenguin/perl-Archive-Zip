@@ -673,7 +673,7 @@ sub _extractZip64ExtraField
             @fields = (undef, 0xffffffff, 0xffffffff, 0xffffffff, 0xffff);
         }
         else {
-            @fields = map { $_ // 0 } @_;
+            @fields = map { defined $_ ? $_ : 0 } @_;
         }
 
         my @fieldIndexes  = (0);
@@ -807,7 +807,7 @@ sub _unixToDosTime {
 sub _writeLocalFileHeader {
     my $self    = shift;
     my $fh      = shift;
-    my $refresh = shift // 0;
+    my $refresh = @_ ? shift : 0;
 
     my $zip64 = $self->zip64();
     my $hasDataDescriptor = $self->hasDataDescriptor();
