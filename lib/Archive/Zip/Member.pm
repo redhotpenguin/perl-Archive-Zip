@@ -673,7 +673,7 @@ sub _extractZip64ExtraField
             @fields = (undef, 0xffffffff, 0xffffffff, 0xffffffff, 0xffff);
         }
         else {
-            @fields = map { defined $_ ? $_ : 0 } @_;
+            @fields = map { $_ // 0 } @_;
         }
 
         my @fieldIndexes  = (0);
@@ -807,20 +807,18 @@ sub _unixToDosTime {
 sub _writeLocalFileHeader {
     my $self    = shift;
     my $fh      = shift;
-    my $refresh = @_ ? shift : 0;
+    my $refresh = shift // 0;
 
     my $zip64 = $self->zip64();
     my $hasDataDescriptor = $self->hasDataDescriptor();
 
-    my $versionNeededToExtract;
+    my $versionNeededToExtract = $self->versionNeededToExtract();
     my $crc32;
     my $compressedSize;
     my $uncompressedSize;
     my $localExtraField = $self->localExtraField();
 
     if (! $zip64) {
-        $versionNeededToExtract = 20;
-
         if ($refresh) {
             $crc32            = $self->crc32();
             $compressedSize   = $self->_writeOffset();
@@ -846,7 +844,7 @@ sub _writeLocalFileHeader {
         }
     }
     else {
-        $versionNeededToExtract = 45;
+        $versionNeededToExtract = 45 if ($versionNeededToExtract < 45);
 
         my $zip64CompressedSize;
         my $zip64UncompressedSize;
@@ -956,20 +954,18 @@ sub _writeCentralDirectoryFileHeader {
 
     $self->{'zip64'} ||= $zip64;
 
-    my $versionMadeBy;
-    my $versionNeededToExtract;
+    my $versionMadeBy             = $self->versionMadeBy();
+    my $versionNeededToExtract    = $self->versionNeededToExtract();
     my $compressedSize            = $self->_writeOffset();
     my $uncompressedSize          = $self->uncompressedSize();
     my $localHeaderRelativeOffset = $self->writeLocalHeaderRelativeOffset();
     my $cdExtraField              = $self->cdExtraField();
 
-    if (! $zip64) {
-        $versionMadeBy             = 20;
-        $versionNeededToExtract    = 20;
+    if (!$zip64) {
+        # no-op
     }
     else {
-        $versionMadeBy             = 45;
-        $versionNeededToExtract    = 45;
+        $versionNeededToExtract = 45 if ($versionNeededToExtract < 45);
 
         my $extraFieldFormat = '';
         my @extraFieldValues = ();
@@ -1049,7 +1045,6 @@ sub _writeCentralDirectoryFileHeader {
     # changed while writing this member.  We already did the
     # zip64 flag.  We must not update the extra fields with any
     # zip64 information, since we consider that internal.
-    $self->{'versionMadeBy'}          = $versionMadeBy;
     $self->{'versionNeededToExtract'} = $versionNeededToExtract;
     $self->{'compressedSize'}         = $self->_writeOffset();
 

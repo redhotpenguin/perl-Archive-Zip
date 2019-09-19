@@ -2167,6 +2167,41 @@ If you are just going to be extracting zips (and/or other archives) you
 are recommended to look at using L<Archive::Extract> instead, as it is much
 easier to use and factors out archive-specific functionality.
 
+=head2 C<versionMadeBy> and C<versionNeededToExtract>
+
+The zip64 format and the zip file format in general specify what
+values to use for the C<versionMadeBy> and
+C<versionNeededToExtract> fields in the local file header,
+central directory file header, and zip64 EOCD record.  In
+practice however, these fields seem to be more or less randomly
+used by various archiver implementations.
+
+To achieve a compromise between backward compatibility and
+(whatever) standard compliance, Archive::Zip handles them as
+follows:
+
+=over 4
+
+=item
+
+For field C<versionMadeBy>, Archive::Zip uses default value 20
+(45 for the zip64 EOCD record) or any previously read value. It
+never changes that value when writing a header, even if it is
+written in zip64 format, or when writing the zip64 EOCD record.
+
+=item
+
+Likewise for field C<versionNeededToExtract>, but here
+Archive::Zip forces a minimum value of 45 when writing a header
+in zip64 format or the zip64 EOCD record.
+
+=item
+
+Finally, Archive::Zip never depends on the values of these fields
+in any way when reading an archive from a file or file handle.
+
+=back
+
 =head2 Try to avoid IO::Scalar
 
 One of the most common ways to use Archive::Zip is to generate Zip files
