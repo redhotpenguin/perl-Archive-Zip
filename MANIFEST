@@ -61,7 +61,7 @@ t/23_closed_handle.t
 t/24_unicode_win32.t
 t/25_traversal.t
 t/26_bug_26.t
-t/276_symlinks.t
+t/27_symlinks.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
 t/common.pm
