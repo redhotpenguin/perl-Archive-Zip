@@ -1341,10 +1341,7 @@ sub _writeToFileHandle {
     # Determine if I need to write a data descriptor
     # I need to do this if I can't refresh the header
     # and I don't know compressed size or crc32 fields.
-    my $headerFieldsUnknown = (
-        ($self->uncompressedSize() > 0)
-          and ($self->compressionMethod() == COMPRESSION_STORED
-            or $self->desiredCompressionMethod() == COMPRESSION_DEFLATED));
+    my $headerFieldsUnknown = $self->uncompressedSize() > 0 ;
 
     my $shouldWriteDataDescriptor =
       ($headerFieldsUnknown and not $fhIsSeekable);
