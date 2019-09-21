@@ -595,8 +595,8 @@ sub _writeEndOfCentralDirectory {
     my ($self, $fh, $membersZip64) = @_;
 
     my $zip64                                 = 0;
-    my $versionMadeBy                         = 0;
-    my $versionNeededToExtract                = 0;
+    my $versionMadeBy                         = $self->versionMadeBy();
+    my $versionNeededToExtract                = $self->versionNeededToExtract();
     my $diskNumber                            = 0;
     my $diskNumberWithStartOfCentralDirectory = 0;
     my $numberOfCentralDirectoriesOnThisDisk  = $self->numberOfMembers();
@@ -617,8 +617,8 @@ sub _writeEndOfCentralDirectory {
         || $eocdDataZip64
         || $self->desiredZip64Mode() == ZIP64_EOCD) {
         $zip64                  = 1;
-        $versionMadeBy          = 45;
-        $versionNeededToExtract = 45;
+        $versionMadeBy          = 45 if ($versionMadeBy == 0);
+        $versionNeededToExtract = 45 if ($versionNeededToExtract < 45);
 
         $self->_print($fh, ZIP64_END_OF_CENTRAL_DIRECTORY_RECORD_SIGNATURE_STRING)
           or return _ioError('writing zip64 EOCD record signature');
