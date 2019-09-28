@@ -53,6 +53,11 @@ foreach my $unix_time (
 # Enjoy the non-indented freedom!
 for my $desiredZip64Mode (ZIP64_AS_NEEDED, ZIP64_EOCD, ZIP64_HEADERS) {
 
+SKIP:
+{
+skip("zip64 format not supported", 126)
+    unless ZIP64_SUPPORTED || $desiredZip64Mode == ZIP64_AS_NEEDED;
+
 #--------- empty file
 # new	# Archive::Zip
 # new	# Archive::Zip::Archive
@@ -578,7 +583,9 @@ SKIP: {
     is($status, 0);
 }
 
-}
+} # SKIP:
+
+} # for my $desiredZip64Mode
 
 #####################################################################
 # Testing Member Methods
@@ -620,10 +627,14 @@ is($member->cdExtraField(), '');
     ok($errors[0] =~ /\Qinvalid extra field (bad data)\E/);
     is($member->cdExtraField(), '');
 
-    @errors = ();
-    is($member->cdExtraField($zip64ExtraField), AZ_FORMAT_ERROR);
-    ok($errors[0] =~ /\Qinvalid extra field (contains zip64 information)\E/);
-    is($member->cdExtraField(), '');
+    SKIP: {
+        skip("zip64 format not supported", 3)
+            unless ZIP64_SUPPORTED;
+        @errors = ();
+        is($member->cdExtraField($zip64ExtraField), AZ_FORMAT_ERROR);
+        ok($errors[0] =~ /\Qinvalid extra field (contains zip64 information)\E/);
+        is($member->cdExtraField(), '');
+    }
 }
 
 # localExtraField               # Archive::Zip::Member
@@ -655,10 +666,14 @@ is($member->localExtraField(), '');
     ok($errors[0] =~ /\Qinvalid extra field (bad data)\E/);
     is($member->localExtraField(), '');
 
-    @errors = ();
-    is($member->localExtraField($zip64ExtraField), AZ_FORMAT_ERROR);
-    ok($errors[0] =~ /\Qinvalid extra field (contains zip64 information)\E/);
-    is($member->localExtraField(), '');
+    SKIP: {
+        skip("zip64 format not supported", 3)
+            unless ZIP64_SUPPORTED;
+        @errors = ();
+        is($member->localExtraField($zip64ExtraField), AZ_FORMAT_ERROR);
+        ok($errors[0] =~ /\Qinvalid extra field (contains zip64 information)\E/);
+        is($member->localExtraField(), '');
+    }
 }
 
 # extraFields   # Archive::Zip::Member

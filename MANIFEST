@@ -62,6 +62,7 @@ t/24_unicode_win32.t
 t/25_traversal.t
 t/26_bzip2.t
 t/27_symlinks.t
+t/28_zip64_unsupported.t
 t/badjpeg/expected.jpg
 t/badjpeg/source.zip
 t/common.pm

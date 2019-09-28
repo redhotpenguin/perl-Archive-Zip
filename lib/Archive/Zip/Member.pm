@@ -639,6 +639,8 @@ sub _extractZip64ExtraField
 
     my $zip64 = 0;
     if (defined($zip64Data)) {
+        return _zip64NotSupported() unless ZIP64_SUPPORTED;
+
         my $dataLength = length($zip64Data);
 
         # Try to be tolerant with respect to the fields to be
@@ -844,6 +846,8 @@ sub _writeLocalFileHeader {
         }
     }
     else {
+        return _zip64NotSupported() unless ZIP64_SUPPORTED;
+
         $versionNeededToExtract = 45 if ($versionNeededToExtract < 45);
 
         my $zip64CompressedSize;
@@ -965,6 +969,8 @@ sub _writeCentralDirectoryFileHeader {
         # no-op
     }
     else {
+        return _zip64NotSupported() unless ZIP64_SUPPORTED;
+
         $versionNeededToExtract = 45 if ($versionNeededToExtract < 45);
 
         my $extraFieldFormat = '';
@@ -1077,6 +1083,8 @@ sub _writeDataDescriptor {
                $self->uncompressedSize());
     }
     else {
+        return _zip64NotSupported() unless ZIP64_SUPPORTED;
+
         $descriptor =
           pack(SIGNATURE_FORMAT . DATA_DESCRIPTOR_ZIP64_FORMAT,
                DATA_DESCRIPTOR_SIGNATURE,
@@ -1333,11 +1341,18 @@ sub _writeToFileHandle {
 
     $self->{'writeLocalHeaderRelativeOffset'} = $offset;
 
+    # Determine if I need to refresh the header in a second pass
+    # later.  If in doubt, I'd rather refresh, since it does not
+    # seem to be worth the hassle to save the extra seeks and
+    # writes.  In addition, having below condition independent of
+    # any specific compression methods helps me piping through
+    # members with unknown compression methods unchanged.  See
+    # test t/26_bzip2.t for details.
+    my $headerFieldsUnknown = $self->uncompressedSize() > 0;
+
     # Determine if I need to write a data descriptor
     # I need to do this if I can't refresh the header
     # and I don't know compressed size or crc32 fields.
-    my $headerFieldsUnknown = $self->uncompressedSize() > 0 ;
-
     my $shouldWriteDataDescriptor =
       ($headerFieldsUnknown and not $fhIsSeekable);
 

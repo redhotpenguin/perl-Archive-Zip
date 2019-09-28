@@ -616,6 +616,8 @@ sub _writeEndOfCentralDirectory {
     if (   $membersZip64
         || $eocdDataZip64
         || $self->desiredZip64Mode() == ZIP64_EOCD) {
+        return _zip64NotSupported() unless ZIP64_SUPPORTED;
+
         $zip64                  = 1;
         $versionMadeBy          = 45 if ($versionMadeBy == 0);
         $versionNeededToExtract = 45 if ($versionNeededToExtract < 45);
@@ -846,6 +848,12 @@ sub _readEndOfCentralDirectory {
     # reading the regular EOCD.
   NOZIP64:
     {
+        # Do not even start looking for any zip64 structures if
+        # that would not be supported.
+        if (! ZIP64_SUPPORTED) {
+            last NOZIP64;
+        }
+
         if ($eocdPosition < ZIP64_END_OF_CENTRAL_DIRECTORY_LOCATOR_LENGTH + SIGNATURE_LENGTH) {
             last NOZIP64;
         }
@@ -935,7 +943,7 @@ sub _readEndOfCentralDirectory {
         # zip file comment!
         $fh->seek($eocdPosition, IO::Seekable::SEEK_SET)
           or return _ioError("seeking to EOCD");
-    }    
+    }
 
     # Skip past signature
     $fh->seek(SIGNATURE_LENGTH, IO::Seekable::SEEK_CUR)
@@ -958,6 +966,20 @@ sub _readEndOfCentralDirectory {
             $self->{'centralDirectoryOffsetWRTStartingDiskNumber'},
             $zipfileCommentLength
         ) = unpack(END_OF_CENTRAL_DIRECTORY_FORMAT, $header);
+
+        if (   $self->{'diskNumber'}                                  == 0xffff
+            || $self->{'diskNumberWithStartOfCentralDirectory'}       == 0xffff
+            || $self->{'numberOfCentralDirectoriesOnThisDisk'}        == 0xffff
+            || $self->{'numberOfCentralDirectories'}                  == 0xffff
+            || $self->{'centralDirectorySize'}                        == 0xffffffff
+            || $self->{'centralDirectoryOffsetWRTStartingDiskNumber'} == 0xffffffff) {
+            if (ZIP64_SUPPORTED) {
+                return _formatError("unexpected zip64 marker values in EOCD");
+            }
+            else {
+                return _zip64NotSupported();
+            }
+        }
     }
     else {
         (

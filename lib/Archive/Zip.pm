@@ -39,6 +39,7 @@ BEGIN {
     %EXPORT_TAGS = (
         CONSTANTS => [
             qw(
+              ZIP64_SUPPORTED
               FA_MSDOS
               FA_UNIX
               GPBF_ENCRYPTED_MASK
@@ -157,6 +158,7 @@ BEGIN {
               _printError
               _ioError
               _formatError
+              _zip64NotSupported
               _subclassResponsibility
               _binmode
               _isSeekable
@@ -178,6 +180,9 @@ BEGIN {
           ));
 
 }
+
+# Zip64 format support status
+use constant ZIP64_SUPPORTED => !! eval { pack("Q<", 1) };
 
 # Error codes
 use constant AZ_OK           => 0;
@@ -404,6 +409,14 @@ sub _ioError {
 sub _error {
     shift if ref($_[0]);
     _printError('error:', @_);
+    return AZ_ERROR;
+}
+
+# This is called if zip64 format is not supported but would be
+# required.
+sub _zip64NotSupported {
+    shift if ref($_[0]);
+    _printError('zip64 format not supported on this Perl interpreter');
     return AZ_ERROR;
 }
 
@@ -2166,6 +2179,22 @@ L<Time::Local>
 If you are just going to be extracting zips (and/or other archives) you
 are recommended to look at using L<Archive::Extract> instead, as it is much
 easier to use and factors out archive-specific functionality.
+
+=head2 Zip64 Format Support
+
+Since version 1.66 Archive::Zip supports the so-called zip64
+format, which overcomes various limitations in the original zip
+file format.  On some Perl interpreters, however, even version
+1.66 and newer of Archive::Zip cannot support the zip64 format.
+Among these are all Perl interpreters that lack 64-bit support
+and those older than version 5.10.0.
+
+Constant C<ZIP64_SUPPORTED>, exported with tag L<:CONSTANTS>,
+equals true if Archive::Zip on the current Perl interpreter
+supports the zip64 format.  If it does not and you try to read or
+write an archive in zip64 format, anyway, Archive::Zip returns an
+error C<AZ_ERROR> and reports an error message along the lines of
+"zip64 format not supported on this Perl interpreter".
 
 =head2 C<versionMadeBy> and C<versionNeededToExtract>
 
