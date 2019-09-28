@@ -5,12 +5,17 @@ use warnings;
 
 use Archive::Zip qw( :CONSTANTS :ERROR_CODES );
 use File::Spec;
+use Test::More;
 use lib 't';
 use common;
 
 # Test zip64 format
 
-use Test::More tests => 80;
+if (ZIP64_SUPPORTED) {
+    plan(tests => 80);
+} else {
+    plan(skip_all => 'Zip64 format not supported.');
+}
 
 sub runPerlCommand {
     my $libs = join(' -I', @INC);
