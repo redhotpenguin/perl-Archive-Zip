@@ -593,7 +593,7 @@ sub _asZipDirName {
     my ($volume, $directories, $file) =
       File::Spec->splitpath(File::Spec->canonpath($name), $forceDir);
     $$volReturn = $volume if (ref($volReturn));
-    my @dirs = map { $_ =~ s{/}{_}g; $_ } File::Spec->splitdir($directories);
+    my @dirs = map { $_ =~ y{/}{_}; $_ } File::Spec->splitdir($directories);
     if (@dirs > 0) { pop(@dirs) unless $dirs[-1] }    # remove empty component
     push(@dirs, defined($file) ? $file : '');
 

@@ -35,7 +35,7 @@ sub new {
     # Info-Zip 3.0 (I guess) seems to use the following values
     # for the version fields in the zip64 EOCD record:
     #
-    #   version made by: 
+    #   version made by:
     #     30 (plus upper byte indicating host system)
     #
     #   version needed to extract:
@@ -269,7 +269,7 @@ sub addMember {
     my $self = shift;
     my $newMember = (ref($_[0]) eq 'HASH') ? shift->{member} : shift;
     push(@{$self->{'members'}}, $newMember) if $newMember;
-    if($newMember && ($newMember->{bitFlag} & 0x800) 
+    if($newMember && ($newMember->{bitFlag} & 0x800)
                   && !utf8::is_utf8($newMember->{fileName})){
         $newMember->{fileName} = Encode::decode_utf8($newMember->{fileName});
     }
@@ -304,7 +304,7 @@ sub addFile {
     } else {
         $self->addMember($newMember);
     }
-    
+
     return $newMember;
 }
 
@@ -353,7 +353,7 @@ sub addDirectory {
     } else {
         $self->addMember($newMember);
     }
-    
+
     return $newMember;
 }
 
@@ -491,7 +491,7 @@ sub writeToFileHandle {
         #
         #   $member->_writeToFileHandle
         #       Determines a local flag value depending on
-        #       necessity and user desire and ors it to 
+        #       necessity and user desire and ors it to
         #       the object member
         #     $member->_writeLocalFileHeader
         #         Queries the object member to write appropriate

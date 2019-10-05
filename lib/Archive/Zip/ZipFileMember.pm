@@ -206,8 +206,8 @@ sub _skipLocalFileHeader {
           if ( $oldCrc32 != $self->{'crc32'}
             || $oldUncompressedSize != $self->{'uncompressedSize'});
 
-        $self->{'crc32'} = 0 
-            if $self->compressionMethod() == COMPRESSION_STORED ; 
+        $self->{'crc32'} = 0
+            if $self->compressionMethod() == COMPRESSION_STORED ;
     }
 
     return AZ_OK;

@@ -158,9 +158,9 @@ B<A:> You can use the Archive::Zip::addTree*() methods:
    use Archive::Zip;
    my $zip = Archive::Zip->new();
    # add all readable files and directories below . as xyz/*
-   $zip->addTree( '.', 'xyz' );	
+   $zip->addTree( '.', 'xyz' );
    # add all readable plain files below /abc as def/*
-   $zip->addTree( '/abc', 'def', sub { -f && -r } );	
+   $zip->addTree( '/abc', 'def', sub { -f && -r } );
    # add all .c files below /tmp as stuff/*
    $zip->addTreeMatching( '/tmp', 'stuff', '\.c$' );
    # add all .o files below /tmp as stuff/* if they aren't writable
