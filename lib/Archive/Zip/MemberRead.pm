@@ -334,7 +334,7 @@ sub read {
 Sreeji K. Das E<lt>sreeji_k@yahoo.comE<gt>
 
 See L<Archive::Zip> by Ned Konz without which this module does not make
-any sense! 
+any sense!
 
 Minor mods by Ned Konz.
 
