@@ -30,6 +30,14 @@ $zip->read($infile);
 $zip->writeToFileNamed($outfile);
 
 my ($status, $reason) = testZip($outfile);
+
+# If unzip cannot handle bzip2 compression, it will return exit status 81
+# Treat this the same as success
+if ($status == 81 * 256) {
+    warn("ziptest said: $reason\n");
+    $status = 0;
+}
+
 is $status, 0, "testZip ok after $infile to $outfile"
     or warn("ziptest said: $reason\n");
 
