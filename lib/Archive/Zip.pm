@@ -14,7 +14,7 @@ use FileHandle          ();
 use vars qw( $VERSION @ISA );
 
 BEGIN {
-    $VERSION = '1.66';
+    $VERSION = '1.67';
 
     require Exporter;
     @ISA = qw( Exporter );
@@ -2182,10 +2182,10 @@ easier to use and factors out archive-specific functionality.
 
 =head2 Zip64 Format Support
 
-Since version 1.66 Archive::Zip supports the so-called zip64
+Since version 1.67 Archive::Zip supports the so-called zip64
 format, which overcomes various limitations in the original zip
 file format.  On some Perl interpreters, however, even version
-1.66 and newer of Archive::Zip cannot support the zip64 format.
+1.67 and newer of Archive::Zip cannot support the zip64 format.
 Among these are all Perl interpreters that lack 64-bit support
 and those older than version 5.10.0.
 
