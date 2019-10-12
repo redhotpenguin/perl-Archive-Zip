@@ -2279,7 +2279,7 @@ have to re-read the entire archive to try again with the correct password.
 
 =head1 SUPPORT
 
-Bugs should be reported via the CPAN bug tracker
+Bugs should be reported on GitHub
 
 L<https://github.com/redhotpenguin/perl-Archive-Zip/issues>
 
