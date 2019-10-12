@@ -2281,9 +2281,9 @@ have to re-read the entire archive to try again with the correct password.
 
 Bugs should be reported via the CPAN bug tracker
 
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Archive-Zip>
+L<https://github.com/redhotpenguin/perl-Archive-Zip/issues>
 
-For other issues contact the maintainer
+For other issues contact the maintainer.
 
 =head1 AUTHOR
 

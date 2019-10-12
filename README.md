@@ -26,11 +26,11 @@ perldoc command.
 
 # SUPPORT
 
-Bugs should be reported via the CPAN bug tracker
+Bugs should be reported on GitHub
 
-http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Archive-Zip
+https://github.com/redhotpenguin/perl-Archive-Zip/issues
 
-For other issues contact the maintainer
+For other issues contact the maintainer.
 
 
 # AUTHOR

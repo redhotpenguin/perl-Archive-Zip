@@ -1,5 +1,7 @@
 Revision history for Perl extension Archive-Zip
 
+    - Switched to GitHub as issue tracker
+
 1.67 Sun 06 Oct 2019
     - Fixed compatibility issues with zip64 format (defined-or, pack)
     - Fixed hard-coded version fields introduced in version 1.66
