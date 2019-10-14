@@ -21,8 +21,7 @@ WriteMakefile1(
                 type => 'git',
             },
             bugtracker => {
-                mailto => 'bug-Archive-Zip@rt.cpan.org',
-                web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Archive-Zip',
+                web => 'https://github.com/redhotpenguin/perl-Archive-Zip/issues',
             },
         },
     },
