@@ -3,6 +3,11 @@ Revision history for Perl extension Archive-Zip
     - Replaced references to Test::MockModule in
       t/23_closed_handle.t with code from PR #32, RT #110087
     - Unixified line endings in t/23_closed_handle.t
+    - Added documentation for Archive::Zip::Member::isSymbolicLink,
+      RT #130524
+    - Implemented other, unrelated doc fixes
+    - Fixed examples/zipcheck.pl to skip symbolic links, RT #130525
+    - Described version 1.59, RT #117371 (tagged important!)
 
 1.67 Sun 06 Oct 2019
     - Fixed compatibility issues with zip64 format (defined-or, pack)
@@ -90,6 +95,9 @@ Revision history for Perl extension Archive-Zip
 
 1.60 Tue 19 Dec 2017
     - RT 123913 Wrong shell bang in examples/selfex.pl
+
+1.59 Thu 11 Aug 2016
+    - update Makefile.PL metadata to CPAN Meta specification 2.0
 
 1.58 Tue 2 Aug 2016
     - avoid relying on . being in @INC [github/karenetheridge]

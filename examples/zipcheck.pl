@@ -24,6 +24,7 @@ if ($@) { warn 'error reading zip:', $@, "\n"; exit 2 }
 
 eval {
     foreach my $member ($zip->members) {
+        next if $member->isSymbolicLink();
         my $fh = IO::File->new();
         $fh->open(">$nullFileName") || die "can't open $nullFileName\: $!\n";
         my $status = $member->extractToFileHandle($fh);
