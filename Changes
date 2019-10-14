@@ -1,5 +1,8 @@
 Revision history for Perl extension Archive-Zip
 
+    - Replaced references to Test::MockModule in
+      t/23_closed_handle.t with code from PR #32, RT #110087
+    - Unixified line endings in t/23_closed_handle.t
     - Added documentation for Archive::Zip::Member::isSymbolicLink,
       RT #130524
     - Implemented other, unrelated doc fixes
