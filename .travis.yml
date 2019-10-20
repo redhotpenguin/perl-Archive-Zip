@@ -6,7 +6,7 @@ perl:
    - "5.28"
    - "5.26"
    - "5.24"
-   - "5.22"   
+   - "5.22"
    - "5.20"
    - "5.18"
    - "5.16"
@@ -18,7 +18,7 @@ perl:
 matrix:
    include:
       - perl: 5.18
-        env: COVERAGE=1      
+        env: COVERAGE=1
    allow_failures:
       - perl: "blead"
 
@@ -29,7 +29,7 @@ before_install:
    - perl -V
    - unzip -h
    - build-dist
-   - cd $BUILD_DIR             
+   - cd $BUILD_DIR
    - zip -T t/data/jar.zip
    - zip -F t/data/jar.zip --out testfix.zip
    - unzip -t testfix.zip
