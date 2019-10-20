@@ -3,7 +3,7 @@
 # Archive is assumed to contain text files.
 # By Ned Konz, perl@bike-nomad.com
 # Usage:
-# 	perl zipGrep.pl 'pattern' myZip.zip
+#     perl zipGrep.pl 'pattern' myZip.zip
 #
 use strict;
 use Archive::Zip qw(:CONSTANTS :ERROR_CODES);
@@ -13,7 +13,7 @@ if (@ARGV != 2) {
 This program searches for the given Perl regular expression in a Zip archive.
 Archive is assumed to contain text files.
 Usage:
-	perl $0 'pattern' myZip.zip
+    perl $0 'pattern' myZip.zip
 EOF
     exit 1;
 }

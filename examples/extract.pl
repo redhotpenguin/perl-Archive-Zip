@@ -1,7 +1,7 @@
 #!/bin/perl -w
 # Extracts the named files into 'extractTest' subdir
 # usage:
-#	perl extract.pl [-j] zipfile.zip filename [...]
+#    perl extract.pl [-j] zipfile.zip filename [...]
 # if -j option given, discards paths.
 #
 # $Revision: 1.5 $
@@ -19,8 +19,8 @@ getopts('j');
 
 if (@ARGV < 2) {
     die <<EOF
-	usage: perl extract.pl [-j] zipfile.zip filename [...]
-	if -j option given, discards paths.
+    usage: perl extract.pl [-j] zipfile.zip filename [...]
+    if -j option given, discards paths.
 EOF
 }
 

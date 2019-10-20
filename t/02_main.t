@@ -59,22 +59,22 @@ skip("zip64 format not supported", 126)
     unless ZIP64_SUPPORTED || $desiredZip64Mode == ZIP64_AS_NEEDED;
 
 #--------- empty file
-# new	# Archive::Zip
-# new	# Archive::Zip::Archive
+# new    # Archive::Zip
+# new    # Archive::Zip::Archive
 my $zip = Archive::Zip->new();
 isa_ok($zip, 'Archive::Zip');
 
 $zip->desiredZip64Mode($desiredZip64Mode);
 
-# members	# Archive::Zip::Archive
+# members    # Archive::Zip::Archive
 my @members = $zip->members;
 is(scalar(@members), 0, '->members is 0');
 
-# numberOfMembers	# Archive::Zip::Archive
+# numberOfMembers    # Archive::Zip::Archive
 my $numberOfMembers = $zip->numberOfMembers();
 is($numberOfMembers, 0, '->numberofMembers is 0');
 
-# writeToFileNamed	# Archive::Zip::Archive
+# writeToFileNamed    # Archive::Zip::Archive
 my $status = $zip->writeToFileNamed(OUTPUTZIP);
 is($status, AZ_OK, '->writeToFileNames ok');
 
@@ -95,7 +95,7 @@ SKIP: {
         if $^O eq 'freebsd';
 
     skip("netbsd's unzip doesn't care about empty zips", 1)
-        if $^O eq 'netbsd' ;        
+        if $^O eq 'netbsd' ;
 
     ok($status != 0);
 }
@@ -106,8 +106,8 @@ SKIP: {
 my $memberName = TESTDIR . '/';
 my $dirName    = TESTDIR;
 
-# addDirectory	# Archive::Zip::Archive
-# new	# Archive::Zip::Member
+# addDirectory    # Archive::Zip::Archive
+# new    # Archive::Zip::Member
 my $member = $zip->addDirectory($memberName);
 ok(defined($member));
 is($member->fileName(), $memberName);
@@ -116,16 +116,16 @@ is($member->fileName(), $memberName);
 # corrupted. Save this to check late.
 my $dir_time = $member->lastModFileDateTime();
 
-# members	# Archive::Zip::Archive
+# members    # Archive::Zip::Archive
 @members = $zip->members();
 is(scalar(@members), 1);
 is($members[0],      $member);
 
-# numberOfMembers	# Archive::Zip::Archive
+# numberOfMembers    # Archive::Zip::Archive
 $numberOfMembers = $zip->numberOfMembers();
 is($numberOfMembers, 1);
 
-# writeToFileNamed	# Archive::Zip::Archive
+# writeToFileNamed    # Archive::Zip::Archive
 $status = $zip->writeToFileNamed(OUTPUTZIP);
 is($status, AZ_OK);
 
@@ -156,23 +156,23 @@ ok(-d $dirName);
 #--------- add a string member, uncompressed
 $memberName = TESTDIR . '/string.txt';
 
-# addString	# Archive::Zip::Archive
-# newFromString	# Archive::Zip::Member
+# addString    # Archive::Zip::Archive
+# newFromString    # Archive::Zip::Member
 $member = $zip->addString(TESTSTRING, $memberName);
 ok(defined($member));
 
 is($member->fileName(), $memberName);
 
-# members	# Archive::Zip::Archive
+# members    # Archive::Zip::Archive
 @members = $zip->members();
 is(scalar(@members), 2);
 is($members[1],      $member);
 
-# numberOfMembers	# Archive::Zip::Archive
+# numberOfMembers    # Archive::Zip::Archive
 $numberOfMembers = $zip->numberOfMembers();
 is($numberOfMembers, 2);
 
-# writeToFileNamed	# Archive::Zip::Archive
+# writeToFileNamed    # Archive::Zip::Archive
 $status = $zip->writeToFileNamed(OUTPUTZIP);
 is($status, AZ_OK);
 
@@ -200,7 +200,7 @@ my $oldCompressionMethod =
   $member->desiredCompressionMethod(COMPRESSION_DEFLATED);
 is($oldCompressionMethod, COMPRESSION_STORED, 'old compression method OK');
 
-# writeToFileNamed	# Archive::Zip::Archive
+# writeToFileNamed    # Archive::Zip::Archive
 $status = $zip->writeToFileNamed(OUTPUTZIP);
 is($status, AZ_OK, 'writeToFileNamed returns AZ_OK');
 is($member->crc32(),            TESTSTRINGCRC);
@@ -225,14 +225,14 @@ is(fileCRC($memberName), TESTSTRINGCRC);
 ok(rename($memberName, TESTDIR . '/file.txt'));
 $memberName = TESTDIR . '/file.txt';
 
-# addFile	# Archive::Zip::Archive
-# newFromFile	# Archive::Zip::Member
+# addFile    # Archive::Zip::Archive
+# newFromFile    # Archive::Zip::Member
 $member = $zip->addFile($memberName);
 ok(defined($member));
 
 is($member->desiredCompressionMethod(), COMPRESSION_DEFLATED);
 
-# writeToFileNamed	# Archive::Zip::Archive
+# writeToFileNamed    # Archive::Zip::Archive
 $status = $zip->writeToFileNamed(OUTPUTZIP);
 is($status,                     AZ_OK);
 is($member->crc32(),            TESTSTRINGCRC);
@@ -261,7 +261,7 @@ $oldCompressionMethod = $member->desiredCompressionMethod(COMPRESSION_STORED);
 
 is($oldCompressionMethod, COMPRESSION_DEFLATED);
 
-# writeToFileNamed	# Archive::Zip::Archive
+# writeToFileNamed    # Archive::Zip::Archive
 $status = $zip->writeToFileNamed(OUTPUTZIP);
 is($status,                     AZ_OK);
 is($member->crc32(),            TESTSTRINGCRC);
@@ -291,20 +291,20 @@ is(fileCRC($newName), TESTSTRINGCRC);
 #--------          -------  ---                            -------
 #     600              446  26%                            3 files
 
-# members	# Archive::Zip::Archive
+# members    # Archive::Zip::Archive
 @members = $zip->members();
 is(scalar(@members), 3);
 is($members[2],      $member);
 
-# memberNames	# Archive::Zip::Archive
+# memberNames    # Archive::Zip::Archive
 my @memberNames = $zip->memberNames();
 is(scalar(@memberNames), 3);
 is($memberNames[2],      $memberName);
 
-# memberNamed	# Archive::Zip::Archive
+# memberNamed    # Archive::Zip::Archive
 is($zip->memberNamed($memberName), $member);
 
-# membersMatching	# Archive::Zip::Archive
+# membersMatching    # Archive::Zip::Archive
 @members = $zip->membersMatching('file');
 is(scalar(@members), 1);
 is($members[0],      $member);
@@ -314,7 +314,7 @@ is(scalar(@members), 2);
 is($members[1],      $member);
 
 #--------- remove the string member and test the file
-# removeMember	# Archive::Zip::Archive
+# removeMember    # Archive::Zip::Archive
 $member = $zip->removeMember($members[0]);
 is($member, $members[0]);
 
@@ -331,14 +331,14 @@ SKIP: {
 }
 
 #--------- add the string member at the end and test the file
-# addMember	# Archive::Zip::Archive
+# addMember    # Archive::Zip::Archive
 $zip->addMember($member);
 @members = $zip->members();
 
 is(scalar(@members), 3);
 is($members[2],      $member);
 
-# memberNames	# Archive::Zip::Archive
+# memberNames    # Archive::Zip::Archive
 @memberNames = $zip->memberNames();
 is(scalar(@memberNames), 3);
 is($memberNames[1],      $memberName);
@@ -361,7 +361,7 @@ is($member,                 $members[1]);
 is($zip->numberOfMembers(), 2);
 
 #--------- replace the string member with the file member
-# replaceMember	# Archive::Zip::Archive
+# replaceMember    # Archive::Zip::Archive
 $member = $zip->replaceMember($members[2], $member);
 is($member,                 $members[2]);
 is($zip->numberOfMembers(), 2);
@@ -410,10 +410,10 @@ $numberOfMembers = $zip->numberOfMembers();
 is($numberOfMembers, 5);
 
 #--------- make sure the contents of the stored file member are OK.
-# contents	# Archive::Zip::Archive
+# contents    # Archive::Zip::Archive
 is($zip->contents($members[1]), TESTSTRING);
 
-# contents	# Archive::Zip::Member
+# contents    # Archive::Zip::Member
 is($members[1]->contents(), TESTSTRING);
 
 #--------- make sure the contents of the compressed string member are OK.
@@ -439,7 +439,7 @@ SKIP: {
 }
 
 #--------- read from INPUTZIP (appending its entries)
-# read	# Archive::Zip::Archive
+# read    # Archive::Zip::Archive
 $status = $zip->read(INPUTZIP);
 is($status,                 AZ_OK);
 is($zip->numberOfMembers(), 10);
@@ -514,7 +514,7 @@ is($zip->extractMember($members[8]), AZ_OK);
         ok($fh);
     }
 
-    #	$status = $zip->writeToFileHandle($fh, 0) if ($catWorks);
+    #    $status = $zip->writeToFileHandle($fh, 0) if ($catWorks);
     $status = $zip->writeToFileHandle($fh) if ($catWorks);
   SKIP: {
         skip('cat does not work on this platform', 1) unless $catWorks;
@@ -683,21 +683,21 @@ is($member->extraFields(), "$unx0ExtraField$unx1ExtraField");
 
 #--------------------- STILL UNTESTED IN THIS SCRIPT ---------------------
 
-# sub setChunkSize	# Archive::Zip
-# sub _formatError	# Archive::Zip
-# sub _error	# Archive::Zip
-# sub _subclassResponsibility 	# Archive::Zip
-# sub diskNumber	# Archive::Zip::Archive
-# sub diskNumberWithStartOfCentralDirectory	# Archive::Zip::Archive
-# sub numberOfCentralDirectoriesOnThisDisk	# Archive::Zip::Archive
-# sub numberOfCentralDirectories	# Archive::Zip::Archive
-# sub centralDirectoryOffsetWRTStartingDiskNumber	# Archive::Zip::Archive
-# sub isEncrypted	# Archive::Zip::Member
-# sub isTextFile	# Archive::Zip::Member
-# sub isBinaryFile	# Archive::Zip::Member
-# sub isDirectory	# Archive::Zip::Member
-# sub lastModTime	# Archive::Zip::Member
-# sub _writeDataDescriptor	# Archive::Zip::Member
-# sub isDirectory	# Archive::Zip::DirectoryMember
-# sub _becomeDirectory	# Archive::Zip::DirectoryMember
-# sub diskNumberStart	# Archive::Zip::ZipFileMember
+# sub setChunkSize    # Archive::Zip
+# sub _formatError    # Archive::Zip
+# sub _error    # Archive::Zip
+# sub _subclassResponsibility     # Archive::Zip
+# sub diskNumber    # Archive::Zip::Archive
+# sub diskNumberWithStartOfCentralDirectory    # Archive::Zip::Archive
+# sub numberOfCentralDirectoriesOnThisDisk    # Archive::Zip::Archive
+# sub numberOfCentralDirectories    # Archive::Zip::Archive
+# sub centralDirectoryOffsetWRTStartingDiskNumber    # Archive::Zip::Archive
+# sub isEncrypted    # Archive::Zip::Member
+# sub isTextFile    # Archive::Zip::Member
+# sub isBinaryFile    # Archive::Zip::Member
+# sub isDirectory    # Archive::Zip::Member
+# sub lastModTime    # Archive::Zip::Member
+# sub _writeDataDescriptor    # Archive::Zip::Member
+# sub isDirectory    # Archive::Zip::DirectoryMember
+# sub _becomeDirectory    # Archive::Zip::DirectoryMember
+# sub diskNumberStart    # Archive::Zip::ZipFileMember

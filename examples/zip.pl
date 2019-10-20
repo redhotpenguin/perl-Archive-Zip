@@ -1,7 +1,7 @@
 #!/bin/perl -w
 # Creates a zip file, adding the given directories and files.
 # Usage:
-#	perl zip.pl zipfile.zip file [...]
+#    perl zip.pl zipfile.zip file [...]
 
 use strict;
 use Archive::Zip qw(:ERROR_CODES :CONSTANTS);

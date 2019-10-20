@@ -16,7 +16,7 @@ use Archive::Zip qw( :CONSTANTS );
 # RT #92205: CRC error when re-writing Zip created by LibreOffice
 
 # Archive::Zip was blowing up when processing member
-# 'Configurations2/accelerator/current.xml' from the LibreOffice file. 
+# 'Configurations2/accelerator/current.xml' from the LibreOffice file.
 #
 # 'current.xml' is a zero length file that has been compressed AND uses
 # streaming. That means the uncompressed length is zero but the compressed
@@ -31,9 +31,9 @@ use Archive::Zip qw( :CONSTANTS );
 # method used or the use of streaming.
 #
 #
-# Input files all contain a single zero length member. 
+# Input files all contain a single zero length member.
 # Streaming & Compression Method are set as follows.
-# 
+#
 # File                Streamed    Method
 # ===============================================
 # emptydef.zip        No          Deflate
@@ -44,7 +44,7 @@ use Archive::Zip qw( :CONSTANTS );
 # See t/data/mkzip.pl for the code used to create these zip files.
 
 
-my @empty = map { "t/data/$_.zip" } 
+my @empty = map { "t/data/$_.zip" }
             qw( emptydef emptydefstr emptystore emptystorestr );
 
 # Implicit tests - check that stored gets used when no compression method
@@ -70,7 +70,7 @@ for my $infile (@empty)
 
 
 
-# Explicitly set desired compression 
+# Explicitly set desired compression
 for my $method ( COMPRESSION_STORED, COMPRESSION_DEFLATED)
 {
     for my $infile (@empty)
@@ -95,7 +95,7 @@ for my $method ( COMPRESSION_STORED, COMPRESSION_DEFLATED)
 }
 
 # The following non-empty files should not be changed at all
-my @nochange = map { "t/data/$_.zip" } 
+my @nochange = map { "t/data/$_.zip" }
                qw( def defstr store storestr );
 
 for my $infile (@nochange)

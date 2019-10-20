@@ -2,7 +2,7 @@
 # Extracts all files from the given zip
 # $Revision: 1.3 $
 # usage:
-#	perl unzipAll.pl [-j] zipfile.zip
+#    perl unzipAll.pl [-j] zipfile.zip
 # if -j option given, discards paths.
 #
 use strict;
@@ -16,8 +16,8 @@ getopts('j');
 
 if (@ARGV < 1) {
     die <<EOF
-	usage: perl $0 [-j] zipfile.zip
-	if -j option given, discards paths.
+    usage: perl $0 [-j] zipfile.zip
+    if -j option given, discards paths.
 EOF
 }
 

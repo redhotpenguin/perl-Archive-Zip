@@ -14,8 +14,8 @@ use Test::More;
 
 my $nl;
 BEGIN {
-	plan(tests => 13);
-	$nl = $^O eq 'MSWin32' ? "\r\n" : "\n";
+    plan(tests => 13);
+    $nl = $^O eq 'MSWin32' ? "\r\n" : "\n";
 }
 use lib 't';
 use common;

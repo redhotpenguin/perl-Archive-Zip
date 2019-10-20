@@ -39,7 +39,7 @@ close($EURO);
 {
     my $archive = Archive::Zip->new;
     $archive->addTree(File::Spec->catfile(TESTDIR, 'folder'), 'folder',);
-    
+
     #TEST
     is_deeply(
         [ $archive->memberNames()],
@@ -133,7 +133,7 @@ unlink(OUTPUTZIP);
     # use a temp file so it's name doesn't match internal name
     my $tmp_file = File::Temp->new;
     $tmp_file->print("File EURO\n");
-    $tmp_file->flush;    
+    $tmp_file->flush;
     my $archive = Archive::Zip->new;
     my $string_member = $archive->addFileOrDirectory(
         $tmp_file->filename => $euro_filename);

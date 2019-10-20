@@ -39,9 +39,9 @@ Zips files in source directory and its subdirectories
 whose file extension is in specified extensions (default: any extension).
     -d <days>       max age (days) for files to be zipped (default: 1 day)
     <dir>           source directory
-    -e <ext>        one or more space-separated extensions  
+    -e <ext>        one or more space-separated extensions
     -h              print help text and exit
-    -msvc           may be given instead of -e and will zip all msvc source files  
+    -msvc           may be given instead of -e and will zip all msvc source files
     -q              query only (list files but don't zip)
     <zippath>.zip   path to zipfile to be created (or updated if it exists)
 ENDUSAGE
@@ -223,14 +223,14 @@ ziprecent.pl
 
   ziprecent h:/myperl -e pl pm -d 365
 
-  ziprecent h:/myperl -q 
+  ziprecent h:/myperl -q
 
-  ziprecent h:/myperl h:/temp/zip/file1.zip 
- 
+  ziprecent h:/myperl h:/temp/zip/file1.zip
+
 
 =head1 DESCRIPTION
 
-This script helps to collect recently modified files in a source directory 
+This script helps to collect recently modified files in a source directory
 into a zip file (new or existing).
 
 It uses Archive::Zip.
@@ -240,7 +240,7 @@ It uses Archive::Zip.
 =item C<  ziprecent h:/myperl  >
 
 Lists and zips all files more recent than 1 day (24 hours)
-in directory h:/myperl and it's subdirectories, 
+in directory h:/myperl and it's subdirectories,
 and places the zip file into default zip directory.
 The generated zip file name is based on local time (e.g. 20001208-231237.zip).
 
@@ -255,18 +255,18 @@ Zips only .pl and .pm files more recent than one year.
 Zips source files found in a typical MSVC project.
 
 
-=item C<  ziprecent h:/myperl -q  > 
+=item C<  ziprecent h:/myperl -q  >
 
 Lists files that should be zipped.
 
 
-=item C<  ziprecent h:/myperl h:/temp/zip/file1.zip  > 
+=item C<  ziprecent h:/myperl h:/temp/zip/file1.zip  >
 
-Updates file named h:/temp/zip/file1.zip 
+Updates file named h:/temp/zip/file1.zip
 (overwrites an existing file if writable).
 
 
-=item C<  ziprecent -h  > 
+=item C<  ziprecent -h  >
 
 Prints the help text and exits.
 
@@ -277,7 +277,7 @@ Prints the help text and exits.
     <dir>           source directory
     -e <ext>        one or more space-separated extensions
     -h              print help text and exit
-    -msvc           may be given instead of -e and will zip all msvc source files  
+    -msvc           may be given instead of -e and will zip all msvc source files
     -q              query only (list files but don't zip)
     <zippath>.zip   path to zipfile to be created (or updated if it exists)
 
@@ -290,7 +290,7 @@ Tested only on Win2k.
 
 Does not handle filenames without extension.
 
-Does not accept more than one source directory (workaround: invoke separately 
+Does not accept more than one source directory (workaround: invoke separately
 for each directory, specifying the same zip file).
 
 

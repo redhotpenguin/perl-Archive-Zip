@@ -1,7 +1,7 @@
 # Shows how to update a Zip in place using a temp file.
 #
 # usage:
-# 	perl [-m] examples/updateTree.pl zipfile.zip dirname
+#     perl [-m] examples/updateTree.pl zipfile.zip dirname
 #
 # -m means to mirror
 #

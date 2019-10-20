@@ -61,6 +61,6 @@ die "Zip read error\n" unless $zip->readFromFileHandle($fh) == AZ_OK;
 
 for my $member ( $zip->members )
 {
-	$member->extractToFileNamed( File::Spec->catfile($dir,$member->fileName) );
+    $member->extractToFileNamed( File::Spec->catfile($dir,$member->fileName) );
 }
 __DATA__

@@ -2,7 +2,7 @@
 # $Revision: 1.7 $
 # Lists the zipfile given as a first argument and tests CRC's.
 # Usage:
-#	perl ziptest.pl zipfile.zip
+#    perl ziptest.pl zipfile.zip
 
 use strict;
 
