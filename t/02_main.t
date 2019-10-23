@@ -95,7 +95,7 @@ SKIP: {
         if $^O eq 'freebsd';
 
     skip("netbsd's unzip doesn't care about empty zips", 1)
-        if $^O eq 'netbsd' ;        
+        if $^O eq 'netbsd' ;
 
     ok($status != 0);
 }

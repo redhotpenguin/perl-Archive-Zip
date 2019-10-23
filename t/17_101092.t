@@ -14,7 +14,7 @@ use common;
 # RT #101092: Creation of non-standard streamed zip file
 
 # Test that reading a zip file that contains a streamed member, then writing
-# it without modification will set the local header fields for crc, compressed 
+# it without modification will set the local header fields for crc, compressed
 # length & uncompressed length all to zero.
 
 # streamed.zip can be created with the following one-liner:
@@ -23,7 +23,7 @@ use common;
 
 my $infile = "t/data/streamed.zip";
 my $outfile = OUTPUTZIP;
-passthrough($infile, $outfile); 
+passthrough($infile, $outfile);
 
 my $before = readFile($infile);
 my $after = readFile($outfile);

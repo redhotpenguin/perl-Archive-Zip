@@ -232,13 +232,13 @@ sub passthrough
     my $toFile = shift ;
     my $action = shift ;
 
-    my $z = Archive::Zip->new; 
+    my $z = Archive::Zip->new;
     $z->read($fromFile);
     if ($action)
     {
         for my $member($z->members())
         {
-            &$action($member) ; 
+            &$action($member) ;
         }
     }
     $z->writeToFileNamed($toFile);
