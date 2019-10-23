@@ -109,14 +109,14 @@ Revision history for Perl extension Archive-Zip
 
 1.56 Thu 17 Dec 2015
     - fix $Archive::Zip::UNICODE issues [github/xlat]
-        - on MSWin32 in methods addFile, addDirectory, addTree: the externalFileName was 
+        - on MSWin32 in methods addFile, addDirectory, addTree: the externalFileName was
           used in place of newName
         - make sure that file names are utf8 in memberNames
         - use Encode on all platform
 
 1.55 Fri 04 Dec 2015
     - rt.cpan.org #110064 - fix empty archive issue with OS X gnu tar
- 
+
 1.54 Wed 02 Dec 2015
     - Ensure filehandles created by Archive::Zip::tempFile are closed [github/antoniomonty]
 
@@ -278,17 +278,17 @@ Revision history for Perl extension Archive-Zip
     - Fixed http://rt.cpan.org/Ticket/Display.html?id=14132 :
     - Incorrect file permissions after extraction.
     - Archive-Zip did not set the file permissions correctly in
-      extractToFileNamed(). 
-    - Added t/10_chmod.t and t/data/chmod.zip. Changed 
+      extractToFileNamed().
+    - Added t/10_chmod.t and t/data/chmod.zip. Changed
       lib/Archive/Zip/Member.pm.
     - Reported by ak2 and jlv (Thanks!)
     - SHLOMIF wrote the test script.
     - (SHLOMIF)
     - Removed a double "required module" from the Archive::Zip POD.
-    - Fixed http://rt.cpan.org/Ticket/Display.html?id=24557 ("documentation 
+    - Fixed http://rt.cpan.org/Ticket/Display.html?id=24557 ("documentation
       improvement"):
     - mentioned Archive::Zip::MemberRead in a few places.
-    - TODO: 
+    - TODO:
         - 1. Add a method to Archive::Zip to get a ::MemberRead from an
           archive member using -> notation. (?)
         - 2. In the POD of ::MemberRead - replace the indirect object
@@ -316,14 +316,14 @@ Revision history for Perl extension Archive-Zip
       but Roland from Verisign says this one extra line unbreaks JAR files,
       so I just applied it :)
     - fixed http://rt.cpan.org/Public/Bug/Display.html?id=27463 with a
-      regression test - cannot add files whose entire filenames are "0". 
+      regression test - cannot add files whose entire filenames are "0".
       (SHLOMIF).
-    - fixed http://rt.cpan.org/Public/Bug/Display.html?id=26384 with a 
-      regression test - Archive::Zip::MemberRead::getline ignores 
+    - fixed http://rt.cpan.org/Public/Bug/Display.html?id=26384 with a
+      regression test - Archive::Zip::MemberRead::getline ignores
       $INPUT_RECORD_SEPARATOR . The modified file in the bug had it to be
       reworked a bit and tests were added in the file
-      08_readmember_record_sep.t. 
-    - Thanks to kovesp [...] sympatico.ca 
+      08_readmember_record_sep.t.
+    - Thanks to kovesp [...] sympatico.ca
     - (SHLOMIF)
 
 1.20 Tue  5 Jun 2007 - Adam Kennedy
@@ -393,18 +393,18 @@ Revision history for Perl extension Archive-Zip
     - Grrrr...removed test that fails when installing under CPANPLUS.
 
 1.15 Wed Jun 22 10:24:25 CDT 2005
-    - added fix for RT #12771 Minor nit: warning in Archive::Zip::DirectoryMember::contents() 
+    - added fix for RT #12771 Minor nit: warning in Archive::Zip::DirectoryMember::contents()
     - added fix for RT #13327 Formatting problem in Archive::Zip::Tree manpage
 
-1.15_02 Sat Mar 12 09:16:30 CST 2005 
+1.15_02 Sat Mar 12 09:16:30 CST 2005
     - fixed dates in previous entry!
-    - began the process of migrating from the monolithic t/test.t to 
+    - began the process of migrating from the monolithic t/test.t to
       smaller scripts using Test::More.
     - started work on improving Archive::Zip's test coverage.  Coverage
       is now up to just over 80%.
     - added error handling to writeToFileHandle
     - fixed small bug in extractMember from previous version
-      
+
 1.15_01 Wed Mar  9 22:26:52 CST 2005
     - added fix for RT #11818 extractMember method corrupts archive
     - added t/pod.t to test for pod correctness
