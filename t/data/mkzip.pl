@@ -18,37 +18,37 @@ use IO::Compress::Zip qw(:all);
 
 my $time = 325532800;
 
-zip \"" => "emptydef.zip", 
+zip \"" => "emptydef.zip",
         Name => "fred", Stream => 0, Method => ZIP_CM_DEFLATE, Time => $time
     or die "Cannot create zip: $ZipError";
 
-zip \"" => "emptydefstr.zip", 
+zip \"" => "emptydefstr.zip",
         Name => "fred", Stream => 1, Method => ZIP_CM_DEFLATE, Time => $time
     or die "Cannot create zip: $ZipError";
 
-zip \"" => "emptystore.zip", 
+zip \"" => "emptystore.zip",
         Name => "fred", Stream => 0, Method => ZIP_CM_STORE, Time => $time
     or die "Cannot create zip: $ZipError";
 
-zip \"" => "emptystorestr.zip", 
+zip \"" => "emptystorestr.zip",
         Name => "fred", Stream => 1, Method => ZIP_CM_STORE, Time => $time
     or die "Cannot create zip: $ZipError";
 
 
 
-zip \"abc" => "def.zip", 
+zip \"abc" => "def.zip",
         Name => "fred", Stream => 0, Method => ZIP_CM_DEFLATE, Time => $time
     or die "Cannot create zip: $ZipError";
 
-zip \"abc" => "defstr.zip", 
+zip \"abc" => "defstr.zip",
         Name => "fred", Stream => 1, Method => ZIP_CM_DEFLATE, Time => $time
     or die "Cannot create zip: $ZipError";
 
-zip \"abc" => "store.zip", 
+zip \"abc" => "store.zip",
         Name => "fred", Stream => 0, Method => ZIP_CM_STORE, Time => $time
     or die "Cannot create zip: $ZipError";
 
-zip \"abc" => "storestr.zip", 
+zip \"abc" => "storestr.zip",
         Name => "fred", Stream => 1, Method => ZIP_CM_STORE, Time => $time
     or die "Cannot create zip: $ZipError";
 
