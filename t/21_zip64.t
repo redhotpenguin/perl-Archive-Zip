@@ -1,11 +1,16 @@
 #!/usr/bin/perl
 
-use strict;
-use warnings;
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
 
-use Archive::Zip qw( :CONSTANTS :ERROR_CODES );
-use File::Spec;
+use strict;
+
+BEGIN { $^W = 1; }
+
 use Test::More;
+
+use Archive::Zip qw(:CONSTANTS :ERROR_CODES);
+
 use lib 't';
 use common;
 
@@ -15,11 +20,6 @@ if (ZIP64_SUPPORTED) {
     plan(tests => 86);
 } else {
     plan(skip_all => 'Zip64 format not supported.');
-}
-
-sub runPerlCommand {
-    my $libs = join(' -I', @INC);
-    return execProc("\"$^X\" \"-I$libs\" -w \"" . join('" "', @_) . '"');
 }
 
 # provided by Archive::Zip 1.64 as negative example
@@ -40,20 +40,20 @@ my $ZIP64_FILE_03 = dataPath('zip64-azeocd.zip');
 my $ZIP64_FILE_04 = dataPath('zip64-azheaders.zip');
 
 my @ZIP_FILES = (
-  $ZIP64_FILE_00,
-  $ZIP64_FILE_01,
-  $ZIP64_FILE_02,
-  $ZIP64_FILE_03,
-  $ZIP64_FILE_04
+    $ZIP64_FILE_00,
+    $ZIP64_FILE_01,
+    $ZIP64_FILE_02,
+    $ZIP64_FILE_03,
+    $ZIP64_FILE_04
 );
 
 my %ZIP_MEMBERS =  (
-  #                  name,      zip64, ucsize,  csize
-  $ZIP64_FILE_00 => ['README',  1,     36,      36],
-  $ZIP64_FILE_01 => ['-',       0,     4194304, 4080],
-  $ZIP64_FILE_02 => ['',        1,     4194304, 4080],
-  $ZIP64_FILE_03 => ['test',    0,     4,       4],
-  $ZIP64_FILE_04 => ['test',    1,     4,       4],
+    #                  name,      zip64, ucsize,  csize
+    $ZIP64_FILE_00 => ['README',  1,     36,      36],
+    $ZIP64_FILE_01 => ['-',       0,     4194304, 4080],
+    $ZIP64_FILE_02 => ['',        1,     4194304, 4080],
+    $ZIP64_FILE_03 => ['test',    0,     4,       4],
+    $ZIP64_FILE_04 => ['test',    1,     4,       4],
 );
 
 my ($status, $output);
@@ -84,11 +84,11 @@ for my $ZIP_FILE (@ZIP_FILES) {
     azok($status, 'Zip64 extra field extraction');
     ok(! $zip64, 'Zip64 extra field removal');
 
-    ($output, $status) = runPerlCommand('examples/zipinfo.pl', $ZIP_FILE);
+    ($output, $status) = execPerl('examples/zipinfo.pl', $ZIP_FILE);
     is($status, 0) or
         diag($output);
 
-    ($output, $status) = runPerlCommand('examples/ziptest.pl', $ZIP_FILE);
+    ($output, $status) = execPerl('examples/ziptest.pl', $ZIP_FILE);
     is($status, 0) or
         diag($output);
 }

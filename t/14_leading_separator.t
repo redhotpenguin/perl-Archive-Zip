@@ -1,4 +1,20 @@
-#!perl
+#!/usr/bin/perl
+
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
+
+use strict;
+
+BEGIN { $^W = 1; }
+
+use File::Spec::Unix;
+use File::Spec;
+use Test::More tests => 3;
+
+use Archive::Zip qw();
+
+use lib 't';
+use common;
 
 # Test the bug-fix for the following bug:
 # Buggy behaviour:
@@ -8,42 +24,15 @@
 #     Discard leading separator
 # Bug report: http://tech.groups.yahoo.com/group/perl-beginner/message/27085
 
-use strict;
-
-BEGIN {
-    $^W = 1;
-}
-
-use Test::More tests => 1;
-use Archive::Zip;
-
-use Cwd        ();
-use File::Spec ();
-
-use lib 't';
-use common;
-
-my $file_relative_path = File::Spec->catfile(TESTDIR, 'file.txt');
-open FH, ">$file_relative_path";
+my $file_absolute_path = testPath('file.txt', PATH_ABS);
+open FH, ">$file_absolute_path" or die;
 close FH;
-my $file_absolute_path = File::Spec->rel2abs($file_relative_path);
 
 my $az = Archive::Zip->new();
-$az->addFile($file_absolute_path);
-
-if ($^O eq 'MSWin32') {
-
-    # remove volume from absolute file path
-    my (undef, $directory_path, $current_directory) =
-      File::Spec->splitpath(Cwd::getcwd(), $file_relative_path);
-    $file_absolute_path =
-      File::Spec->catfile($directory_path, $current_directory,
-        $file_relative_path);
-
-    $file_absolute_path =~ s{\\}{/}g;    # convert to Unix separators
-}
+isa_ok($az, 'Archive::Zip');
+isa_ok($az->addFile($file_absolute_path), 'Archive::Zip::FileMember');
 
 # expect path without leading separator
-(my $expected_member_name = $file_absolute_path) =~ s{^/}{};
+(my $expected_member_name = testPath('file.txt', PATH_ZIPABS)) =~ s{^/}{};
 my ($member_name) = $az->memberNames();
 is($member_name, $expected_member_name, 'no leading separator');

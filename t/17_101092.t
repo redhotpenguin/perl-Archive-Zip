@@ -1,13 +1,16 @@
-#!/use/bin/perl
+#!/usr/bin/perl
+
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
 
 use strict;
 
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
+BEGIN { $^W = 1; }
 
 use Test::More tests => 2;
+
+use Archive::Zip qw();
+
 use lib 't';
 use common;
 
@@ -24,9 +27,8 @@ use common;
 my $infile = dataPath("streamed.zip");
 my $outfile = OUTPUTZIP;
 passThrough($infile, $outfile);
+azuztok();
 
 my $before = readFile($infile);
 my $after = readFile($outfile);
-
-azuztok();
-ok $before eq $after;
+ok($before eq $after);

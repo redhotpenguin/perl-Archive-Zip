@@ -1,12 +1,16 @@
 #!/usr/bin/perl
 
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
+
 use strict;
-use warnings;
 
-BEGIN { $| = 1; }
+BEGIN { $^W = 1; }
 
-use Archive::Zip;
 use Test::More;
+
+use Archive::Zip qw();
+
 use lib 't';
 use common;
 

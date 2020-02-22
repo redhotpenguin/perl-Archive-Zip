@@ -1,64 +1,62 @@
 #!/usr/bin/perl
 
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
+
+use strict;
+
+BEGIN { $^W = 1; }
+
+use Test::More tests => 14;
+
+use Archive::Zip qw();
+
+use lib 't';
+use common;
+
 # These are regression tests for:
 # http://rt.cpan.org/Public/Bug/Display.html?id=27463
 # http://rt.cpan.org/Public/Bug/Display.html?id=76780
 #
 # It tests that one can add files to the archive whose filenames are "0".
 
-use strict;
-
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
-use Test::More tests => 9;
-use Archive::Zip;
-
-use File::Path;
-use File::Spec;
-
-use lib 't';
-use common;
-
-mkpath([File::Spec->catdir(TESTDIR, 'folder')]);
-
-my $zero_file = File::Spec->catfile(TESTDIR, 'folder', "0");
-open(O, ">$zero_file");
-print O "File 0\n";
-close(O);
-
-my $one_file = File::Spec->catfile(TESTDIR, 'folder', '1');
-open(O, ">$one_file");
-print O "File 1\n";
-close(O);
-
-my $archive = Archive::Zip->new;
-
-$archive->addTree(File::Spec->catfile(TESTDIR, 'folder'), 'folder',);
-
-# TEST
-ok(
-    scalar(grep { $_ eq "folder/0" } $archive->memberNames()),
-    "Checking that a file called '0' was added properly"
-);
-
-rmtree([File::Spec->catdir(TESTDIR, 'folder')]);
-
-# Cannot create member called "0" with addString
+# Try to create member called "0" with addTree
 {
-    # Create member "0" with addString
+    mkdir(testPath('folder')) or die;
+
+    my $zero_file = testPath('folder', '0');
+    open(O, ">$zero_file") or die;
+    print O "File 0\n";
+    close(O);
+
+    my $one_file = testPath('folder', '1');
+    open(O, ">$one_file") or die;
+    print O "File 1\n";
+    close(O);
+
     my $archive = Archive::Zip->new;
-    my $string_member = $archive->addString(TESTSTRING => 0);
-    azwok($archive);
+    isa_ok($archive, 'Archive::Zip');
+
+    azok($archive->addTree(testPath('folder'), 'folder'));
+
+    # TEST
+    ok(scalar(grep { $_ eq "folder/0" } $archive->memberNames()),
+       "Checking that a file called '0' was added properly by addTree");
 }
 
+# Try to create member called "0" with addString
 {
-
-    # Read member "0"
     my $archive = Archive::Zip->new;
+    isa_ok($archive, 'Archive::Zip');
+    isa_ok($archive->addString((TESTSTRING) => 0), 'Archive::Zip::StringMember');
+    azwok($archive, 'file' => OUTPUTZIP);
+}
+
+# Try to find member called "0" with memberNames
+{
+    my $archive = Archive::Zip->new;
+    isa_ok($archive, 'Archive::Zip');
     azok($archive->read(OUTPUTZIP));
     ok(scalar(grep { $_ eq "0" } $archive->memberNames()),
-        "Checking that a file called '0' was added properly by addString");
+       "Checking that a file called '0' was added properly by addString");
 }
-unlink(OUTPUTZIP);

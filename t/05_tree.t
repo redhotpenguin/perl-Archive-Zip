@@ -1,22 +1,20 @@
 #!/usr/bin/perl
 
-use strict;
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
 
 use strict;
 
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
-use Archive::Zip qw( :CONSTANTS );
-use FileHandle;
-use File::Spec;
+BEGIN { $^W = 1; }
 
-use Test::More tests => 6;
+use Test::More tests => 8;
+
+use Archive::Zip qw();
+
 use lib 't';
 use common;
 
-use constant FILENAME => File::Spec->catfile(TESTDIR, 'testing.txt');
+# Test Archive::Zip::addTree
 
 my $zip;
 my @memberNames;
@@ -30,16 +28,15 @@ sub makeZip {
 
 sub makeZipAndLookFor {
     my ($src, $dest, $pred, $lookFor) = @_;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     makeZip($src, $dest, $pred);
     ok(@memberNames);
     ok((grep { $_ eq $lookFor } @memberNames) == 1)
-      or print STDERR "Can't find $lookFor in ("
-      . join(",", @memberNames) . ")\n";
+        or diag("Can't find $lookFor in (" . join(",", @memberNames) . ")");
 }
 
-my ($testFileVolume, $testFileDirs, $testFileName) = File::Spec->splitpath($0);
-
-makeZipAndLookFor('.', '', sub { print "file $_\n"; -f && /\.t$/ },
-    't/02_main.t');
-makeZipAndLookFor('.',   'e/', sub { -f && /\.t$/ }, 'e/t/02_main.t');
-makeZipAndLookFor('./t', '',   sub { -f && /\.t$/ }, '02_main.t');
+makeZipAndLookFor('.', '',   sub { note "file $_";
+                                   -f && /\.t$/ },       't/02_main.t');
+makeZipAndLookFor('.', 'e/', sub { -f && /\.t$/ },       'e/t/02_main.t');
+makeZipAndLookFor('t', '',   sub { -f && /\.t$/ },       '02_main.t');
+makeZipAndLookFor('t', 'e/', sub { -f && /\.t$/ || -d }, 'e/data/');

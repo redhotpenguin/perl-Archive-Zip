@@ -1,13 +1,18 @@
 #!/usr/bin/perl
 
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
+
 use strict;
-use warnings;
+
+BEGIN { $^W = 1; }
 
 use Test::More;
+
+use Archive::Zip qw(:CONSTANTS :ERROR_CODES);
+
 use lib 't';
 use common;
-
-use Archive::Zip qw( :CONSTANTS :ERROR_CODES );
 
 # Test proper detection of unsupportedness of zip64 format
 

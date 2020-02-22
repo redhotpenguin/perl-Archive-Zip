@@ -1,155 +1,96 @@
 #!/usr/bin/perl
 
-# tests with $Archive::Zip::UNICODE
-use utf8;       #utf8 source code
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
+
 use strict;
 
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
-use Test::More;
-use Archive::Zip;
+# need utf8 source code
+use utf8;
+
+BEGIN { $^W = 1; }
 
 use File::Temp;
-use File::Path;
-use File::Spec;
+use Test::More tests => 48;
+
+use Archive::Zip qw();
 
 use lib 't';
 use common;
 
-#Initialy written for MSWin32 only, but I found a bug in memberNames() so
+# Initialy written for MSWin32 only, but I found a bug in memberNames() so
 # other systems should be tested too.
-#if( $^O ne 'MSWin32' ) {
-#    plan skip_all => 'Test relevant only on MSWin32';
-#    done_testing();
-#    exit;
-#}
 
-$Archive::Zip::UNICODE=1;
+$Archive::Zip::UNICODE = 1;
 
-mkpath([File::Spec->catdir(TESTDIR, 'folder')]);
+# create and test archive
+sub cata
+{
+    my ($creator, $membernames, $name) = @_;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    # create and write archive
+    {
+        my $archive = Archive::Zip->new;
+        &$creator($archive);
+        azwok($archive, 'name' => $name);
+    }
+
+    # read archive and test member names
+    {
+        my $archive = Archive::Zip->new;
+        azok($archive->read(OUTPUTZIP), "$name - test read");
+        is_deeply([$archive->memberNames()], $membernames, "$name - test members");
+    }
+
+    unlink(OUTPUTZIP) or die;
+}
+
 my $euro_filename = "euro-€";
-my $zero_file = File::Spec->catfile(TESTDIR, 'folder', $euro_filename);
-open(my $EURO, ">", "$zero_file") or die "ERROR: Unable to open $zero_file: $!";
-print $EURO "File EURO\n";
-close($EURO);
+{
+    mkdir(testPath('folder')) or die;
+    open(my $euro_file, ">", testPath('folder', $euro_filename)) or die;
+    print $euro_file "File EURO\n" or die;
+    close($euro_file) or die;
+}
 
 # create member called $euro_filename with addTree
-{
-    my $archive = Archive::Zip->new;
-    $archive->addTree(File::Spec->catfile(TESTDIR, 'folder'), 'folder',);
-
-    #TEST
-    is_deeply(
-        [ $archive->memberNames()],
-        [ "folder/", "folder/$euro_filename" ],
-        "Checking that a file named with unicode chars was added properly"
-    );
-
-}
+cata(sub { $_[0]->addTree(testPath('folder'), 'folder') },
+     ["folder/", "folder/$euro_filename"],
+     "Checking that a file named with unicode chars was added properly by addTree");
 
 # create member called $euro_filename with addString
-{
-    # Create member $euro_filename with addString
-    my $archive = Archive::Zip->new;
-    my $string_member = $archive->addString(TESTSTRING => $euro_filename);
-    azwok($archive);
-}
-#TEST
-{
-    # Read member $euro_filename
-    my $archive = Archive::Zip->new;
-    azok($archive->read(OUTPUTZIP));
-    is_deeply(
-        [$archive->memberNames()],
-        [$euro_filename],
-        "Checking that a file named with unicode chars was added properly by addString");
-}
-unlink(OUTPUTZIP);
+cata(sub { $_[0]->addString(TESTSTRING => $euro_filename) },
+     [$euro_filename],
+     "Checking that a file named with unicode chars was added properly by addString");
 
-{
-    # Create member called $euro_filename with addFile
-    # use a temp file so it's name doesn't match internal name
-    my $tmp_file = File::Temp->new;
-    $tmp_file->print("File EURO\n");
-    $tmp_file->flush;
-    my $archive = Archive::Zip->new;
-    my $string_member = $archive->addFile($tmp_file->filename => $euro_filename);
-    azwok($archive);
-}
-#TEST
-{
-    # Read member $euro_filename
-    my $archive = Archive::Zip->new;
-    azok($archive->read(OUTPUTZIP));
-    is_deeply(
-        [$archive->memberNames()],
-        [$euro_filename],
-        "Checking that a file named with unicode chars was added properly by addFile");
-}
-unlink(OUTPUTZIP);
+# create member called $euro_filename with addFile
+# use a temp file so its name doesn't match internal name
+cata(sub { my ($tmp_file, $tmp_filename) =
+               File::Temp::tempfile('eurotest-XXXX', DIR => testPath());
+           $tmp_file->print("File EURO\n") or die;
+           $tmp_file->close() or die;
+           $_[0]->addFile($tmp_filename => $euro_filename); },
+     [$euro_filename],
+     "Checking that a file named with unicode chars was added properly by addFile");
 
-{
-    # Create member called $euro_filename with addDirectory
-    my $archive = Archive::Zip->new;
-    my $string_member = $archive->addDirectory(
-        File::Spec->catdir(TESTDIR, 'folder') => $euro_filename);
-    azwok($archive);
-}
-#TEST
-{
-    # Read member $euro_filename
-    my $archive = Archive::Zip->new;
-    azok($archive->read(OUTPUTZIP));
-    is_deeply(
-        [$archive->memberNames()],
-        [$euro_filename.'/'],
-        "Checking that a file named with unicode chars was added properly by addDirectory");
-}
-unlink(OUTPUTZIP);
+# create member called $euro_filename with addDirectory
+cata(sub { $_[0]->addDirectory(testPath('folder') => $euro_filename) },
+     [$euro_filename . '/'],
+     "Checking that a file named with unicode chars was added properly by addDirectory");
 
-{
-    # Create member called $euro_filename with addFileOrDirectory from a directory
-    my $archive = Archive::Zip->new;
-    my $string_member = $archive->addFileOrDirectory(
-        File::Spec->catdir(TESTDIR, 'folder') => $euro_filename);
-    azwok($archive);
-}
-#TEST
-{
-    # Read member $euro_filename
-    my $archive = Archive::Zip->new;
-    azok($archive->read(OUTPUTZIP));
-    is_deeply(
-        [$archive->memberNames()],
-        [$euro_filename.'/'],
-        "Checking that a file named with unicode chars was added properly by addFileOrDirectory from a direcotry");
-}
-unlink(OUTPUTZIP);
+# create member called $euro_filename with addFileOrDirectory from a directory
+cata(sub { $_[0]->addFileOrDirectory(testPath('folder') => $euro_filename) },
+     [$euro_filename . '/'],
+     "Checking that a file named with unicode chars was added properly by addFileOrDirectory from a direcotry");
 
-{
-    # Create member called $euro_filename with addFileOrDirectory from a file
-    # use a temp file so it's name doesn't match internal name
-    my $tmp_file = File::Temp->new;
-    $tmp_file->print("File EURO\n");
-    $tmp_file->flush;
-    my $archive = Archive::Zip->new;
-    my $string_member = $archive->addFileOrDirectory(
-        $tmp_file->filename => $euro_filename);
-    azwok($archive);
-}
-#TEST
-{
-    # Read member $euro_filename
-    my $archive = Archive::Zip->new;
-    azok($archive->read(OUTPUTZIP));
-    is_deeply(
-        [$archive->memberNames()],
-        [$euro_filename],
-        "Checking that a file named with unicode chars was added properly by addFileOrDirectory from a file");
-}
-unlink(OUTPUTZIP);
-
-rmtree([File::Spec->catdir(TESTDIR, 'folder')]);
-done_testing();
+# create member called $euro_filename with addFileOrDirectory from a file
+# use a temp file so its name doesn't match internal name
+cata(sub { my ($tmp_file, $tmp_filename) =
+               File::Temp::tempfile('eurotest-XXXX', DIR => testPath());
+           $tmp_file->print("File EURO\n") or die;
+           $tmp_file->close() or die;
+           $_[0]->addFileOrDirectory($tmp_filename => $euro_filename); },
+     [$euro_filename],
+     "Checking that a file named with unicode chars was added properly by addFileOrDirectory from a file");

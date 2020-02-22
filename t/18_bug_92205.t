@@ -1,17 +1,18 @@
 #!/usr/bin/perl
 
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
+
 use strict;
 
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
+BEGIN { $^W = 1; }
 
 use Test::More tests => 32;
+
+use Archive::Zip qw(:CONSTANTS);
+
 use lib 't';
 use common;
-use Archive::Zip qw( :CONSTANTS );
-
 
 # RT #92205: CRC error when re-writing Zip created by LibreOffice
 
@@ -25,11 +26,9 @@ use Archive::Zip qw( :CONSTANTS );
 # The fix for issue #101092 added code that forced both the uncompressed &
 # compressed lengths to be zero if either was zero. That caused this issue.
 
-
 # This set of test checks that a zero length zip member will ALWAYS be
-# mapped to a zero length Stored member, regardless of the compression
+# mapped to a zero length stored member, regardless of the compression
 # method used or the use of streaming.
-#
 #
 # Input files all contain a single zero length member.
 # Streaming & Compression Method are set as follows.
@@ -43,69 +42,48 @@ use Archive::Zip qw( :CONSTANTS );
 #
 # See t/data/mkzip.pl for the code used to create these zip files.
 
+# [<input-file>  => "<ref-file>", <comp-method>|undef, ]
+my @TESTS = (
+  # Implicit tests - check that COMPRESSION_STORED gets used when
+  # no compression method has been set.
+  [emptydef      => "emptystore", undef,               ],
+  [emptydefstr   => "emptystore", undef,               ],
+  [emptystore    => "emptystore", undef,               ],
+  [emptystorestr => "emptystore", undef,               ],
 
-my @empty = map { dataPath($_) }
-            qw( emptydef emptydefstr emptystore emptystorestr );
+  # Explicitly set desired compression
+  [emptydef      => "emptystore", COMPRESSION_STORED,  ],
+  [emptydefstr   => "emptystore", COMPRESSION_STORED,  ],
+  [emptystore    => "emptystore", COMPRESSION_STORED,  ],
+  [emptystorestr => "emptystore", COMPRESSION_STORED,  ],
 
-# Implicit tests - check that stored gets used when no compression method
-# has been set.
-for my $infile (@empty)
+  [emptydef      => "emptystore", COMPRESSION_DEFLATED,],
+  [emptydefstr   => "emptystore", COMPRESSION_DEFLATED,],
+  [emptystore    => "emptystore", COMPRESSION_DEFLATED,],
+  [emptystorestr => "emptystore", COMPRESSION_DEFLATED,],
+
+  # The following non-empty files should not be changed at all
+  [def           => "def",        undef,               ],
+  [defstr        => "defstr",     undef,               ],
+  [store         => "store",      undef,               ],
+  [storestr      => "storestr",   undef,               ],
+);
+
+for my $test (@TESTS)
 {
-    my $expectedout = dataPath("emptystore.zip");
+    my ($infile, $reffile, $method) = @$test;
+    $infile = dataPath($infile);
+    $reffile = dataPath($reffile);
     my $outfile = OUTPUTZIP;
 
     passThrough($infile, $outfile, sub {
-        my $member = shift ;
+        my $member = shift;
+        $member->desiredCompressionMethod($method) if defined($method);
         $member->setLastModFileDateTimeFromUnix($member->lastModTime());
-     });
-
-    my $expected = readFile($expectedout);
-    my $after = readFile($outfile);
-
+    });
     azuztok($outfile, 'name' => "\"unzip -t\" ok after $infile to $outfile");
-    ok $expected eq $after, "$expectedout eq $outfile";
-}
 
-
-
-# Explicitly set desired compression
-for my $method ( COMPRESSION_STORED, COMPRESSION_DEFLATED)
-{
-    for my $infile (@empty)
-    {
-        my $outfile = OUTPUTZIP;
-        my $expectedout = dataPath("emptystore.zip");
-
-        passThrough($infile, $outfile, sub {
-            my $member = shift ;
-            $member->desiredCompressionMethod( $method );
-            $member->setLastModFileDateTimeFromUnix($member->lastModTime());
-         });
-
-        my $expected = readFile($expectedout);
-        my $after = readFile($outfile);
-
-        azuztok($outfile, 'name' => "[$method] \"unzip -t\" ok after $infile to $outfile");
-        ok $after eq $expected, "[$method] $infile eq $outfile";
-    }
-}
-
-# The following non-empty files should not be changed at all
-my @nochange = map { dataPath($_) }
-               qw( def defstr store storestr );
-
-for my $infile (@nochange)
-{
-    my $outfile = OUTPUTZIP;
-
-    passThrough($infile, $outfile, sub {
-        my $member = shift ;
-        $member->setLastModFileDateTimeFromUnix($member->lastModTime());
-     });
-
-    my $expected = readFile($infile);
-    my $after = readFile($outfile);
-
-    azuztok($outfile, 'name' => "\"unzip -t\" ok after $infile to $outfile");
-    ok $expected eq $after, "$infile eq $outfile";
+    my $outtext = readFile($outfile);
+    my $reftext = readFile($reffile);
+    ok($outtext eq $reftext, "$outfile eq $reffile");
 }
