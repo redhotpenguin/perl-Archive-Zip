@@ -1,18 +1,24 @@
 #!/usr/bin/perl
 
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
+
 use strict;
-use warnings;
 
-BEGIN { $| = 1; }
+BEGIN { $^W = 1; }
 
-use Archive::Zip qw( :ERROR_CODES );
 use Test::More;
+
+use Archive::Zip qw();
+
+use lib 't';
+use common;
 
 foreach my $pass (qw( wrong test )) {
     my $zip = Archive::Zip->new();
     isa_ok($zip, "Archive::Zip");
 
-    is($zip->read("t/data/crypt.zip"), AZ_OK, "Read file");
+    azok($zip->read(dataPath("crypt.zip")), "Read file");
 
     ok(my @mn = $zip->memberNames, "get memberNames");
     is_deeply(\@mn, ["decrypt.txt"], "memberNames");

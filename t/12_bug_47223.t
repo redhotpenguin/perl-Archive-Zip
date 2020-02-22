@@ -1,34 +1,41 @@
-#!/use/bin/perl
+#!/usr/bin/perl
 
-# Check Windows Explorer compatible directories
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
 
 use strict;
 
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
+BEGIN { $^W = 1; }
 
 use Test::More;
-use Archive::Zip;
-use File::Temp;
-use File::Spec;
+
+use Archive::Zip qw();
+
+use lib 't';
+use common;
+
+# Somewhere between version 1.26 and 1.28 function
+# Archive::Zip::_asLocalName under certain conditions would
+# incorrectly prepended cwd to an absolute destination file name
+# while extracting trees.  This test ensures that this does not
+# happen.  In addition this test uses short file names and
+# Windows file name syntax in the destination directory.  The
+# latter of which not beeing what the documentation prescribes.
 
 if ($^O eq 'MSWin32') {
-    plan(tests => 1);
+    plan(tests => 3);
 } else {
     plan(skip_all => 'Only required on Win32.');
 }
 
-my $dist = Win32::GetShortPathName(
-    File::Spec->rel2abs(File::Spec->catfile(qw(t data winzip.zip))));
-my $tmpdirname = File::Spec->catdir(File::Spec->tmpdir, "parXXXXX");
-my $tmpdir = File::Temp::mkdtemp($tmpdirname)
-  or die "Could not create temporary directory from template '$tmpdirname': $!";
-my $path = $tmpdir;
-$path = File::Spec->catdir($tmpdir, 'test');
+my $dist = dataPath('winzip.zip');
+my $path = testPath('test', PATH_ABS);
+mkdir $path
+    or die "Could not create temporary directory '$path': $!";
+$path = Win32::GetShortPathName($path)
+    or die "Could not get short path name of temporary directory '$path': $!";
 
 my $zip = Archive::Zip->new();
-
-$zip->read($dist);
-ok(eval { $zip->extractTree('', "$path/"); 1; });
+isa_ok($zip, 'Archive::Zip');
+azok($zip->read($dist));
+azok(eval { $zip->extractTree('', "$path/"); });

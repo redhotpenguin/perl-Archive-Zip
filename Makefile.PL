@@ -52,17 +52,7 @@ WriteMakefile1(
         'Test::More' => '0.88',
     },
     clean => {
-        FILES => join( ' ', qw{
-                test.log
-                testdir/*
-                testdir/
-                extracted/testdir/*
-                extracted/testdir
-                extracted/
-                testin.zip
-                testout.zip
-                test2.zip
-                } ),
+        FILES => 'testdir',
     },
     dist => {
         COMPRESS => 'gzip',

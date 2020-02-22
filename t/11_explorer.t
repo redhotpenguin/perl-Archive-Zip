@@ -1,16 +1,20 @@
-#!/use/bin/perl
+#!/usr/bin/perl
 
-# Check Windows Explorer compatible directories
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
 
 use strict;
 
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
+BEGIN { $^W = 1; }
 
 use Test::More tests => 4;
-use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
+
+use Archive::Zip qw();
+
+use lib 't';
+use common;
+
+# Check Windows Explorer compatible directories
 
 my $zip = Archive::Zip->new;
 isa_ok($zip, 'Archive::Zip');

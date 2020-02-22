@@ -1,40 +1,48 @@
 #!/usr/bin/perl
 
-# Github 11: "CRC or size mismatch" when extracting member second time
-# Test for correct functionality to prevent regression
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
 
 use strict;
-use warnings;
 
-use Archive::Zip qw( :ERROR_CODES );
-use File::Spec;
-use File::Path;
+BEGIN { $^W = 1; }
+
+use Test::More tests => 2;
+
+use Archive::Zip qw();
+
 use lib 't';
 use common;
 
-use Test::More tests => 2;
+# Github 11: "CRC or size mismatch" when extracting member second time
+# Test for correct functionality to prevent regression
 
 # create test env
 my $GH_ISSUE   = 'github11';
 my $TEST_NAME  = "20_bug_$GH_ISSUE";
-my $TEST_DIR   = File::Spec->catdir(TESTDIR, $TEST_NAME);
-mkpath($TEST_DIR);
+my $TEST_DIR   = testPath($TEST_NAME);
+mkdir($TEST_DIR) or die;
 
 # test 1
-my $DATA_DIR      = File::Spec->catfile('t', 'data');
-my $GOOD_ZIP_FILE = File::Spec->catfile($DATA_DIR, "good_${GH_ISSUE}.zip");
+{
+my $GOOD_ZIP_FILE = dataPath("good_${GH_ISSUE}.zip");
 my $GOOD_ZIP      = Archive::Zip->new($GOOD_ZIP_FILE);
-my $MEMBER_FILE = 'FILE';
-my $member      = $GOOD_ZIP->memberNamed($MEMBER_FILE);
-my $OUT_FILE = File::Spec->catfile($TEST_DIR, "out");
+my $MEMBER_FILE   = 'FILE';
+my $member        = $GOOD_ZIP->memberNamed($MEMBER_FILE);
+my $OUT_FILE      = testPath($TEST_DIR, "out");
 # Extracting twice triggered the bug
 $member->extractToFileNamed($OUT_FILE);
-is($member->extractToFileNamed($OUT_FILE), AZ_OK, 'Testing known good zip');
+azok($member->extractToFileNamed($OUT_FILE), 'Testing known good zip');
+}
 
 # test 2
-my $BAD_ZIP_FILE = File::Spec->catfile($DATA_DIR, "bad_${GH_ISSUE}.zip");
+{
+my $BAD_ZIP_FILE = dataPath("bad_${GH_ISSUE}.zip");
 my $BAD_ZIP      = Archive::Zip->new($BAD_ZIP_FILE);
-$member = $BAD_ZIP->memberNamed($MEMBER_FILE);
+my $MEMBER_FILE  = 'FILE';
+my $member       = $BAD_ZIP->memberNamed($MEMBER_FILE);
+my $OUT_FILE     = testPath($TEST_DIR, "out");
 # Extracting twice triggered the bug
 $member->extractToFileNamed($OUT_FILE);
-is($member->extractToFileNamed($OUT_FILE), AZ_OK, 'Testing known bad zip');
+azok($member->extractToFileNamed($OUT_FILE), 'Testing known bad zip');
+}

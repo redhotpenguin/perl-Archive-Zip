@@ -1,19 +1,23 @@
 #!/usr/bin/perl
 
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
+
 use strict;
 
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
-use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
-use Archive::Zip::MemberRead;
+BEGIN { $^W = 1; }
 
 use Test::More tests => 10;
+
+use Archive::Zip qw();
+use Archive::Zip::MemberRead qw();
+
 use lib 't';
 use common;
 
-use constant FILENAME => File::Spec->catfile(TESTDIR, 'member_read.zip');
+# Test Archive::Zip::MemberRead
+
+use constant FILENAME => testPath('member_read.zip');
 
 my ($zip, $member, $fh, @data);
 $zip = new Archive::Zip;

@@ -7,14 +7,14 @@ use strict;
 
 BEGIN { $^W = 1; }
 
-use Test::More tests => 8;
-
-use Archive::Zip qw();
+use Test::More tests => 2;
 
 use lib 't';
 use common;
 
-my $zip = Archive::Zip->new();
-isa_ok($zip, 'Archive::Zip');
-azok($zip->read(dataPath('jar.zip')), 'Read file');
-azwok($zip, name => 'Wrote file');
+use_ok('Archive::Zip');
+use_ok('Archive::Zip::MemberRead');
+
+common::azuzdiag();
+common::azuztdiag();
+common::azwpdiag();

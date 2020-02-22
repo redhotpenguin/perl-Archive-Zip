@@ -1,10 +1,11 @@
-^\.travis.yml$
 ^\.appveyor.yml$
+^\.cvsignore$
 ^\.git.*
-^Makefile$
-\.old$
-\.bak$
+^\.travis.yml$
 ^MYMETA\..*
+^Makefile$
+\.bak$
+\.old$
 
 \bblib/
 \bpm_to_blib\.ts$
@@ -27,9 +28,4 @@
 
 \B\.prove$
 
-^test\.log$
 ^testdir/
-^extracted/
-^testin\.zip$
-^testout\.zip$
-^test2\.zip$

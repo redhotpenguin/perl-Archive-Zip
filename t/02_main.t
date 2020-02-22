@@ -1,20 +1,16 @@
 #!/usr/bin/perl
 
-# Main testing for Archive::Zip
+# See https://github.com/redhotpenguin/perl-Archive-Zip/blob/master/t/README.md
+# for a short documentation on the Archive::Zip test infrastructure.
 
 use strict;
 
-BEGIN {
-    $|  = 1;
-    $^W = 1;
-}
+BEGIN { $^W = 1; }
 
-use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
-use FileHandle;
 use File::Path;
-use File::Spec;
+use Test::More;
 
-use Test::More tests => 429;
+use Archive::Zip qw(:ERROR_CODES :CONSTANTS);
 
 use lib 't';
 use common;
@@ -25,12 +21,11 @@ use common;
 #--------- check CRC
 is(TESTSTRINGCRC, 0xac373f32, 'Testing CRC matches expected');
 
-# Bad times die
-SCOPE: {
+{
     my @errors = ();
     local $Archive::Zip::ErrorHandler = sub { push @errors, @_ };
     eval { Archive::Zip::Member::_unixToDosTime(0) };
-    ok($errors[0] =~ /Tried to add member with zero or undef/,
+    ok($errors[0] =~ /Tried to add member with zero or undef value for time/,
         'Got expected _unixToDosTime error');
 }
 
@@ -53,10 +48,11 @@ foreach my $unix_time (
 # Enjoy the non-indented freedom!
 for my $desiredZip64Mode (ZIP64_AS_NEEDED, ZIP64_EOCD, ZIP64_HEADERS) {
 
-SKIP:
-{
-skip("zip64 format not supported", 126)
-    unless ZIP64_SUPPORTED || $desiredZip64Mode == ZIP64_AS_NEEDED;
+next unless ZIP64_SUPPORTED || $desiredZip64Mode == ZIP64_AS_NEEDED;
+
+# Re-create test directory for each loop iteration
+rmtree([testPath()], 0, 0);
+mkdir(testPath()) or die;
 
 #--------- empty file
 # new	# Archive::Zip
@@ -75,36 +71,13 @@ my $numberOfMembers = $zip->numberOfMembers();
 is($numberOfMembers, 0, '->numberofMembers is 0');
 
 # writeToFileNamed	# Archive::Zip::Archive
-my $status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK, '->writeToFileNames ok');
+azok($zip->writeToFileNamed(OUTPUTZIP), '->writeToFileNamed ok');
 
-my $zipout;
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    if ($^O eq 'MSWin32') {
-        print STDERR
-          "\n# You might see an expected 'zipfile is empty' warning now.\n";
-    }
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-
-    skip("freebsd's unzip doesn't care about empty zips", 1)
-        if $^O eq 'freebsd';
-
-    skip("netbsd's unzip doesn't care about empty zips", 1)
-        if $^O eq 'netbsd' ;
-
-    ok($status != 0);
-}
-
-# unzip -t returns error code=1 for warning on empty
+azuztok(refzip => "emptyzip.zip");
 
 #--------- add a directory
-my $memberName = TESTDIR . '/';
-my $dirName    = TESTDIR;
+my $memberName = testPath(PATH_ZIPDIR);
+my $dirName    = testPath();
 
 # addDirectory	# Archive::Zip::Archive
 # new	# Archive::Zip::Member
@@ -113,8 +86,8 @@ ok(defined($member));
 is($member->fileName(), $memberName);
 
 # On some (Windows systems) the modification time is
-# corrupted. Save this to check late.
-my $dir_time = $member->lastModFileDateTime();
+# corrupted. Save this to check later.
+my $dirTime = $member->lastModFileDateTime();
 
 # members	# Archive::Zip::Archive
 @members = $zip->members();
@@ -126,35 +99,25 @@ $numberOfMembers = $zip->numberOfMembers();
 is($numberOfMembers, 1);
 
 # writeToFileNamed	# Archive::Zip::Archive
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK);
+azok($zip->writeToFileNamed(OUTPUTZIP));
 
 # Does the modification time get corrupted?
-is(($zip->members)[0]->lastModFileDateTime(), $dir_time);
+is(($zip->members)[0]->lastModFileDateTime(), $dirTime);
 
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azuztok();
 
 #--------- extract the directory by name
-rmtree([TESTDIR], 0, 0);
-$status = $zip->extractMember($memberName);
-is($status, AZ_OK);
+rmdir($dirName) or die;
+azok($zip->extractMember($memberName));
 ok(-d $dirName);
 
 #--------- extract the directory by identity
-ok(rmdir($dirName));    # it's still empty
-$status = $zip->extractMember($member);
-is($status, AZ_OK);
+rmdir($dirName) or die;
+azok($zip->extractMember($member));
 ok(-d $dirName);
 
 #--------- add a string member, uncompressed
-$memberName = TESTDIR . '/string.txt';
+$memberName = testPath('string.txt', PATH_ZIPFILE);
 
 # addString	# Archive::Zip::Archive
 # newFromString	# Archive::Zip::Member
@@ -173,27 +136,18 @@ $numberOfMembers = $zip->numberOfMembers();
 is($numberOfMembers, 2);
 
 # writeToFileNamed	# Archive::Zip::Archive
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK);
+azok($zip->writeToFileNamed(OUTPUTZIP));
 
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azuztok();
 
 is($member->crc32(), TESTSTRINGCRC);
 
 is($member->crc32String(), sprintf("%08x", TESTSTRINGCRC));
 
 #--------- extract it by name
-$status = $zip->extractMember($memberName);
-is($status, AZ_OK);
-ok(-f $memberName);
-is(fileCRC($memberName), TESTSTRINGCRC);
+azok($zip->extractMember($memberName));
+ok  (-f $memberName);
+is  (readFile($memberName), TESTSTRING);
 
 #--------- now compress it and re-test
 my $oldCompressionMethod =
@@ -201,29 +155,20 @@ my $oldCompressionMethod =
 is($oldCompressionMethod, COMPRESSION_STORED, 'old compression method OK');
 
 # writeToFileNamed	# Archive::Zip::Archive
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK, 'writeToFileNamed returns AZ_OK');
-is($member->crc32(),            TESTSTRINGCRC);
-is($member->uncompressedSize(), TESTSTRINGLENGTH);
+azok($zip->writeToFileNamed(OUTPUTZIP), 'writeToFileNamed returns AZ_OK');
+is  ($member->crc32(),            TESTSTRINGCRC);
+is  ($member->uncompressedSize(), TESTSTRINGLENGTH);
 
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azuztok();
 
 #--------- extract it by name
-$status = $zip->extractMember($memberName);
-is($status, AZ_OK);
-ok(-f $memberName);
-is(fileCRC($memberName), TESTSTRINGCRC);
+azok($zip->extractMember($memberName));
+ok  (-f $memberName);
+is  (readFile($memberName), TESTSTRING);
 
 #--------- add a file member, compressed
-ok(rename($memberName, TESTDIR . '/file.txt'));
-$memberName = TESTDIR . '/file.txt';
+ok(rename($memberName, testPath('file.txt', PATH_ZIPFILE)));
+$memberName = testPath('file.txt', PATH_ZIPFILE);
 
 # addFile	# Archive::Zip::Archive
 # newFromFile	# Archive::Zip::Member
@@ -233,28 +178,19 @@ ok(defined($member));
 is($member->desiredCompressionMethod(), COMPRESSION_DEFLATED);
 
 # writeToFileNamed	# Archive::Zip::Archive
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status,                     AZ_OK);
-is($member->crc32(),            TESTSTRINGCRC);
-is($member->uncompressedSize(), TESTSTRINGLENGTH);
+azok($zip->writeToFileNamed(OUTPUTZIP));
+is  ($member->crc32(),            TESTSTRINGCRC);
+is  ($member->uncompressedSize(), TESTSTRINGLENGTH);
 
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azuztok();
 
 #--------- extract it by name (note we have to rename it first
 #--------- or we will clobber the original file
 my $newName = $memberName;
 $newName =~ s/\.txt/2.txt/;
-$status = $zip->extractMember($memberName, $newName);
-is($status, AZ_OK);
-ok(-f $newName);
-is(fileCRC($newName), TESTSTRINGCRC);
+azok($zip->extractMember($memberName, $newName));
+ok  (-f $newName);
+is  (readFile($newName), TESTSTRING);
 
 #--------- now make it uncompressed and re-test
 $oldCompressionMethod = $member->desiredCompressionMethod(COMPRESSION_STORED);
@@ -262,25 +198,16 @@ $oldCompressionMethod = $member->desiredCompressionMethod(COMPRESSION_STORED);
 is($oldCompressionMethod, COMPRESSION_DEFLATED);
 
 # writeToFileNamed	# Archive::Zip::Archive
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status,                     AZ_OK);
-is($member->crc32(),            TESTSTRINGCRC);
-is($member->uncompressedSize(), TESTSTRINGLENGTH);
+azok($zip->writeToFileNamed(OUTPUTZIP));
+is  ($member->crc32(),            TESTSTRINGCRC);
+is  ($member->uncompressedSize(), TESTSTRINGLENGTH);
 
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azuztok();
 
 #--------- extract it by name
-$status = $zip->extractMember($memberName, $newName);
-is($status, AZ_OK);
-ok(-f $newName);
-is(fileCRC($newName), TESTSTRINGCRC);
+azok($zip->extractMember($memberName, $newName));
+ok  (-f $newName);
+is  (readFile($newName), TESTSTRING);
 
 # Now, the contents of OUTPUTZIP are:
 # Length   Method    Size  Ratio   Date   Time   CRC-32    Name
@@ -318,17 +245,7 @@ is($members[1],      $member);
 $member = $zip->removeMember($members[0]);
 is($member, $members[0]);
 
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK);
-
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azwok($zip);
 
 #--------- add the string member at the end and test the file
 # addMember	# Archive::Zip::Archive
@@ -343,17 +260,7 @@ is($members[2],      $member);
 is(scalar(@memberNames), 3);
 is($memberNames[1],      $memberName);
 
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK);
-
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azwok($zip);
 
 #--------- remove the file member
 $member = $zip->removeMember($members[1]);
@@ -370,27 +277,16 @@ is($zip->numberOfMembers(), 2);
 $zip->addMember($member);
 is($zip->numberOfMembers(), 3);
 
-@members = $zip->members();
-$status  = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK);
-
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azwok($zip);
 
 #--------- add compressed file
-$member = $zip->addFile(File::Spec->catfile(TESTDIR, 'file.txt'));
+$member = $zip->addFile(testPath('file.txt'));
 ok(defined($member));
 $member->desiredCompressionMethod(COMPRESSION_DEFLATED);
-$member->fileName(TESTDIR . '/fileC.txt');
+$member->fileName(testPath('fileC.txt', PATH_ZIPFILE));
 
 #--------- add uncompressed string
-$member = $zip->addString(TESTSTRING, TESTDIR . '/stringU.txt');
+$member = $zip->addString(TESTSTRING, testPath('stringU.txt', PATH_ZIPFILE));
 ok(defined($member));
 $member->desiredCompressionMethod(COMPRESSION_STORED);
 
@@ -426,28 +322,17 @@ is($members[3]->contents(), TESTSTRING);
 is($members[4]->contents(), TESTSTRING);
 
 #--------- write to INPUTZIP
-$status = $zip->writeToFileNamed(INPUTZIP);
-is($status, AZ_OK);
-
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip(INPUTZIP);
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azwok($zip, 'file' => INPUTZIP);
 
 #--------- read from INPUTZIP (appending its entries)
 # read	# Archive::Zip::Archive
-$status = $zip->read(INPUTZIP);
-is($status,                 AZ_OK);
-is($zip->numberOfMembers(), 10);
+azok($zip->read(INPUTZIP));
+is  ($zip->numberOfMembers(), 10);
 
 #--------- clean up duplicate names
 @members = $zip->members();
 $member  = $zip->removeMember($members[5]);
-is($member->fileName(), TESTDIR . '/');
+is($member->fileName(), testPath(PATH_ZIPDIR));
 
 SCOPE: {
     for my $i (6 .. 9) {
@@ -459,32 +344,22 @@ SCOPE: {
 is(scalar($zip->membersMatching('2.txt')), 4);
 
 #--------- write zip out and test it.
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK);
-
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azwok($zip);
 
 #--------- Make sure that we haven't renamed files (this happened!)
 is(scalar($zip->membersMatching('2\.txt$')), 4);
 
 #--------- Now try extracting everyone
 @members = $zip->members();
-is($zip->extractMember($members[0]), AZ_OK);    #DM
-is($zip->extractMember($members[1]), AZ_OK);    #NFM
-is($zip->extractMember($members[2]), AZ_OK);
-is($zip->extractMember($members[3]), AZ_OK);    #NFM
-is($zip->extractMember($members[4]), AZ_OK);
-is($zip->extractMember($members[5]), AZ_OK);
-is($zip->extractMember($members[6]), AZ_OK);
-is($zip->extractMember($members[7]), AZ_OK);
-is($zip->extractMember($members[8]), AZ_OK);
+azok($zip->extractMember($members[0]));    #DM
+azok($zip->extractMember($members[1]));    #NFM
+azok($zip->extractMember($members[2]));
+azok($zip->extractMember($members[3]));    #NFM
+azok($zip->extractMember($members[4]));
+azok($zip->extractMember($members[5]));
+azok($zip->extractMember($members[6]));
+azok($zip->extractMember($members[7]));
+azok($zip->extractMember($members[8]));
 
 #--------- count dirs
 {
@@ -502,90 +377,40 @@ is($zip->extractMember($members[8]), AZ_OK);
 }
 
 #--------- Try writing zip file to file handle
-{
-    my $fh;
-    if ($catWorks) {
-        unlink(OUTPUTZIP);
-        $fh = FileHandle->new(CATPIPE . OUTPUTZIP);
-        binmode($fh);
-    }
-  SKIP: {
-        skip('cat does not work on this platform', 1) unless $catWorks;
-        ok($fh);
-    }
+my $fh;
+ok  ($fh = azopen(OUTPUTZIP), 'Pipe open');
+azok($zip->writeToFileHandle($fh), 'Write zip to file handle');
+ok  ($fh->close(), 'Pipe close');
 
-    #	$status = $zip->writeToFileHandle($fh, 0) if ($catWorks);
-    $status = $zip->writeToFileHandle($fh) if ($catWorks);
-  SKIP: {
-        skip('cat does not work on this platform', 1) unless $catWorks;
-        is($status, AZ_OK);
-    }
-    $fh->close() if ($catWorks);
-  SKIP: {
-        skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-        ($status, $zipout) = testZip();
-        is($status, 0);
-    }
-}
+azuztok();
 
 #--------- Change the contents of a string member
+my $status;
 is(ref($members[2]), 'Archive::Zip::StringMember');
 (undef, $status) = $members[2]->contents("This is my new contents\n");
-is($status, AZ_OK);
+azok($status);
 
 #--------- write zip out and test it.
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK);
-
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azwok($zip);
 
 #--------- Change the contents of a file member
 is(ref($members[1]), 'Archive::Zip::NewFileMember');
 (undef, $status) = $members[1]->contents("This is my new contents\n");
-is($status, AZ_OK);
+azok($status);
 
 #--------- write zip out and test it.
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK);
-
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
-}
+azwok($zip);
 
 #--------- Change the contents of a zip member
 
 is(ref($members[7]), 'Archive::Zip::ZipFileMember');
 (undef, $status) = $members[7]->contents("This is my new contents\n");
-is($status, AZ_OK);
+azok($status);
 
 #--------- write zip out and test it.
-$status = $zip->writeToFileNamed(OUTPUTZIP);
-is($status, AZ_OK);
+azwok($zip);
 
-SKIP: {
-    skip("No 'unzip' program to test against", 1) unless HAVEUNZIP;
-    ($status, $zipout) = testZip();
-
-    # STDERR->print("status= $status, out=$zipout\n");
-    skip("test zip doesn't work", 1) if $testZipDoesntWork;
-    is($status, 0);
 }
-
-} # SKIP:
-
-} # for my $desiredZip64Mode
 
 #####################################################################
 # Testing Member Methods
@@ -604,36 +429,30 @@ my $zip64ExtraField = pack('v v',         0x0001,  0);
 #--------- Non-error cases
 
 my $member = Archive::Zip::Member->newFromString(TESTSTRING);
-ok(defined($member));
-is($member->cdExtraField(), '');
-is($member->cdExtraField($unx0ExtraField), AZ_OK);
-is($member->cdExtraField(), $unx0ExtraField);
-is($member->cdExtraField(''), AZ_OK);
-is($member->cdExtraField(), '');
+ok  (defined($member));
+is  ($member->cdExtraField(), '');
+azok($member->cdExtraField($unx0ExtraField));
+is  ($member->cdExtraField(), $unx0ExtraField);
+azok($member->cdExtraField(''));
+is  ($member->cdExtraField(), '');
 
 #--------- Error cases
 
 {
-    my @errors;
-    local $Archive::Zip::ErrorHandler = sub { push @errors, @_ };
+    azis($member->cdExtraField($inv0ExtraField), AZ_FORMAT_ERROR,
+         qr/\Qinvalid extra field (bad header ID or data size)\E/);
+    is  ($member->cdExtraField(), '');
 
-    @errors = ();
-    is($member->cdExtraField($inv0ExtraField), AZ_FORMAT_ERROR);
-    ok($errors[0] =~ /\Qinvalid extra field (bad header ID or data size)\E/);
-    is($member->cdExtraField(), '');
-
-    @errors = ();
-    is($member->cdExtraField($inv1ExtraField), AZ_FORMAT_ERROR);
-    ok($errors[0] =~ /\Qinvalid extra field (bad data)\E/);
-    is($member->cdExtraField(), '');
+    azis($member->cdExtraField($inv1ExtraField), AZ_FORMAT_ERROR,
+         qr/\Qinvalid extra field (bad data)\E/);
+    is  ($member->cdExtraField(), '');
 
     SKIP: {
-        skip("zip64 format not supported", 3)
+        skip("zip64 format not supported", 2)
             unless ZIP64_SUPPORTED;
-        @errors = ();
-        is($member->cdExtraField($zip64ExtraField), AZ_FORMAT_ERROR);
-        ok($errors[0] =~ /\Qinvalid extra field (contains zip64 information)\E/);
-        is($member->cdExtraField(), '');
+        azis($member->cdExtraField($zip64ExtraField), AZ_FORMAT_ERROR,
+             qr/\Qinvalid extra field (contains zip64 information)\E/);
+        is  ($member->cdExtraField(), '');
     }
 }
 
@@ -643,43 +462,37 @@ is($member->cdExtraField(), '');
 #--------- Non-error cases
 
 $member = Archive::Zip::Member->newFromString(TESTSTRING);
-ok(defined($member));
-is($member->localExtraField(), '');
-is($member->localExtraField($unx0ExtraField), AZ_OK);
-is($member->localExtraField(), $unx0ExtraField);
-is($member->localExtraField(''), AZ_OK);
-is($member->localExtraField(), '');
+ok  (defined($member));
+is  ($member->localExtraField(), '');
+azok($member->localExtraField($unx0ExtraField));
+is  ($member->localExtraField(), $unx0ExtraField);
+azok($member->localExtraField(''));
+is  ($member->localExtraField(), '');
 
 #--------- Error cases
 
 {
-    my @errors;
-    local $Archive::Zip::ErrorHandler = sub { push @errors, @_ };
+    azis($member->localExtraField($inv0ExtraField), AZ_FORMAT_ERROR,
+         qr/\Qinvalid extra field (bad header ID or data size)\E/);
+    is  ($member->localExtraField(), '');
 
-    @errors = ();
-    is($member->localExtraField($inv0ExtraField), AZ_FORMAT_ERROR);
-    ok($errors[0] =~ /\Qinvalid extra field (bad header ID or data size)\E/);
-    is($member->localExtraField(), '');
-
-    @errors = ();
-    is($member->localExtraField($inv1ExtraField), AZ_FORMAT_ERROR);
-    ok($errors[0] =~ /\Qinvalid extra field (bad data)\E/);
-    is($member->localExtraField(), '');
+    azis($member->localExtraField($inv1ExtraField), AZ_FORMAT_ERROR,
+         qr/\Qinvalid extra field (bad data)\E/);
+    is  ($member->localExtraField(), '');
 
     SKIP: {
-        skip("zip64 format not supported", 3)
+        skip("zip64 format not supported", 2)
             unless ZIP64_SUPPORTED;
-        @errors = ();
-        is($member->localExtraField($zip64ExtraField), AZ_FORMAT_ERROR);
-        ok($errors[0] =~ /\Qinvalid extra field (contains zip64 information)\E/);
-        is($member->localExtraField(), '');
+        azis($member->localExtraField($zip64ExtraField), AZ_FORMAT_ERROR,
+             qr/\Qinvalid extra field (contains zip64 information)\E/);
+        is  ($member->localExtraField(), '');
     }
 }
 
 # extraFields   # Archive::Zip::Member
-is($member->localExtraField($unx0ExtraField), AZ_OK);
-is($member->cdExtraField($unx1ExtraField), AZ_OK);
-is($member->extraFields(), "$unx0ExtraField$unx1ExtraField");
+azok($member->localExtraField($unx0ExtraField));
+azok($member->cdExtraField($unx1ExtraField));
+is  ($member->extraFields(), "$unx0ExtraField$unx1ExtraField");
 
 #--------------------- STILL UNTESTED IN THIS SCRIPT ---------------------
 
@@ -701,3 +514,5 @@ is($member->extraFields(), "$unx0ExtraField$unx1ExtraField");
 # sub isDirectory	# Archive::Zip::DirectoryMember
 # sub _becomeDirectory	# Archive::Zip::DirectoryMember
 # sub diskNumberStart	# Archive::Zip::ZipFileMember
+
+done_testing();
