@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 use strict;
 use warnings;
 
@@ -20,12 +22,10 @@ use Test::More tests => 41;
 # indeed not created.
 
 # Suppress croaking errors, the tests produce some.
-Archive::Zip::setErrorHandler(sub {});
 my ($existed, $ret, $zip, $allowed_file, $forbidden_file);
 
 # Change working directory to a temporary directory because some tested
 # functions operarates there and we need prepared symlinks there.
-my @data_path = (File::Spec->splitdir(File::Spec->rel2abs('.')), 't', 'data');
 ok(chdir TESTDIR, "Working directory changed");
 
 # Symlink tests make sense only if a file system supports them.
@@ -46,11 +46,10 @@ SKIP: {
     # Extracting an archive tree must fail
     $zip = Archive::Zip->new();
     isa_ok($zip, 'Archive::Zip');
-    is($zip->read(File::Spec->catfile(@data_path, 'link-dir.zip')), AZ_OK,
-        'Archive read');
+    azok($zip->read(dataPath('link-dir.zip', PATH_ABS)), 'Archive read');
     $existed = -e File::Spec->catfile('', 'tmp', 'gotcha-linkdir');
     $ret = eval { $zip->extractTree() };
-    is($ret, AZ_ERROR, 'Tree extraction aborted');
+    azis($ret, AZ_ERROR, 'Tree extraction aborted');
     SKIP: {
         skip 'A canary file existed before the test', 1 if $existed;
         ok(! -e File::Spec->catfile('link-dir', 'gotcha-linkdir'),
@@ -65,7 +64,7 @@ SKIP: {
     $forbidden_file = File::Spec->catfile($link, 'gotcha-linkdir');
     $existed = -e $forbidden_file;
     $ret = eval { $zip->extractMember('link-dir/gotcha-linkdir') };
-    is($ret, AZ_ERROR, 'Member extraction without a local name aborted');
+    azis($ret, AZ_ERROR, 'Member extraction without a local name aborted');
     SKIP: {
         skip 'A canary file existed before the test', 1 if $existed;
         ok(! -e $forbidden_file,
@@ -75,7 +74,7 @@ SKIP: {
     # But allow extracting an archive member into a supplied file name
     $allowed_file = File::Spec->catfile($link, 'file');
     $ret = eval { $zip->extractMember('link-dir/gotcha-linkdir', $allowed_file) };
-    is($ret, AZ_OK, 'Member extraction passed');
+    azok($ret, 'Member extraction passed');
     ok(-e $allowed_file, 'File created');
     ok(unlink($allowed_file), 'File removed');
     ok(unlink($link), 'A symlink to a directory removed');
@@ -88,8 +87,7 @@ SKIP: {
 # 4 directories.
 $zip = Archive::Zip->new();
 isa_ok($zip, 'Archive::Zip');
-is($zip->read(File::Spec->catfile(@data_path,
-            'dotdot-from-unexistant-path.zip')), AZ_OK, 'Archive read');
+azok($zip->read(dataPath('dotdot-from-unexistant-path.zip', PATH_ABS)), 'Archive read');
 $forbidden_file = File::Spec->catfile('..', '..', '..', '..', 'tmp',
     'gotcha-dotdot-unexistingpath');
 SKIP: {
@@ -97,7 +95,7 @@ SKIP: {
 
     $existed = -e $forbidden_file;
     $ret = eval { $zip->extractTree() };
-    is($ret, AZ_ERROR, 'Tree extraction aborted');
+    azis($ret, AZ_ERROR, 'Tree extraction aborted');
     SKIP: {
         skip 'A canary file existed before the test', 1 if $existed;
         ok(! -e $forbidden_file, 'A file was not created in a parent directory');
@@ -109,7 +107,7 @@ $existed = -e $forbidden_file;
 $ret = eval { $zip->extractMember(
         'unexisting/../../../../../tmp/gotcha-dotdot-unexistingpath',
     ) };
-is($ret, AZ_ERROR, 'Member extraction without a local name aborted');
+azis($ret, AZ_ERROR, 'Member extraction without a local name aborted');
 SKIP: {
     skip 'A canary file existed before the test', 1 if $existed;
     ok(! -e $forbidden_file, 'A file was not created in a parent directory');
@@ -122,7 +120,7 @@ $ret = eval { $zip->extractMember(
         'unexisting/../../../../../tmp/gotcha-dotdot-unexistingpath',
         $allowed_file
     ) };
-is($ret, AZ_OK, 'Member extraction passed');
+azok($ret, 'Member extraction passed');
 ok(-e $allowed_file, 'File created');
 ok(unlink($allowed_file), 'File removed');
 
@@ -136,11 +134,10 @@ SKIP: {
 
     $zip = Archive::Zip->new();
     isa_ok($zip, 'Archive::Zip');
-    is($zip->read(File::Spec->catfile(@data_path, 'link-samename.zip')), AZ_OK,
-        'Archive read');
+    azis($zip->read(dataPath('link-samename.zip', PATH_ABS)), 'Archive read');
     $existed = -e File::Spec->catfile('', 'tmp', 'gotcha-samename');
     $ret = eval { $zip->extractTree() };
-    is($ret, AZ_ERROR, 'Tree extraction aborted');
+    azis($ret, AZ_ERROR, 'Tree extraction aborted');
     SKIP: {
         skip 'A canary file existed before the test', 1 if $existed;
         ok(! -e File::Spec->catfile('', 'tmp', 'gotcha-samename'),
@@ -159,7 +156,7 @@ SKIP: {
     my $member = ${[$zip->members]}[1];
     ok($member, 'A member to extract selected');
     $ret = eval { $zip->extractMember($member) };
-    is($ret, AZ_ERROR,
+    azis($ret, AZ_ERROR,
         'Member extraction using extractMember() without a local name aborted');
     SKIP: {
         skip 'A canary file existed before the test', 1 if $existed;
@@ -171,7 +168,7 @@ SKIP: {
     # a supplied file name.
     $allowed_file = $target;
     $ret = eval { $zip->extractMember($member, $allowed_file) };
-    is($ret, AZ_OK, 'Member extraction using extractMember() passed');
+    azok($ret, 'Member extraction using extractMember() passed');
     ok(-e $allowed_file, 'File created');
     ok(unlink($allowed_file), 'File removed');
 
@@ -181,8 +178,8 @@ SKIP: {
     $existed = -e $forbidden_file;
     # Select a member by order due to same file names.
     $ret = eval { $zip->extractMemberWithoutPaths($member) };
-    is($ret, AZ_ERROR,
-        'Member extraction using extractMemberWithoutPaths() without a local name aborted');
+    azis($ret, AZ_ERROR,
+         'Member extraction using extractMemberWithoutPaths() without a local name aborted');
     SKIP: {
         skip 'A canary file existed before the test', 1 if $existed;
         ok(! -e $forbidden_file,
@@ -193,8 +190,7 @@ SKIP: {
     # into a supplied file name.
     $allowed_file = $target;
     $ret = eval { $zip->extractMemberWithoutPaths($member, $allowed_file) };
-    is($ret, AZ_OK,
-        'Member extraction using extractMemberWithoutPaths() passed');
+    azok($ret, 'Member extraction using extractMemberWithoutPaths() passed');
     ok(-e $allowed_file, 'File created');
     ok(unlink($allowed_file), 'File removed');
     ok(unlink($link), 'A symlink to a file removed');

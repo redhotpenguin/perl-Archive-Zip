@@ -10,6 +10,17 @@ Revision history for Perl extension Archive-Zip
     - Fixed examples/zipcheck.pl to skip symbolic links, RT #130525
     - Described version 1.59, RT #117371 (tagged important!)
 
+    - Completely re-did test suite:
+      . Created new test APIs in t/common.pm and documented them in
+        t/README.md
+      . Changed tests to be less dependent on OS-specific quirks of "unzip -t"
+      . Changed tests to write more diagnostic information if executed in
+        automated test environments
+      . Normalized access to test data and to temporary results.  Removed
+        references to obsolete temporary results (for example, those to
+        directory "extracted").
+      . Normalized test headers and brushed up tests in general
+
 1.67 Sun 06 Oct 2019
     - Fixed compatibility issues with zip64 format (defined-or, pack)
     - Fixed hard-coded version fields introduced in version 1.66

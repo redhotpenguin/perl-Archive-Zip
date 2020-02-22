@@ -10,7 +10,7 @@ BEGIN {
 }
 
 use Test::More tests => 4;
-use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
+use Archive::Zip qw( :CONSTANTS );
 
 my $zip = Archive::Zip->new;
 isa_ok($zip, 'Archive::Zip');

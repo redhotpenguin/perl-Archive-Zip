@@ -13,6 +13,8 @@ use Test::More;
 use Archive::Zip;
 use File::Temp;
 use File::Spec;
+use lib 't';
+use common;
 
 if ($^O eq 'MSWin32') {
     plan(tests => 1);
@@ -20,8 +22,7 @@ if ($^O eq 'MSWin32') {
     plan(skip_all => 'Only required on Win32.');
 }
 
-my $dist = Win32::GetShortPathName(
-    File::Spec->rel2abs(File::Spec->catfile(qw(t data winzip.zip))));
+my $dist = dataPath('winzip.zip');
 my $tmpdirname = File::Spec->catdir(File::Spec->tmpdir, "parXXXXX");
 my $tmpdir = File::Temp::mkdtemp($tmpdirname)
   or die "Could not create temporary directory from template '$tmpdirname': $!";

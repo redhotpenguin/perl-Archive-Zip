@@ -44,17 +44,17 @@ use Archive::Zip qw( :CONSTANTS );
 # See t/data/mkzip.pl for the code used to create these zip files.
 
 
-my @empty = map { "t/data/$_.zip" }
+my @empty = map { dataPath($_) }
             qw( emptydef emptydefstr emptystore emptystorestr );
 
 # Implicit tests - check that stored gets used when no compression method
 # has been set.
 for my $infile (@empty)
 {
-    my $expectedout = "t/data/emptystore.zip";
+    my $expectedout = dataPath("emptystore.zip");
     my $outfile = OUTPUTZIP;
 
-    passthrough($infile, $outfile, sub {
+    passThrough($infile, $outfile, sub {
         my $member = shift ;
         $member->setLastModFileDateTimeFromUnix($member->lastModTime());
      });
@@ -62,9 +62,7 @@ for my $infile (@empty)
     my $expected = readFile($expectedout);
     my $after = readFile($outfile);
 
-    my ($status, $reason) = testZip($outfile);
-    is $status, 0, "testZip ok after $infile to $outfile"
-        or warn("ziptest said: $reason\n");
+    azuztok($outfile, 'name' => "\"unzip -t\" ok after $infile to $outfile");
     ok $expected eq $after, "$expectedout eq $outfile";
 }
 
@@ -76,9 +74,9 @@ for my $method ( COMPRESSION_STORED, COMPRESSION_DEFLATED)
     for my $infile (@empty)
     {
         my $outfile = OUTPUTZIP;
-        my $expectedout = "t/data/emptystore.zip";
+        my $expectedout = dataPath("emptystore.zip");
 
-        passthrough($infile, $outfile, sub {
+        passThrough($infile, $outfile, sub {
             my $member = shift ;
             $member->desiredCompressionMethod( $method );
             $member->setLastModFileDateTimeFromUnix($member->lastModTime());
@@ -87,22 +85,20 @@ for my $method ( COMPRESSION_STORED, COMPRESSION_DEFLATED)
         my $expected = readFile($expectedout);
         my $after = readFile($outfile);
 
-        my ($status, $reason) = testZip($outfile);
-        is $status, 0, "[$method] testZip ok after $infile to $outfile"
-            or warn("ziptest said: $reason\n");
+        azuztok($outfile, 'name' => "[$method] \"unzip -t\" ok after $infile to $outfile");
         ok $after eq $expected, "[$method] $infile eq $outfile";
     }
 }
 
 # The following non-empty files should not be changed at all
-my @nochange = map { "t/data/$_.zip" }
+my @nochange = map { dataPath($_) }
                qw( def defstr store storestr );
 
 for my $infile (@nochange)
 {
     my $outfile = OUTPUTZIP;
 
-    passthrough($infile, $outfile, sub {
+    passThrough($infile, $outfile, sub {
         my $member = shift ;
         $member->setLastModFileDateTimeFromUnix($member->lastModTime());
      });
@@ -110,9 +106,6 @@ for my $infile (@nochange)
     my $expected = readFile($infile);
     my $after = readFile($outfile);
 
-    my ($status, $reason) = testZip($outfile);
-    is $status, 0, "testZip ok after $infile to $outfile"
-        or warn("ziptest said: $reason\n");
+    azuztok($outfile, 'name' => "\"unzip -t\" ok after $infile to $outfile");
     ok $expected eq $after, "$infile eq $outfile";
 }
-

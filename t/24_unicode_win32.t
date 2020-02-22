@@ -54,13 +54,13 @@ close($EURO);
     # Create member $euro_filename with addString
     my $archive = Archive::Zip->new;
     my $string_member = $archive->addString(TESTSTRING => $euro_filename);
-    $archive->writeToFileNamed(OUTPUTZIP);
+    azwok($archive);
 }
 #TEST
 {
     # Read member $euro_filename
     my $archive = Archive::Zip->new;
-    is($archive->read(OUTPUTZIP), Archive::Zip::AZ_OK);
+    azok($archive->read(OUTPUTZIP));
     is_deeply(
         [$archive->memberNames()],
         [$euro_filename],
@@ -76,13 +76,13 @@ unlink(OUTPUTZIP);
     $tmp_file->flush;
     my $archive = Archive::Zip->new;
     my $string_member = $archive->addFile($tmp_file->filename => $euro_filename);
-    $archive->writeToFileNamed(OUTPUTZIP);
+    azwok($archive);
 }
 #TEST
 {
     # Read member $euro_filename
     my $archive = Archive::Zip->new;
-    is($archive->read(OUTPUTZIP), Archive::Zip::AZ_OK);
+    azok($archive->read(OUTPUTZIP));
     is_deeply(
         [$archive->memberNames()],
         [$euro_filename],
@@ -95,13 +95,13 @@ unlink(OUTPUTZIP);
     my $archive = Archive::Zip->new;
     my $string_member = $archive->addDirectory(
         File::Spec->catdir(TESTDIR, 'folder') => $euro_filename);
-    $archive->writeToFileNamed(OUTPUTZIP);
+    azwok($archive);
 }
 #TEST
 {
     # Read member $euro_filename
     my $archive = Archive::Zip->new;
-    is($archive->read(OUTPUTZIP), Archive::Zip::AZ_OK);
+    azok($archive->read(OUTPUTZIP));
     is_deeply(
         [$archive->memberNames()],
         [$euro_filename.'/'],
@@ -114,13 +114,13 @@ unlink(OUTPUTZIP);
     my $archive = Archive::Zip->new;
     my $string_member = $archive->addFileOrDirectory(
         File::Spec->catdir(TESTDIR, 'folder') => $euro_filename);
-    $archive->writeToFileNamed(OUTPUTZIP);
+    azwok($archive);
 }
 #TEST
 {
     # Read member $euro_filename
     my $archive = Archive::Zip->new;
-    is($archive->read(OUTPUTZIP), Archive::Zip::AZ_OK);
+    azok($archive->read(OUTPUTZIP));
     is_deeply(
         [$archive->memberNames()],
         [$euro_filename.'/'],
@@ -137,13 +137,13 @@ unlink(OUTPUTZIP);
     my $archive = Archive::Zip->new;
     my $string_member = $archive->addFileOrDirectory(
         $tmp_file->filename => $euro_filename);
-    $archive->writeToFileNamed(OUTPUTZIP);
+    azwok($archive);
 }
 #TEST
 {
     # Read member $euro_filename
     my $archive = Archive::Zip->new;
-    is($archive->read(OUTPUTZIP), Archive::Zip::AZ_OK);
+    azok($archive->read(OUTPUTZIP));
     is_deeply(
         [$archive->memberNames()],
         [$euro_filename],

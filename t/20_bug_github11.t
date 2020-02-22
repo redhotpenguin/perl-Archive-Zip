@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use Archive::Zip qw( :ERROR_CODES );
+use Archive::Zip;
 use File::Spec;
 use File::Path;
 use lib 't';
@@ -21,20 +21,19 @@ my $TEST_DIR   = File::Spec->catdir(TESTDIR, $TEST_NAME);
 mkpath($TEST_DIR);
 
 # test 1
-my $DATA_DIR      = File::Spec->catfile('t', 'data');
-my $GOOD_ZIP_FILE = File::Spec->catfile($DATA_DIR, "good_${GH_ISSUE}.zip");
+my $GOOD_ZIP_FILE = dataPath("good_${GH_ISSUE}.zip");
 my $GOOD_ZIP      = Archive::Zip->new($GOOD_ZIP_FILE);
 my $MEMBER_FILE = 'FILE';
 my $member      = $GOOD_ZIP->memberNamed($MEMBER_FILE);
 my $OUT_FILE = File::Spec->catfile($TEST_DIR, "out");
 # Extracting twice triggered the bug
 $member->extractToFileNamed($OUT_FILE);
-is($member->extractToFileNamed($OUT_FILE), AZ_OK, 'Testing known good zip');
+azok($member->extractToFileNamed($OUT_FILE), 'Testing known good zip');
 
 # test 2
-my $BAD_ZIP_FILE = File::Spec->catfile($DATA_DIR, "bad_${GH_ISSUE}.zip");
+my $BAD_ZIP_FILE = dataPath("bad_${GH_ISSUE}.zip");
 my $BAD_ZIP      = Archive::Zip->new($BAD_ZIP_FILE);
 $member = $BAD_ZIP->memberNamed($MEMBER_FILE);
 # Extracting twice triggered the bug
 $member->extractToFileNamed($OUT_FILE);
-is($member->extractToFileNamed($OUT_FILE), AZ_OK, 'Testing known bad zip');
+azok($member->extractToFileNamed($OUT_FILE), 'Testing known bad zip');

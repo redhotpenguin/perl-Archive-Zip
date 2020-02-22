@@ -12,7 +12,7 @@ BEGIN {
     $|  = 1;
     $^W = 1;
 }
-use Test::More tests => 3;
+use Test::More tests => 9;
 use Archive::Zip;
 
 use File::Path;
@@ -50,14 +50,14 @@ rmtree([File::Spec->catdir(TESTDIR, 'folder')]);
     # Create member "0" with addString
     my $archive = Archive::Zip->new;
     my $string_member = $archive->addString(TESTSTRING => 0);
-    $archive->writeToFileNamed(OUTPUTZIP);
+    azwok($archive);
 }
 
 {
 
     # Read member "0"
     my $archive = Archive::Zip->new;
-    is($archive->read(OUTPUTZIP), Archive::Zip::AZ_OK);
+    azok($archive->read(OUTPUTZIP));
     ok(scalar(grep { $_ eq "0" } $archive->memberNames()),
         "Checking that a file called '0' was added properly by addString");
 }

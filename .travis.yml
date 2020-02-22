@@ -30,9 +30,6 @@ before_install:
    - unzip -h
    - build-dist
    - cd $BUILD_DIR
-   - zip -T t/data/jar.zip
-   - zip -F t/data/jar.zip --out testfix.zip
-   - unzip -t testfix.zip
 
 install:
    - cpan-install --deps
@@ -42,7 +39,11 @@ before_script:
    - coverage-setup
 
 script:
-   - prove -lrsv -j$((SYSTEM_CORES + 1)) $(test-dirs) t
+   # run tests twice.  First in serial, non-shuffled order to get
+   # readable output, then in parallel and shuffled.  Leave
+   # verbose mode off for both runs since in automated test
+   # environments the tests are verbose already by default.
+   - prove -lr $(test-dirs) && prove -lrs -j$((SYSTEM_CORES + 1)) $(test-dirs)
 
 after_success:
    - coverage-report

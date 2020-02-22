@@ -6,12 +6,14 @@ BEGIN {
     $|  = 1;
     $^W = 1;
 }
-use Archive::Zip qw( :ERROR_CODES );
+use Archive::Zip;
 use Test::More tests => 4;
+use lib 't';
+use common;
 
 my $zip = Archive::Zip->new();
 isa_ok($zip, 'Archive::Zip');
-is($zip->read('t/data/perl.zip'), AZ_OK, 'Read file');
+azok($zip->read(dataPath('perl.zip')), 'Read file');
 
-is($zip->extractTree(undef, 'extracted/xTree'), AZ_OK, 'Extracted archive');
-ok(-d 'extracted/xTree/foo', 'Checked directory');
+azok($zip->extractTree(undef, testPath()), 'Extracted archive');
+ok(-d testPath('foo'), 'Checked directory');

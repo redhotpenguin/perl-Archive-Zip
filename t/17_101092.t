@@ -21,15 +21,12 @@ use common;
 #
 # perl -MIO::Compress::Zip=zip -e 'zip \"abc" => "streamed.zip", Name => "fred", Stream => 1, Method =>8'
 
-my $infile = "t/data/streamed.zip";
+my $infile = dataPath("streamed.zip");
 my $outfile = OUTPUTZIP;
-passthrough($infile, $outfile);
+passThrough($infile, $outfile);
 
 my $before = readFile($infile);
 my $after = readFile($outfile);
 
-my ($status, $reason) = testZip($outfile);
-is $status, 0
-    or warn("ziptest said: $reason\n");
+azuztok();
 ok $before eq $after;
-

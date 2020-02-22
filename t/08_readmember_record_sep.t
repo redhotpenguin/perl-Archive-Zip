@@ -6,7 +6,7 @@ BEGIN {
     $|  = 1;
     $^W = 1;
 }
-use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
+use Archive::Zip qw( :CONSTANTS );
 use Archive::Zip::MemberRead;
 use File::Spec;
 

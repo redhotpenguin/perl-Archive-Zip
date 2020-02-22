@@ -5,14 +5,16 @@ use warnings;
 
 BEGIN { $| = 1; }
 
-use Archive::Zip qw( :ERROR_CODES );
+use Archive::Zip;
 use Test::More;
+use lib 't';
+use common;
 
 foreach my $pass (qw( wrong test )) {
     my $zip = Archive::Zip->new();
     isa_ok($zip, "Archive::Zip");
 
-    is($zip->read("t/data/crypt.zip"), AZ_OK, "Read file");
+    azok($zip->read(dataPath("crypt.zip")), "Read file");
 
     ok(my @mn = $zip->memberNames, "get memberNames");
     is_deeply(\@mn, ["decrypt.txt"], "memberNames");

@@ -55,7 +55,7 @@ if (!test_if_chmod_is_working()) {
 
 my $zip = Archive::Zip->new();
 
-$zip->read(File::Spec->catfile(File::Spec->curdir(), "t", "data", "chmod.zip"));
+$zip->read(dataPath("chmod.zip"));
 
 my $test_dir = File::Spec->catdir(File::Spec->curdir(), "testdir", "chtest");
 
@@ -70,4 +70,3 @@ is(get_perm($test_file), 0444, "File permission is OK.");
 
 # Clean up.
 rmtree($test_dir);
-

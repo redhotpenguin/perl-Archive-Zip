@@ -35,7 +35,7 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 README.md
 script/crc32
-t/01_compile.t
+t/01_init.t
 t/02_main.t
 t/03_ex.t
 t/04_readmember.t
@@ -63,8 +63,6 @@ t/25_traversal.t
 t/26_bzip2.t
 t/27_symlinks.t
 t/28_zip64_unsupported.t
-t/badjpeg/expected.jpg
-t/badjpeg/source.zip
 t/common.pm
 t/data/bad_github11.zip
 t/data/bzip.zip
@@ -79,6 +77,8 @@ t/data/emptydef.zip
 t/data/emptydefstr.zip
 t/data/emptystore.zip
 t/data/emptystorestr.zip
+t/data/emptyzip.zip
+t/data/expected.jpg
 t/data/good_github11.zip
 t/data/jar.zip
 t/data/link-dir.zip
@@ -86,6 +86,7 @@ t/data/link-samename.zip
 t/data/linux.zip
 t/data/mkzip.pl
 t/data/perl.zip
+t/data/simple.zip
 t/data/store.zip
 t/data/storestr.zip
 t/data/streamed.zip
@@ -96,3 +97,4 @@ t/data/zip64-azheaders.zip
 t/data/zip64-infozip.zip
 t/data/zip64-iocz.zip
 t/data/zip64.zip
+t/README.md

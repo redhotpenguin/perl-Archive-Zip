@@ -5,12 +5,14 @@ use warnings;
 
 BEGIN { $| = 1; }
 
-use Archive::Zip qw( :ERROR_CODES );
+use Archive::Zip;
 use Test::More;
+use lib 't';
+use common;
 
 my $zip = Archive::Zip->new();
 isa_ok($zip, "Archive::Zip");
-is($zip->read("t/data/crypcomp.zip"), AZ_OK, "Read file");
+azok($zip->read(dataPath("crypcomp.zip")), "Read file");
 
 ok(my @mn = $zip->memberNames, "get memberNames");
 is_deeply(\@mn, ["test"], "memberNames");

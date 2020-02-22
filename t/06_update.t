@@ -11,7 +11,7 @@ BEGIN {
 use File::Spec ();
 use IO::File   ();
 use File::Find ();
-use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
+use Archive::Zip qw( :CONSTANTS );
 
 use Test::More tests => 12;
 use lib 't';
@@ -32,7 +32,7 @@ File::Find::find(\&countMembers, $testDir);
 is($numberOfMembers > 1, 1, 'not enough members to test');
 
 # an initial updateTree() should act like an addTree()
-is($zip->updateTree($testDir), AZ_OK, 'initial updateTree failed');
+azok($zip->updateTree($testDir), 'initial updateTree failed');
 is(scalar($zip->members()),
     $numberOfMembers, 'wrong number of members after create');
 
@@ -49,7 +49,7 @@ undef($fh);
 is(-f $testFileName, 1, "creating $testFileName failed");
 
 # Then update it. It should be added.
-is($zip->updateTree($testDir), AZ_OK, 'updateTree failed');
+azok($zip->updateTree($testDir), 'updateTree failed');
 is(
     scalar($zip->members()),
     $numberOfMembers + 1,
@@ -61,7 +61,7 @@ unlink($testFileName);
 is(-f $testFileName, undef, "deleting $testFileName failed");
 
 # updating without the mirror option should keep the members
-is($zip->updateTree($testDir), AZ_OK, 'updateTree failed');
+azok($zip->updateTree($testDir), 'updateTree failed');
 is(
     scalar($zip->members()),
     $numberOfMembers + 1,
@@ -69,6 +69,6 @@ is(
 );
 
 # now try again with the mirror option; should delete the last file.
-is($zip->updateTree($testDir, undef, undef, 1), AZ_OK, 'updateTree failed');
+azok($zip->updateTree($testDir, undef, undef, 1), 'updateTree failed');
 is(scalar($zip->members()),
     $numberOfMembers, 'wrong number of members after mirror');

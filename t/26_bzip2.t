@@ -15,29 +15,17 @@ BEGIN {
     $^W = 1;
 }
 
-use Test::More tests => 1;
+use Test::More tests => 8;
 use lib 't';
 use common;
 use Archive::Zip qw( :CONSTANTS );
 
 
-my $infile = "t/data/bzip.zip";
+my $infile = dataPath("bzip.zip");
 my $outfile = OUTPUTZIP;
 
 
 my $zip = Archive::Zip->new();
-$zip->read($infile);
-$zip->writeToFileNamed($outfile);
-
-my ($status, $reason) = testZip($outfile);
-
-# If unzip cannot handle bzip2 compression, it will return exit status 81
-# Treat this the same as success
-if ($status == 81 * 256) {
-    warn("ziptest said: $reason\n");
-    $status = 0;
-}
-
-is $status, 0, "testZip ok after $infile to $outfile"
-    or warn("ziptest said: $reason\n");
-
+isa_ok($zip, 'Archive::Zip');
+azok($zip->read($infile));
+azwok($zip);
