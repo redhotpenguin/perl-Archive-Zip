@@ -1,5 +1,6 @@
 Revision history for Perl extension Archive-Zip
 
+1.68 Thr 12 Mar 2020
     - Switched to GitHub as issue tracker
     - Replaced references to Test::MockModule in
       t/23_closed_handle.t with code from PR #32, RT #110087
