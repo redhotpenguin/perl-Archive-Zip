@@ -43,4 +43,6 @@ jobs:
     - name: Build
       run: perl Makefile.PL && make
     - name: Test
+      env:
+        AUTOMATED_TESTING: 1
       run: make test
