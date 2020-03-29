@@ -408,7 +408,7 @@ sub contents {
     if ($status == AZ_OK && ! ref($member)) {
         my $memberName = $member;
         $member = $self->memberNamed($memberName);
-        $status = _error('No member named $memberName') unless defined($member);
+        $status = _error("No member named $memberName") unless defined($member);
     }
     if ($status == AZ_OK) {
         ($contents, $status) = $member->contents($newContents);
