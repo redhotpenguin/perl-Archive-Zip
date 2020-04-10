@@ -39,10 +39,17 @@ jobs:
     - name: Perl version
       run: perl -V
     - name: Install dependencies
-      run: cpanm --quiet --installdeps --notest .
+      run: |
+        cpanm --quiet --installdeps --notest .
+        # make sure have latest version of prove
+        cpanm App::Prove
     - name: Build
       run: perl Makefile.PL && make
-    - name: Test
+    - name: Standard Test
       env:
         AUTOMATED_TESTING: 1
-      run: make test
+      run: prove -lr t
+    - name: Shuffle Test
+      env:
+        AUTOMATED_TESTING: 1
+      run: prove -lrs -j2 t
