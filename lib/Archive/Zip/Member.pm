@@ -890,7 +890,7 @@ sub _writeLocalFileHeader {
     my $header =
       pack(LOCAL_FILE_HEADER_FORMAT,
            $versionNeededToExtract,
-           $self->{'bitFlag'},
+           $self->bitFlag(),
            $self->desiredCompressionMethod(),
            $self->lastModFileDateTime(),
            $crc32,
