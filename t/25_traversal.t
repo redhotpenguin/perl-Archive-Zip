@@ -8,7 +8,8 @@ use strict;
 BEGIN { $^W = 1; }
 
 use File::Spec;
-use Test::More tests => 41;
+use File::Path qw(make_path);
+use Test::More tests => 49;
 
 use Archive::Zip qw(:ERROR_CODES);
 
@@ -44,7 +45,7 @@ my $symlinks_not_supported;
 #   link-dir/gotcha-linkdir
 # should not write into /tmp/gotcha-linkdir file.
 SKIP: {
-    skip 'Symbolic links are not supported', 12 if $symlinks_not_supported;
+    skip 'Symbolic links are not supported', 20 if $symlinks_not_supported;
 
     # Extracting an archive tree must fail
     $zip = Archive::Zip->new();
@@ -85,6 +86,24 @@ SKIP: {
     ok(-e $allowed_file, 'File created');
     ok(unlink($allowed_file), 'File removed');
     ok(unlink($link), 'A symlink to a directory removed');
+
+    # And allow extracting a tree into a destination path that is a symlink to
+    # a directory.
+    ok(symlink('.', $link), "Ensured that $link is a symlink");
+    my $zip_safe = Archive::Zip->new();
+    isa_ok($zip_safe, 'Archive::Zip');
+    azok($zip_safe->read(dataPath('simple.zip', PATH_ABS)), 'Archive read');
+    $ret = eval { $zip_safe->extractTree({ zipName => $link }) };
+    azok($ret, 'Tree extraction to destination that is a symlink to a directory passed');
+
+    # And allow extracting a tree into a destination path that is a child path
+    # of a symlink to a directory.
+    ok(unlink $link, "Removed $link");
+    ok(symlink('.', $link), "Ensured that $link is a symlink");
+    my $link_subpath = File::Spec->catdir($link, 'sub/path');
+    ok(make_path($link_subpath), "Created directory $link_subpath");
+    $ret = eval { $zip_safe->extractTree({ zipName => $link_subpath }) };
+    azok($ret, 'Extraction to destination that is a child of a symlink to a directory passed');
 }
 
 # Case 2:
