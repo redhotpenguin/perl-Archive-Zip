@@ -34,7 +34,7 @@ ok(chdir testPath(), "Working directory changed");
 # Symlink tests make sense only if a file system supports them.
 my $symlinks_not_supported;
 {
-    my $link = testPath('trylink');
+    my $link = testPathInit('trylink') or BAIL_OUT("Failed to create parent directory of `trylink`: $!");
     $symlinks_not_supported = !eval { symlink('.', $link) };
     unlink($link);
 }
