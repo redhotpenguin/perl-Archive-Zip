@@ -1167,26 +1167,60 @@ sub addTreeMatching {
     return $self->addTree($root, $dest, $matcher, $compressionLevel);
 }
 
-# Check if one of the components of a path to the file or the file name
-# itself is an already existing symbolic link. If yes then return an
-# error. Continuing and writing to a file traversing a link posseses
-# a security threat, especially if the link was extracted from an
-# attacker-supplied archive. This would allow writing to an arbitrary
-# file. The same applies when using ".." to escape from a working
-# directory. <https://bugzilla.redhat.com/show_bug.cgi?id=1591449>
+# Checks that a path is "safe" to extract, in the following senses:
+#
+# 1. The path is a child of the supplied base path:
+#
+#       a. _extractionNameIsSafe('foo/bar', '/baz')         => ok
+#       b. _extractionNameIsSafe('/baz/foo/bar', '/baz')    => ok
+#       c. _extractionNameIsSafe('/notbaz/foo/bar', '/baz') => not ok
+#       d. _extractionNameIsSafe('', '/baz')                => not ok
+#       e. _extractionNameIsSafe('/baz', '/baz')            => not ok
+#       f. _extractionNameIsSafe('.', '/baz')               => not ok
+#       g. _extractionNameIsSafe('./', '/baz')              => not ok
+#       h. _extractionNameIsSafe('./.', '/baz')             => not ok
+#
+# 2. The path contains no `..` elements (though the base path may):
+#
+#       a. _extractionNameIsSafe('foo/bar', '../baz/quux')  => ok
+#       b. _extractionNameIsSafe('foo/bar', '/baz/../quux') => ok
+#       c. _extractionNameIsSafe('foo/bar', '/baz/quux/..') => ok
+#       d. _extractionNameIsSafe('foo/bar/..', '/baz')      => not ok
+#       e. _extractionNameIsSafe('foo/../bar', '/baz')      => not ok
+#       f. _extractionNameIsSafe('../../bar', '/baz')       => not ok
+#
+# 3. None of the components of the path *under the base path* are symbolic
+#    links:
+#
+#       a. _extractionNameIsSafe('foo/bar', '/baz/quux'), given `baz` is a symlink but `foo` and `bar` are not     => ok
+#       b. _extractionNameIsSafe('foo/bar', '/baz/quux'), given `quux` is a symlink but `foo` and `bar` are not    => ok
+#       c. _extractionNameIsSafe('foo/bar', '/baz/quux'), given `foo` is a symlink                                 => not ok
+#       d. _extractionNameIsSafe('foo/bar', '/baz/quux'), given `bar` is a symlink                                 => not ok
+#
+# Continuing and writing to a file traversing a link posseses a security
+# threat, especially if the link was extracted from an attacker-supplied
+# archive. This would allow writing to an arbitrary file. The same applies when
+# using ".." to escape from a working directory.
+# <https://bugzilla.redhat.com/show_bug.cgi?id=1591449>
 sub _extractionNameIsSafe {
     my $name = shift;
-    my ($volume, $directories) = File::Spec->splitpath($name, 1);
-    my @directories = File::Spec->splitdir($directories);
+    my $base = File::Spec->rel2abs(shift // '');
+    my $rel = File::Spec->abs2rel(File::Spec->rel2abs($name, $base), $base);
+    my @directories = File::Spec->splitdir((File::Spec->splitpath($rel, 1))[1]);
+
     if (grep '..' eq $_, @directories) {
         return _error(
             "Could not extract $name safely: a parent directory is used");
     }
-    my @path;
-    my $path;
+
+    if (@directories == 1 && $directories[0] eq '.') {
+        return _error(
+            "Could not extract $name safely: refusing to overwrite $base");
+    }
+
+    my $path = $base;
     for my $directory (@directories) {
-        push @path, $directory;
-        $path = File::Spec->catpath($volume, File::Spec->catdir(@path), '');
+        $path = File::Spec->catdir($path, $directory);
         if (-l $path) {
             return _error(
                 "Could not extract $name safely: $path is an existing symbolic link");
@@ -1232,7 +1266,7 @@ sub extractTree {
         $fileName =~ s{$pattern}{$dest};       # in Unix format
                                                # convert to platform format:
         $fileName = Archive::Zip::_asLocalName($fileName, $volume);
-        if ((my $ret = _extractionNameIsSafe($fileName))
+        if ((my $ret = _extractionNameIsSafe($fileName, $dest))
             != AZ_OK) { return $ret; }
         my $status = $member->extractToFileNamed($fileName);
         return $status if $status != AZ_OK;
