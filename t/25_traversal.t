@@ -7,14 +7,24 @@ use strict;
 
 BEGIN { $^W = 1; }
 
+use Cwd;
+use File::Basename qw(fileparse);
 use File::Spec;
 use File::Path qw(make_path);
-use Test::More tests => 49;
+use Test::More tests => 55;
 
 use Archive::Zip qw(:ERROR_CODES);
 
 use lib 't';
 use common;
+
+# This test changes working directory into temporary directories a few times;
+# save the initial path and change back to it at the end in order to avoid
+# frustrating automatic cleanup of these directories (`cannot remove path when
+# cwd is ...` from `File::Temp`).
+my $init_cwd;
+BEGIN { $init_cwd = Cwd::cwd; }
+END { chdir($init_cwd); }
 
 # These tests check for CVE-2018-10860 vulnerabilities.
 # If an archive contains a symlink and then a file that traverses that symlink,
@@ -224,4 +234,15 @@ SKIP: {
     ok(-e $allowed_file, 'File created');
     ok(unlink($allowed_file), 'File removed');
     ok(unlink($link), 'A symlink to a file removed');
+}
+
+# Case 4: allow traversals in the destination path when extracting a tree.
+$zip = Archive::Zip->new();
+isa_ok($zip, 'Archive::Zip');
+azok($zip->read(dataPath('simple.zip', PATH_ABS)), 'Archive read');
+testDirInit('nested/extract/path') or BAIL_OUT("Failed to create extraction path: $!");
+ok(chdir testPath('nested'), "Working directory changed");
+for my $dest (qw(../nested/extract/path extract/../extract/path extract/path/../path)) {
+    $ret = eval { $zip->extractTree({ zipName => $dest }) };
+    azok($ret, "Tree extraction to $dest passed");
 }
