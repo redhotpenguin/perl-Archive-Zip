@@ -7,13 +7,24 @@ use strict;
 
 BEGIN { $^W = 1; }
 
+use Cwd;
+use File::Basename qw(fileparse);
 use File::Spec;
-use Test::More tests => 41;
+use File::Path qw(make_path);
+use Test::More tests => 55;
 
 use Archive::Zip qw(:ERROR_CODES);
 
 use lib 't';
 use common;
+
+# This test changes working directory into temporary directories a few times;
+# save the initial path and change back to it at the end in order to avoid
+# frustrating automatic cleanup of these directories (`cannot remove path when
+# cwd is ...` from `File::Temp`).
+my $init_cwd;
+BEGIN { $init_cwd = Cwd::cwd; }
+END { chdir($init_cwd); }
 
 # These tests check for CVE-2018-10860 vulnerabilities.
 # If an archive contains a symlink and then a file that traverses that symlink,
@@ -34,7 +45,7 @@ ok(chdir testPath(), "Working directory changed");
 # Symlink tests make sense only if a file system supports them.
 my $symlinks_not_supported;
 {
-    my $link = testPath('trylink');
+    my $link = testPathInit('trylink') or BAIL_OUT("Failed to create parent directory of `trylink`: $!");
     $symlinks_not_supported = !eval { symlink('.', $link) };
     unlink($link);
 }
@@ -44,7 +55,7 @@ my $symlinks_not_supported;
 #   link-dir/gotcha-linkdir
 # should not write into /tmp/gotcha-linkdir file.
 SKIP: {
-    skip 'Symbolic links are not supported', 12 if $symlinks_not_supported;
+    skip 'Symbolic links are not supported', 20 if $symlinks_not_supported;
 
     # Extracting an archive tree must fail
     $zip = Archive::Zip->new();
@@ -85,6 +96,24 @@ SKIP: {
     ok(-e $allowed_file, 'File created');
     ok(unlink($allowed_file), 'File removed');
     ok(unlink($link), 'A symlink to a directory removed');
+
+    # And allow extracting a tree into a destination path that is a symlink to
+    # a directory.
+    ok(symlink('.', $link), "Ensured that $link is a symlink");
+    my $zip_safe = Archive::Zip->new();
+    isa_ok($zip_safe, 'Archive::Zip');
+    azok($zip_safe->read(dataPath('simple.zip', PATH_ABS)), 'Archive read');
+    $ret = eval { $zip_safe->extractTree({ zipName => $link }) };
+    azok($ret, 'Tree extraction to destination that is a symlink to a directory passed');
+
+    # And allow extracting a tree into a destination path that is a child path
+    # of a symlink to a directory.
+    ok(unlink $link, "Removed $link");
+    ok(symlink('.', $link), "Ensured that $link is a symlink");
+    my $link_subpath = File::Spec->catdir($link, 'sub/path');
+    ok(make_path($link_subpath), "Created directory $link_subpath");
+    $ret = eval { $zip_safe->extractTree({ zipName => $link_subpath }) };
+    azok($ret, 'Extraction to destination that is a child of a symlink to a directory passed');
 }
 
 # Case 2:
@@ -205,4 +234,15 @@ SKIP: {
     ok(-e $allowed_file, 'File created');
     ok(unlink($allowed_file), 'File removed');
     ok(unlink($link), 'A symlink to a file removed');
+}
+
+# Case 4: allow traversals in the destination path when extracting a tree.
+$zip = Archive::Zip->new();
+isa_ok($zip, 'Archive::Zip');
+azok($zip->read(dataPath('simple.zip', PATH_ABS)), 'Archive read');
+testDirInit('nested/extract/path') or BAIL_OUT("Failed to create extraction path: $!");
+ok(chdir testPath('nested'), "Working directory changed");
+for my $dest (qw(../nested/extract/path extract/../extract/path extract/path/../path)) {
+    $ret = eval { $zip->extractTree({ zipName => $dest }) };
+    azok($ret, "Tree extraction to $dest passed");
 }

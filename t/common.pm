@@ -8,6 +8,8 @@ use warnings;
 
 use Carp qw(croak longmess);
 use Config;
+use File::Basename qw(fileparse);
+use File::Path qw(make_path);
 use File::Spec;
 use File::Spec::Unix;
 use File::Temp qw(tempfile tempdir);
@@ -20,7 +22,8 @@ use Exporter qw(import);
 @common::EXPORT = qw(TESTDIR INPUTZIP OUTPUTZIP
                      TESTSTRING TESTSTRINGLENGTH TESTSTRINGCRC
                      PATH_REL PATH_ABS PATH_ZIPFILE PATH_ZIPDIR PATH_ZIPABS
-                     passThrough readFile execProc execPerl dataPath testPath
+                     passThrough readFile execProc execPerl dataPath
+                     testPath testDirInit testPathInit
                      azbinis azok azis
                      azopen azuztok azwok);
 
@@ -170,6 +173,21 @@ sub testPath
     else {
         return File::Spec::Unix->catfile(@cwdDirs, @testDirs, @pathItems);
     }
+}
+
+sub testDirInit {
+    my $path = &testPath;
+    note("Creating test directory $path");
+    make_path($path) or return;
+    return $path;
+}
+
+sub testPathInit {
+    my $path = &testPath;
+    my $dirs = (fileparse($path))[1];
+    note("Creating parent directory $dirs of test path $path");
+    make_path($dirs) or return;
+    return $path;
 }
 
 ### Initialization
