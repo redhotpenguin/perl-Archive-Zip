@@ -64,6 +64,8 @@ B<A:> Have you looked in the C<examples/> directory yet? It contains:
 
 =over 4
 
+=item examples/avoidOpens.pl   -- shows how using readFromFileHandle and overwriteAs can avoid opens
+
 =item examples/calcSizes.pl    -- How to find out how big a Zip file will be before writing it
 
 =item examples/copy.pl         -- Copies one Zip file to another
