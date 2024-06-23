@@ -1481,6 +1481,10 @@ supported, but using in-memory data is.
     my $zip2 = Archive::Zip->new();
     $status = $zip2->readFromFileHandle( $fh );
 
+See examples/AvoidOpens.pl for how using readFromFileHandle 
+with overwriteAs can avoid open system calls compared to 
+using read and overwrite methods.
+
 Read zip using in-memory data (recursable):
 
     open my $fh, "<", "archive.zip" or die $!;
