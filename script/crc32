@@ -2,7 +2,7 @@
 
 # Computes and prints to stdout the CRC-32 values of the given files
 
-use 5.006;
+use 5.010;
 use strict;
 use lib qw( blib/lib lib );
 use Archive::Zip;
