@@ -791,12 +791,10 @@ sub readFromFileHandle {
         }
         $status = $newMember->_readCentralDirectoryFileHeader();
         return $status if $status != AZ_OK;
-        $status = $newMember->endRead();
-        return $status if $status != AZ_OK;
 
         if ($newMember->isDirectory()) {
             $newMember->_become('Archive::Zip::DirectoryMember');
-            # Ensure above call suceeded to avoid future trouble
+            # Ensure above call succeeded to avoid future trouble
             $newMember->_ISA('Archive::Zip::DirectoryMember') or
               return $self->_error('becoming Archive::Zip::DirectoryMember');
         }

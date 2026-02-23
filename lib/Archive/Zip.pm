@@ -1465,6 +1465,9 @@ Returns C<AZ_OK> or error code.
     my $zipFile = Archive::Zip->new();
     my $status = $zipFile->read( '/some/FileName.zip' );
 
+This closes the file after reading. Accessing members will
+reopen the file handle as needed.
+
 =item readFromFileHandle( $fileHandle, $filename )
 
 =item readFromFileHandle( { fileHandle => $fileHandle, filename => $filename } )
@@ -1488,6 +1491,19 @@ Read zip using in-memory data (recursable):
     my $zip = Archive::Zip->new;
     open my $dh, "+<", \$zip_data;
     $zip->readFromFileHandle ($dh);
+
+Using IO::String
+
+    # Slurp file into string
+    open my $fh, "<", "archive.zip" or die $!;
+    my $zip_data = do { local $.; <$fh> };
+    close $fh;
+    # Create IO::String handle
+    my $dataFH = IO::String->new($zip_data);
+    # Read from string handle
+    my $zip = Archive::Zip->new();
+    my $status = $zip->readFromFileHandle({fileHandle => $dataFH});
+    ...
 
 =back
 
